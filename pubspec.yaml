@@ -1,0 +1,52 @@
+name: assistant_me
+description: assistant me flutter app.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.19.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # design
+  flutter_riverpod: ^2.3.0
+  riverpod_annotation: ^2.0.0
+  freezed_annotation: ^2.2.0
+
+  # UI
+  line_icons: ^2.0.1
+
+  # network
+  http: ^0.13.5
+
+  # storage
+  shared_preferences: ^2.0.18
+
+  # other
+  intl: ^0.17.0
+  logger: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  freezed: ^2.3.2
+  json_serializable: ^6.6.1
+  riverpod_generator: ^2.0.0
+
+  flutter_lints: ^2.0.0
+  
+  build_runner: ^2.0.1
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Note Sans JP
+      fonts:
+        - asset: assets/font/NotoSansJP-Regular.otf
