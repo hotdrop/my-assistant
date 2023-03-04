@@ -17,10 +17,10 @@ class AccountPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _ViewEmail(),
-            const SizedBox(height: 8),
-            const _ViewInputApiKey(),
+          children: const [
+            _ViewEmail(),
+            SizedBox(height: 8),
+            _ViewInputApiKey(),
           ],
         ),
       ),

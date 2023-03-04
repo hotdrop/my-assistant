@@ -1,4 +1,3 @@
-import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/assist_repository.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/gpt_response.dart';
@@ -16,14 +15,19 @@ class HomeController extends _$HomeController {
 
   Future<void> postTalk() async {
     final apiKey = ref.read(appSettingsProvider).apiKey;
-    final messageController = ref.read(talkControllerProvider);
-    if (apiKey == null || messageController.text.isEmpty) {
+    final message = ref.read(talkControllerProvider).text;
+    if (apiKey == null || message.isEmpty) {
       return;
     }
+    // TODO TalkのIDをどうするか？一意にしたいので別の場所から発行してくるか時刻のEpochにするか
+    int id = 1;
 
-    final response = await ref.read(assistRepositoryProvider).talk(messageController.text, apiKey);
-    ref.read(currentTalksProvider.notifier).add(response);
+    ref.read(currentTalksProvider.notifier).addUserTalk(id, message);
     ref.read(talkControllerProvider).clear();
+    // TODO ここでloading状態にしてresponseが返ってきたら入れ替えたい。
+
+    final response = await ref.read(assistRepositoryProvider).talk(message, apiKey);
+    ref.read(currentTalksProvider.notifier).addAssistantResponse(id, response);
   }
 }
 
@@ -35,12 +39,22 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
     return [];
   }
 
-  void add(GptResponse response) {
+  void addUserTalk(int id, String message) {
+    final talk = Talk(
+      id: id,
+      roleType: RoleType.user,
+      message: message,
+      totalTokenNum: 0,
+    );
+    state = [...state, talk];
+  }
+
+  void addAssistantResponse(int id, GptResponse response) {
     final messageObj = response.choices.first.message;
     final usage = response.usage;
 
     final roleType = Talk.toRoleType(messageObj.role);
-    final talk = Talk(id: response.id, roleType: roleType, talk: messageObj.content, totalTokenNum: usage.totalTokens);
+    final talk = Talk(id: id, roleType: roleType, message: messageObj.content, totalTokenNum: usage.totalTokens);
     state = [...state, talk];
   }
 }

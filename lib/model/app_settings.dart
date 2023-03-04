@@ -20,7 +20,8 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
 @immutable
 class AppSettings {
-  const AppSettings({this.email, this.apiKey});
+  // TODO デバッグのためapiKeyの初期値を適当に入れている
+  const AppSettings({this.email, this.apiKey = 'test'});
 
   final String? email;
   final String? apiKey;

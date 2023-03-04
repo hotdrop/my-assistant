@@ -1,4 +1,6 @@
 import 'package:assistant_me/ui/home/home_controller.dart';
+import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
+import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
@@ -14,12 +16,14 @@ class HomePage extends StatelessWidget {
         title: const Text('ホーム画面'),
       ),
       body: Column(
-        children: [
-          const _ViewHeader(),
-          const _ViewInputTalk(),
-          const _ViewErrorLabel(),
-          const Divider(),
-          // チャット欄
+        children: const [
+          _ViewHeader(),
+          _ViewInputTalk(),
+          _ViewErrorLabel(),
+          Divider(),
+          Flexible(
+            child: _ViewTalkArea(),
+          ),
         ],
       ),
     );
@@ -61,6 +65,7 @@ class _ViewInputTalk extends ConsumerWidget {
               textAlignVertical: TextAlignVertical.top,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
+                label: Text('ここに質問を書きます'),
               ),
             ),
           ),
@@ -88,5 +93,29 @@ class _ViewErrorLabel extends ConsumerWidget {
     }
 
     return Text(errorMsg, style: const TextStyle(color: Colors.red));
+  }
+}
+
+class _ViewTalkArea extends ConsumerWidget {
+  const _ViewTalkArea();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final talks = ref.watch(currentTalksProvider);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: talks.length,
+        itemBuilder: (context, index) {
+          final isUser = talks[index].isRoleTypeUser();
+          if (isUser) {
+            return UserChatRowWidget(talk: talks[index]);
+          } else {
+            return AssistantChatRowWidget(talk: talks[index]);
+          }
+        },
+      ),
+    );
   }
 }
