@@ -9,19 +9,25 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     return const AppSettings();
   }
 
-  void setApiKey(String apiKey) {
-    state = state.copyWith(apiKey: apiKey);
+  void setEmail(String newEmail) {
+    state = state.copyWith(email: newEmail);
+  }
+
+  void setApiKey(String newApiKey) {
+    state = state.copyWith(apiKey: newApiKey);
   }
 }
 
 @immutable
 class AppSettings {
-  const AppSettings({this.apiKey});
+  const AppSettings({this.email, this.apiKey});
 
+  final String? email;
   final String? apiKey;
 
-  AppSettings copyWith({String? apiKey}) {
+  AppSettings copyWith({String? email, String? apiKey}) {
     return AppSettings(
+      email: email ?? this.email,
       apiKey: apiKey ?? this.apiKey,
     );
   }

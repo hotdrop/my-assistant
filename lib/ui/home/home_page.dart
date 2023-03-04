@@ -36,7 +36,7 @@ class _ViewHeader extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Text('このスレッドのトークン利用数: ${totalTokenNum}'),
+          Text('このスレッドのトークン利用数: $totalTokenNum'),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
 import 'package:assistant_me/model/gpt_request.dart';
 import 'package:assistant_me/model/gpt_response.dart';
@@ -16,6 +17,7 @@ class AssistRepository {
       apiKey: apiKey,
       newContents: message,
     );
+    AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');
     // TODO 検証中なのでAPIは叩かない
     // final response = await _ref.read(httpClientProvider).post(request);
 

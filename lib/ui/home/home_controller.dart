@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/assist_repository.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/gpt_response.dart';
@@ -22,6 +23,7 @@ class HomeController extends _$HomeController {
 
     final response = await ref.read(assistRepositoryProvider).talk(messageController.text, apiKey);
     ref.read(currentTalksProvider.notifier).add(response);
+    ref.read(talkControllerProvider).clear();
   }
 }
 
