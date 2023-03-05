@@ -1,4 +1,3 @@
-import 'package:assistant_me/resource/strings.dart';
 import 'package:assistant_me/ui/top_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -20,7 +19,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('ja', '')],
-      title: Strings.appName,
+      title: 'マイアシスト',
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Note Sans JP',

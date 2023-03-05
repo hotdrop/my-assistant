@@ -65,8 +65,8 @@ class _ViewInputTalk extends ConsumerWidget {
               textAlignVertical: TextAlignVertical.top,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                label: Text('ここに質問を書きます'),
               ),
+              style: const TextStyle(fontSize: 12),
             ),
           ),
           RawMaterialButton(
