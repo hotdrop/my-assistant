@@ -1,7 +1,9 @@
+import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/assist_repository.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/gpt_response.dart';
 import 'package:assistant_me/model/talk.dart';
+import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,20 +25,25 @@ class HomeController extends _$HomeController {
       return;
     }
 
-    // TODO TalkのIDをどうするか？スレッドIDと連番にするか。いずれにしろhomeControllerで発行したくない
-    int id = 1;
+    // 最初の会話だったらスレッドを保存する
+    if (ref.read(threadProvider).isNotCrerateId()) {
+      final thread = await ref.read(assistRepositoryProvider).createThread(message);
+      ref.read(threadProvider.notifier).state = thread;
+    }
+    final thread = ref.read(threadProvider);
+    final talkId = ref.read(currentTalksProvider).length + 1;
 
     // こちらの会話追加
-    ref.read(currentTalksProvider.notifier).addUserTalk(id, message);
+    ref.read(currentTalksProvider.notifier).addUserTalk(talkId, message);
     ref.read(talkControllerProvider).clear();
 
     // アシスタントのロード中会話追加
-    ref.read(currentTalksProvider.notifier).addAssistantLoading(id);
+    ref.read(currentTalksProvider.notifier).addAssistantLoading(talkId + 1);
     _autoScrollToEndOfTalkArea();
 
     // アシスタントのレスポンス会話更新
-    final response = await ref.read(assistRepositoryProvider).talk(message, apiKey);
-    ref.read(currentTalksProvider.notifier).updateAssistantResponse(id, response);
+    final response = await ref.read(assistRepositoryProvider).talk(message, apiKey, thread);
+    ref.read(currentTalksProvider.notifier).updateAssistantResponse(talkId + 1, response);
     _autoScrollToEndOfTalkArea();
   }
 
@@ -67,6 +74,9 @@ class HomeController extends _$HomeController {
     });
   }
 }
+
+// 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）
+final threadProvider = StateProvider((_) => TalkThread.createEmpty());
 
 // 会話データ
 final currentTalksProvider = NotifierProvider<CurrentTalksNotifier, List<Talk>>(CurrentTalksNotifier.new);

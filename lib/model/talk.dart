@@ -23,7 +23,6 @@ class Talk {
     return Talk(id: _loadingId, dateTime: DateTime.now(), roleType: RoleType.assistant, message: '', totalTokenNum: 0);
   }
 
-  // このIDはAPIのものではなくアプリ側で管理するID
   final int id;
   final DateTime dateTime;
   final RoleType roleType;
