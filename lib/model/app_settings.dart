@@ -23,8 +23,7 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
 @immutable
 class AppSettings {
-  // TODO デバッグのためapiKeyの初期値を適当に入れているが本来は不要
-  const AppSettings({this.apiKey = 'test'});
+  const AppSettings({this.apiKey});
 
   final String? apiKey;
 

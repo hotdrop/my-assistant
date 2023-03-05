@@ -20,6 +20,7 @@ class HomePage extends StatelessWidget {
           _ViewHeader(),
           _ViewInputTalk(),
           _ViewErrorLabel(),
+          _ViewNewThreadButton(),
           Divider(),
           Flexible(
             child: _ViewTalkArea(),
@@ -76,7 +77,6 @@ class _ViewInputTalk extends ConsumerWidget {
             shape: const CircleBorder(),
             child: LineIcon(LineIcons.paperPlane, size: 28),
           ),
-          // TODO どこかに新規スレッド作成ボタンを入れたい
         ],
       ),
     );
@@ -94,6 +94,26 @@ class _ViewErrorLabel extends ConsumerWidget {
     }
 
     return Text(errorMsg, style: const TextStyle(color: Colors.red));
+  }
+}
+
+class _ViewNewThreadButton extends ConsumerWidget {
+  const _ViewNewThreadButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: OutlinedButton(
+        onPressed: () {
+          ref.read(homeControllerProvider.notifier).newThread();
+        },
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Text('内容をクリアしてスレッドを新規作成する'),
+        ),
+      ),
+    );
   }
 }
 

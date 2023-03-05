@@ -15,13 +15,12 @@ class HomeController extends _$HomeController {
   void build() {}
 
   Future<void> postTalk() async {
-    final apiKey = ref.read(appSettingsProvider).apiKey;
-    final message = ref.read(talkControllerProvider).text;
-    final isAssistantLoading = _isNowLoadingAssistant();
-
-    if (apiKey == null || message.isEmpty || isAssistantLoading) {
+    if (!_canContinueProcess()) {
       return;
     }
+
+    final apiKey = ref.read(appSettingsProvider).apiKey;
+    final message = ref.read(talkControllerProvider).text;
 
     // 最初の会話だったらスレッドを保存する
     if (ref.read(threadProvider).isNotCrerateId()) {
@@ -39,7 +38,7 @@ class HomeController extends _$HomeController {
     _autoScrollToEndOfTalkArea();
 
     // アシスタントのレスポンス会話更新
-    final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey, thread);
+    final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey!, thread);
     ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
     _autoScrollToEndOfTalkArea();
   }
@@ -69,6 +68,31 @@ class HomeController extends _$HomeController {
             curve: Curves.fastOutSlowIn,
           );
     });
+  }
+
+  void newThread() {
+    if (!_canContinueProcess()) {
+      return;
+    }
+
+    ref.read(threadProvider.notifier).state = TalkThread.createEmpty();
+    ref.read(currentTalksProvider.notifier).clear();
+    ref.read(talkControllerProvider).clear();
+  }
+
+  ///
+  /// 処理中だったり準備が整っておらずスレッドでの会話ができない状態だった場合はfalseを返す
+  ///
+  bool _canContinueProcess() {
+    final apiKey = ref.read(appSettingsProvider).apiKey;
+    final message = ref.read(talkControllerProvider).text;
+    final isAssistantLoading = _isNowLoadingAssistant();
+
+    if (apiKey == null || message.isEmpty || isAssistantLoading) {
+      return false;
+    }
+
+    return true;
   }
 }
 
@@ -102,6 +126,10 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
   void updateAssistantResponse(Talk talk) {
     final lastIndex = state.length - 1;
     state = List.of(state)..[lastIndex] = talk;
+  }
+
+  void clear() {
+    state = [];
   }
 }
 
