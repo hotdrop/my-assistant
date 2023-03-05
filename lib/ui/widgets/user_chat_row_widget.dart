@@ -10,24 +10,29 @@ class UserChatRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO 時刻をつける
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(width: 4),
-        LineIcon(LineIcons.userCircle),
-        Flexible(
-          child: Card(
-            elevation: 4.0,
-            color: Theme.of(context).colorScheme.background,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: SelectableText(talk.message, style: const TextStyle(fontSize: 12)),
+        Text(talk.toDateTimeString(), style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(width: 4),
+            LineIcon(LineIcons.userCircle),
+            Flexible(
+              child: Card(
+                elevation: 4.0,
+                color: Theme.of(context).colorScheme.background,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SelectableText(talk.message, style: const TextStyle(fontSize: 12)),
+                ),
+              ),
             ),
-          ),
+            const SizedBox(width: 32),
+          ],
         ),
-        const SizedBox(width: 32),
       ],
     );
   }

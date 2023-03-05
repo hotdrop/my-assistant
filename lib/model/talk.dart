@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Talk {
   const Talk({
     required this.id,
@@ -42,6 +44,9 @@ class Talk {
   bool isLoading() => (id == _loadingId) && (roleType == RoleType.assistant);
 
   bool isRoleTypeUser() => roleType == RoleType.user;
+
+  static final _dateFormat = DateFormat('yyyy/MM/dd hh:mm');
+  String toDateTimeString() => _dateFormat.format(dateTime);
 }
 
 enum RoleType {
