@@ -1,7 +1,5 @@
-import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/assist_repository.dart';
 import 'package:assistant_me/model/app_settings.dart';
-import 'package:assistant_me/model/gpt_response.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter/material.dart';
@@ -31,19 +29,18 @@ class HomeController extends _$HomeController {
       ref.read(threadProvider.notifier).state = thread;
     }
     final thread = ref.read(threadProvider);
-    final talkId = ref.read(currentTalksProvider).length + 1;
 
     // こちらの会話追加
-    ref.read(currentTalksProvider.notifier).addUserTalk(talkId, message);
+    ref.read(currentTalksProvider.notifier).addUserTalk(message);
     ref.read(talkControllerProvider).clear();
 
     // アシスタントのロード中会話追加
-    ref.read(currentTalksProvider.notifier).addAssistantLoading(talkId + 1);
+    ref.read(currentTalksProvider.notifier).addAssistantLoading();
     _autoScrollToEndOfTalkArea();
 
     // アシスタントのレスポンス会話更新
-    final response = await ref.read(assistRepositoryProvider).talk(message, apiKey, thread);
-    ref.read(currentTalksProvider.notifier).updateAssistantResponse(talkId + 1, response);
+    final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey, thread);
+    ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
     _autoScrollToEndOfTalkArea();
   }
 
@@ -87,9 +84,8 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
     return [];
   }
 
-  void addUserTalk(int id, String message) {
+  void addUserTalk(String message) {
     final talk = Talk.create(
-      id: id,
       dateTime: DateTime.now(),
       roleType: RoleType.user,
       message: message,
@@ -98,21 +94,12 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
     state = [...state, talk];
   }
 
-  void addAssistantLoading(int id) {
+  void addAssistantLoading() {
     final talk = Talk.loading();
     state = [...state, talk];
   }
 
-  void updateAssistantResponse(int id, GptResponse response) {
-    final messageObj = response.choices.first.message;
-
-    final talk = Talk.create(
-      id: id,
-      dateTime: response.epoch.toDateTime(),
-      roleType: Talk.toRoleType(messageObj.role),
-      message: messageObj.content,
-      totalTokenNum: response.usage.totalTokens,
-    );
+  void updateAssistantResponse(Talk talk) {
     final lastIndex = state.length - 1;
     state = List.of(state)..[lastIndex] = talk;
   }

@@ -76,6 +76,7 @@ class _ViewInputTalk extends ConsumerWidget {
             shape: const CircleBorder(),
             child: LineIcon(LineIcons.paperPlane, size: 28),
           ),
+          // TODO どこかに新規スレッド作成ボタンを入れたい
         ],
       ),
     );

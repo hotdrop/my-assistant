@@ -1,17 +1,19 @@
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/top_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -23,12 +25,34 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Note Sans JP',
-        primaryColor: Colors.green,
+        primaryColor: Colors.purple,
         appBarTheme: const AppBarTheme(
           centerTitle: true,
         ),
       ),
-      home: const TopPage(),
+      home: ref.watch(appInitFutureProvider).when(
+            data: (_) => const TopPage(),
+            error: (error, s) => _ViewOnLoading(errorMessage: '$error'),
+            loading: () => const _ViewOnLoading(),
+          ),
+    );
+  }
+}
+
+class _ViewOnLoading extends StatelessWidget {
+  const _ViewOnLoading({this.errorMessage});
+
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('マイアシスト'),
+      ),
+      body: Center(
+        child: LoadingAnimationWidget.threeArchedCircle(color: Theme.of(context).primaryColor, size: 32),
+      ),
     );
   }
 }

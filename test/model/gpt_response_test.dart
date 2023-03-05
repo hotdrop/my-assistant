@@ -1,6 +1,7 @@
-import 'package:assistant_me/model/gpt_response.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert' as convert;
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:assistant_me/data/remote/entities/gpt_response.dart';
 
 void main() {
   const String dummyResponse =
