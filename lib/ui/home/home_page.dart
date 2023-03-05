@@ -102,19 +102,26 @@ class _ViewTalkArea extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final talks = ref.watch(currentTalksProvider);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: talks.length,
-        itemBuilder: (context, index) {
-          final isUser = talks[index].isRoleTypeUser();
-          if (isUser) {
-            return UserChatRowWidget(talk: talks[index]);
-          } else {
-            return AssistantChatRowWidget(talk: talks[index]);
-          }
-        },
+      child: CustomScrollView(
+        controller: ref.watch(chatScrollControllerProvider),
+        slivers: [
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final isUser = talks[index].isRoleTypeUser();
+                if (isUser) {
+                  return UserChatRowWidget(talk: talks[index]);
+                } else {
+                  return AssistantChatRowWidget(talk: talks[index]);
+                }
+              },
+              childCount: talks.length,
+            ),
+          ),
+        ],
       ),
     );
   }

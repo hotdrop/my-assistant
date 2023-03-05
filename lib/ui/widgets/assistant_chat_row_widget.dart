@@ -14,12 +14,15 @@ class AssistantChatRowWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Card(
-          elevation: 4.0,
-          color: Theme.of(context).colorScheme.background,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(talk.message),
+        const SizedBox(width: 32),
+        Flexible(
+          child: Card(
+            elevation: 4.0,
+            color: Theme.of(context).colorScheme.background,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SelectableText(talk.message),
+            ),
           ),
         ),
         LineIcon(LineIcons.robot),

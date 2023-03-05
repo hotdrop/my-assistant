@@ -13,7 +13,7 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
-  // TODO 前の対話情報もここで設定する
+  // TODO 引数で前の対話情報を受け取ってjsonに設定する
   String body() {
     return json.encode({
       'model': 'gpt-3.5-turbo',

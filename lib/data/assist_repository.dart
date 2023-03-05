@@ -20,6 +20,7 @@ class AssistRepository {
     AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');
     // TODO 検証中なのでAPIは叩かない
     // final response = await _ref.read(httpClientProvider).post(request);
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     // TODO ここでローカルストレージに保存する
 

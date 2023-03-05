@@ -9,10 +9,6 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     return const AppSettings();
   }
 
-  void setEmail(String newEmail) {
-    state = state.copyWith(email: newEmail);
-  }
-
   void setApiKey(String newApiKey) {
     state = state.copyWith(apiKey: newApiKey);
   }
@@ -20,15 +16,13 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
 @immutable
 class AppSettings {
-  // TODO デバッグのためapiKeyの初期値を適当に入れている
-  const AppSettings({this.email, this.apiKey = 'test'});
+  // TODO デバッグのためapiKeyの初期値を適当に入れているが本来は不要
+  const AppSettings({this.apiKey = 'test'});
 
-  final String? email;
   final String? apiKey;
 
   AppSettings copyWith({String? email, String? apiKey}) {
     return AppSettings(
-      email: email ?? this.email,
       apiKey: apiKey ?? this.apiKey,
     );
   }
