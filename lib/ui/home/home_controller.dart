@@ -120,7 +120,7 @@ final totalTokenNumProvider = Provider((ref) {
 // 会話は上から下方向に時系列で進んでいくのでスクロールを常に一番下に移動させるためこれを定義する
 final chatScrollControllerProvider = StateProvider((_) => ScrollController());
 
-// エラー
+// 入力枠の下に表示するエラーメッセージ。今のところAPIKeyのエラーしかない
 final errorProvider = Provider<String?>((ref) {
   final appSettings = ref.watch(appSettingsProvider);
   if (appSettings.apiKey == null) {
