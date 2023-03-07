@@ -24,9 +24,11 @@ class AssistRepository {
   }
 
   Future<Talk> talk(String message, String apiKey, TalkThread thread) async {
+    final historyTalks = await _ref.read(talkDaoProvider).findTalks(thread.id);
     final request = GptRequest(
       apiKey: apiKey,
       newContents: message,
+      histories: historyTalks,
     );
     AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');
 

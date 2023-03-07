@@ -1,10 +1,17 @@
 import 'dart:convert';
 
+import 'package:assistant_me/model/talk.dart';
+
 class GptRequest {
-  GptRequest({required this.apiKey, required this.newContents});
+  GptRequest({
+    required this.apiKey,
+    required this.newContents,
+    required this.histories,
+  });
 
   final String apiKey;
   final String newContents;
+  final List<Talk> histories;
 
   Uri get uri => Uri.parse('https://api.openai.com/v1/chat/completions');
 
@@ -13,17 +20,33 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
-  // TODO 引数で前の対話情報を受け取ってjsonに設定する
+  List<Map<String, String>> get systemMessages => [
+        {'role': 'system', 'content': 'あなたはIT業界で仕事をしているエンジニアのアシスタントです。'},
+        {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートです。'},
+      ];
+
+  // TODO systemはapp_settingsで可変に設定できるようにしたい
   String body() {
+    final historyMessages = [];
+    for (var history in histories) {
+      switch (history.roleType) {
+        case RoleType.user:
+          historyMessages.add({'role': 'user', 'content': history.message});
+          break;
+        case RoleType.assistant:
+          historyMessages.add({'role': 'assistant', 'content': history.message});
+          break;
+      }
+    }
+
     return json.encode({
       'model': 'gpt-3.5-turbo',
       'messages': [
-        {
-          'role': 'user',
-          'content': newContents,
-        }
+        ...systemMessages,
+        ...historyMessages,
+        {'role': 'user', 'content': newContents}
       ],
-      'max_tokens': '2000',
+      'max_tokens': '2000'
     });
   }
 }
