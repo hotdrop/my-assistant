@@ -41,6 +41,7 @@ class _ViewHeader extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
+          // TODO 4096トークンに達したら終了
           Text('このスレッドのトークン利用数: $totalTokenNum'),
         ],
       ),

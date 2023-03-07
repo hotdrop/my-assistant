@@ -45,8 +45,7 @@ class GptRequest {
         ...systemMessages,
         ...historyMessages,
         {'role': 'user', 'content': newContents}
-      ],
-      'max_tokens': '2000'
+      ]
     });
   }
 }
