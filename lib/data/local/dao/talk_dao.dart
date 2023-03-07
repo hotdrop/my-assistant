@@ -19,7 +19,7 @@ class TalkDao {
     final talkThread = TalkThreadEntity(id: threadId, title: title);
     box.put(threadId, talkThread);
 
-    return _toThreadModel(talkThread, 0);
+    return _toThreadModel(entity: talkThread, talkNum: 0, totalTokenNum: 0);
   }
 
   ///
@@ -34,8 +34,12 @@ class TalkDao {
 
     final results = <TalkThread>[];
     for (var thread in box.values) {
-      final talksNum = talkBox.values.where((e) => e.threadId == thread.id).length;
-      final talkThread = _toThreadModel(thread, talksNum);
+      final talks = talkBox.values.where((e) => e.threadId == thread.id);
+      final talkThread = _toThreadModel(
+        entity: thread,
+        talkNum: talks.length,
+        totalTokenNum: talks.map((e) => e.totalTokenNum).fold(0, (previousValue, element) => previousValue + element),
+      );
       results.add(talkThread);
     }
     return results;
@@ -94,11 +98,12 @@ class TalkDao {
     );
   }
 
-  TalkThread _toThreadModel(TalkThreadEntity entity, int talkNum) {
+  TalkThread _toThreadModel({required TalkThreadEntity entity, required int talkNum, required int totalTokenNum}) {
     return TalkThread(
       id: entity.id,
       title: entity.title,
       talkNum: talkNum,
+      totalTokenNum: totalTokenNum,
     );
   }
 }

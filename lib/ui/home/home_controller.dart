@@ -44,18 +44,6 @@ class HomeController extends _$HomeController {
   }
 
   ///
-  /// アシスタントがロード中か？
-  ///
-  bool _isNowLoadingAssistant() {
-    if (ref.read(currentTalksProvider).isEmpty) {
-      return false;
-    }
-
-    final lastTalk = ref.read(currentTalksProvider).last;
-    return lastTalk.isLoading();
-  }
-
-  ///
   /// 会話の一番下にスクロールする処理
   /// animateToだけだとWidgetにアイテムが追加される前にスクロール処理を行なってしまうのでaddPostFrameCallbackをつけている
   /// 参考: https://stackoverflow.com/questions/44141148/how-to-get-full-size-of-a-scrollcontroller/44142234#44142234
@@ -81,18 +69,33 @@ class HomeController extends _$HomeController {
   }
 
   ///
-  /// 処理中だったり準備が整っておらずスレッドでの会話ができない状態だった場合はfalseを返す
+  /// ボタン連打で送信しないようにする制御
+  /// 以下の場合はfalseを返す。
+  /// ・初期状態（会話のメッセージが空で会話のやりとりもない）
+  /// ・アシスタント側が会話のロード中
   ///
   bool _canContinueProcess() {
-    final apiKey = ref.read(appSettingsProvider).apiKey;
-    final message = ref.read(talkControllerProvider).text;
+    final emptyMessage = ref.read(talkControllerProvider).text.isEmpty;
+    final nonTalk = ref.read(currentTalksProvider).isEmpty;
     final isAssistantLoading = _isNowLoadingAssistant();
 
-    if (apiKey == null || message.isEmpty || isAssistantLoading) {
+    if ((emptyMessage && nonTalk) || isAssistantLoading) {
       return false;
     }
 
     return true;
+  }
+
+  ///
+  /// アシスタントがロード中か？
+  ///
+  bool _isNowLoadingAssistant() {
+    if (ref.read(currentTalksProvider).isEmpty) {
+      return false;
+    }
+
+    final lastTalk = ref.read(currentTalksProvider).last;
+    return lastTalk.isLoading();
   }
 }
 
@@ -148,8 +151,19 @@ final chatScrollControllerProvider = StateProvider((_) => ScrollController());
 // 入力枠の下に表示するエラーメッセージ。今のところAPIKeyのエラーしかない
 final errorProvider = Provider<String?>((ref) {
   final appSettings = ref.watch(appSettingsProvider);
+  final isReachedMaxToken = ref.watch(_isReachedMaxTokenProvider);
+
   if (appSettings.apiKey == null) {
     return 'API Keyが設定されていません。API Keyを設定してから実行してください。';
+  } else if (isReachedMaxToken) {
+    return '最大トークン数(${appSettings.maxTokenNum})に達したのでこれ以上会話はできません。';
   }
   return null;
+});
+
+// 最大トークン数に達したか？
+final _isReachedMaxTokenProvider = Provider<bool>((ref) {
+  final maxToken = ref.watch(appSettingsProvider.select((value) => value.maxTokenNum));
+  final currentToken = ref.watch(totalTokenNumProvider);
+  return currentToken >= maxToken;
 });

@@ -23,13 +23,17 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
 @immutable
 class AppSettings {
-  const AppSettings({this.apiKey});
+  const AppSettings({this.apiKey, this.maxTokenNum = maxToken});
 
   final String? apiKey;
+  final int maxTokenNum;
 
-  AppSettings copyWith({String? email, String? apiKey}) {
+  static const int maxToken = 4096;
+
+  AppSettings copyWith({String? apiKey, int? maxTokenNum}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,
+      maxTokenNum: maxTokenNum ?? this.maxTokenNum,
     );
   }
 }

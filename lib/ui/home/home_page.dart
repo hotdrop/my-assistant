@@ -1,3 +1,4 @@
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
@@ -37,14 +38,18 @@ class _ViewHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final totalTokenNum = ref.watch(totalTokenNumProvider);
+    final maxTokenNum = ref.watch(appSettingsProvider.select((value) => value.maxTokenNum));
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Row(
-        children: [
-          // TODO 4096トークンに達したら終了
-          Text('このスレッドのトークン利用数: $totalTokenNum'),
-        ],
-      ),
+      child: Row(children: [
+        Text('このスレッドのトークン利用数: $totalTokenNum/$maxTokenNum'),
+        const SizedBox(width: 8),
+        Tooltip(
+          message: '最大トークン数は$maxTokenNumです。最大トークンに達したら会話続行はできません。',
+          child: LineIcon(LineIcons.questionCircle),
+        )
+      ]),
     );
   }
 }
