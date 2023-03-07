@@ -25,7 +25,6 @@ class GptRequest {
         {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートです。'},
       ];
 
-  // TODO systemはapp_settingsで可変に設定できるようにしたい
   String body() {
     final historyMessages = [];
     for (var history in histories) {

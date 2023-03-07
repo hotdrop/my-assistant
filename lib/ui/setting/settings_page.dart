@@ -4,14 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
-class InformationPage extends StatelessWidget {
-  const InformationPage({super.key});
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('アカウント情報'),
+        title: const Text('設定情報'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -21,7 +21,6 @@ class InformationPage extends StatelessWidget {
             SizedBox(height: 8),
             _ViewInputApiKey(),
             SizedBox(height: 16),
-            Text('ここにAPIのsystemに設定する文字列を表示する'),
           ],
         ),
       ),

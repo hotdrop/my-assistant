@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:assistant_me/ui/info/information_page.dart';
+import 'package:assistant_me/ui/setting/settings_page.dart';
 import 'package:assistant_me/ui/history/history_page.dart';
 import 'package:assistant_me/ui/home/home_page.dart';
 import 'package:line_icons/line_icon.dart';
@@ -38,7 +38,7 @@ class _TopPageState extends State<TopPage> {
   List<Destination> get destinations => <Destination>[
         Destination('ホーム', LineIcon(LineIcons.home)),
         Destination('履歴', LineIcon(LineIcons.history)),
-        Destination('情報', LineIcon(LineIcons.infoCircle)),
+        Destination('設定', LineIcon(LineIcons.cog)),
       ];
 
   Widget _menuView(int index) {
@@ -48,7 +48,7 @@ class _TopPageState extends State<TopPage> {
       case 1:
         return const HistoryPage();
       case 2:
-        return const InformationPage();
+        return const SettingsPage();
       default:
         throw Exception(['不正なIndexです index=$index']);
     }
