@@ -87,15 +87,15 @@ class _ViewBodyHistories extends ConsumerWidget {
     return SingleChildScrollView(
       child: Wrap(
         verticalDirection: VerticalDirection.down,
-        children: threads.map((t) {
-          return ViewHistoryCard(
-            thread: t,
-            isSelected: selectedThreadId == t.id,
-            onTap: (int threadId) {
-              ref.read(historyControllerProvider.notifier).onLoad(threadId);
-            },
-          );
-        }).toList(),
+        children: threads
+            .where((t) => t.deleteAt == null) //
+            .map((t) => ViewHistoryCard(
+                thread: t,
+                isSelected: selectedThreadId == t.id,
+                onTap: (int threadId) {
+                  ref.read(historyControllerProvider.notifier).onLoad(threadId);
+                }))
+            .toList(),
       ),
     );
   }

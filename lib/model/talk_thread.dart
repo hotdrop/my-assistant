@@ -1,14 +1,15 @@
 class TalkThread {
-  const TalkThread({required this.id, required this.title, required this.talkNum, required this.totalTokenNum});
+  const TalkThread({required this.id, required this.title, required this.talkNum, required this.totalTalkTokenNum, this.deleteAt});
 
   factory TalkThread.createEmpty() {
-    return const TalkThread(id: noneId, title: '', talkNum: 0, totalTokenNum: 0);
+    return const TalkThread(id: noneId, title: '', talkNum: 0, totalTalkTokenNum: 0);
   }
 
   final int id;
   final String title;
+  final DateTime? deleteAt;
   final int talkNum;
-  final int totalTokenNum;
+  final int totalTalkTokenNum;
 
   static const int noneId = -1;
 

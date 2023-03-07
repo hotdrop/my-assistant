@@ -16,10 +16,10 @@ class TalkDao {
     final title = message.length < 30 ? message : message.substring(0, 30);
 
     final threadId = (box.isEmpty) ? 1 : box.length + 1;
-    final talkThread = TalkThreadEntity(id: threadId, title: title);
+    final talkThread = TalkThreadEntity(id: threadId, title: title, totalTalkTokenNum: 0);
     box.put(threadId, talkThread);
 
-    return _toThreadModel(entity: talkThread, talkNum: 0, totalTokenNum: 0);
+    return _toThreadModel(entity: talkThread, talkNum: 0, totalTalkTokenNum: 0);
   }
 
   ///
@@ -38,7 +38,8 @@ class TalkDao {
       final talkThread = _toThreadModel(
         entity: thread,
         talkNum: talks.length,
-        totalTokenNum: talks.map((e) => e.totalTokenNum).fold(0, (previousValue, element) => previousValue + element),
+        deleteAt: thread.deleteAt,
+        totalTalkTokenNum: thread.totalTalkTokenNum,
       );
       results.add(talkThread);
     }
@@ -67,6 +68,17 @@ class TalkDao {
     final box = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
     await box.add(_toEntityForUserTalk(threadId, message));
     await box.add(_toEntityForAssistTalk(threadId, talk));
+
+    // スレッドの総トークン数を更新
+    final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+    // このタイミングでThreadIDでは絶対ヒットするので!をつける
+    final updateThread = threadBox.get(threadId)!.updateTokenNum(talk.totalTokenNum);
+    threadBox.put(threadId, updateThread);
+  }
+
+  Future<void> delete({required int threadId}) async {
+    // TODO 会話を削除
+    // TODO スレッドの削除日付を設定
   }
 
   TalkEntity _toEntityForUserTalk(int threadId, String message) {
@@ -98,12 +110,13 @@ class TalkDao {
     );
   }
 
-  TalkThread _toThreadModel({required TalkThreadEntity entity, required int talkNum, required int totalTokenNum}) {
+  TalkThread _toThreadModel({required TalkThreadEntity entity, required int talkNum, required int totalTalkTokenNum, DateTime? deleteAt}) {
     return TalkThread(
       id: entity.id,
       title: entity.title,
       talkNum: talkNum,
-      totalTokenNum: totalTokenNum,
+      deleteAt: deleteAt,
+      totalTalkTokenNum: totalTalkTokenNum,
     );
   }
 }

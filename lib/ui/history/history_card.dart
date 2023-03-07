@@ -29,7 +29,7 @@ class ViewHistoryCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('トークン数: ${thread.totalTokenNum}', style: Theme.of(context).textTheme.bodySmall),
+                    Text('トークン数: ${thread.totalTalkTokenNum}', style: Theme.of(context).textTheme.bodySmall),
                     _ViewRowTalks(talkNum: thread.talkNum),
                   ],
                 ),
