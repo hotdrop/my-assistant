@@ -21,8 +21,8 @@ void main() {
       apiKey: 'test',
       newContents: 'ありがとうございます。',
       histories: [
-        Talk(dateTime: DateTime.now(), roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
-        Talk(dateTime: DateTime.now(), roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
       ],
     );
     expect(request.body(), expectSecondTalkBody);
@@ -35,10 +35,10 @@ void main() {
       apiKey: 'test',
       newContents: 'ありがとうございました!',
       histories: [
-        Talk(dateTime: DateTime.now(), roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
-        Talk(dateTime: DateTime.now(), roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
-        Talk(dateTime: DateTime.now(), roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', totalTokenNum: 0),
-        Talk(dateTime: DateTime.now(), roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', totalTokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', totalTokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', totalTokenNum: 0),
       ],
     );
     expect(request.body(), expectThirdTalkBody);

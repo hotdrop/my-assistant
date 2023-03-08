@@ -13,7 +13,6 @@ class UserChatRowWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(talk.toDateTimeString(), style: const TextStyle(fontSize: 11, color: Colors.grey)),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

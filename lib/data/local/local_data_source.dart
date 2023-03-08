@@ -1,3 +1,4 @@
+import 'package:assistant_me/data/local/entities/auto_id.dart';
 import 'package:assistant_me/data/local/entities/talk_entity.dart';
 import 'package:assistant_me/data/local/entities/talk_thread_entity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,5 +16,6 @@ class _LocalDataSource {
     await Hive.initFlutter();
     Hive.registerAdapter(TalkEntityAdapter());
     Hive.registerAdapter(TalkThreadEntityAdapter());
+    Hive.registerAdapter(AutoIdAdapter());
   }
 }

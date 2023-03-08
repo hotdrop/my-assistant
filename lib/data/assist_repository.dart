@@ -39,7 +39,6 @@ class AssistRepository {
 
     final messageObj = response.choices.first.message;
     final talk = Talk.create(
-      dateTime: response.epoch.toDateTime(),
       roleType: Talk.toRoleType(messageObj.role),
       message: messageObj.content,
       totalTokenNum: response.usage.totalTokens,

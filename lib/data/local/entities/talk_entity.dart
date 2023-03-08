@@ -5,8 +5,8 @@ part 'talk_entity.g.dart';
 @HiveType(typeId: 2)
 class TalkEntity extends HiveObject {
   TalkEntity({
+    required this.id,
     required this.threadId,
-    required this.dateTime,
     required this.roleTypeIndex,
     required this.message,
     required this.totalTokenNum,
@@ -15,10 +15,10 @@ class TalkEntity extends HiveObject {
   static const String boxName = 'talk';
 
   @HiveField(0)
-  final int threadId;
+  final int id;
 
   @HiveField(1)
-  final DateTime dateTime;
+  final int threadId;
 
   @HiveField(2)
   final int roleTypeIndex;

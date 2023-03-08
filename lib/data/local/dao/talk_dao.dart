@@ -1,3 +1,4 @@
+import 'package:assistant_me/data/local/dao/id_dao.dart';
 import 'package:assistant_me/data/local/entities/talk_entity.dart';
 import 'package:assistant_me/data/local/entities/talk_thread_entity.dart';
 import 'package:assistant_me/model/talk.dart';
@@ -5,19 +6,25 @@ import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-final talkDaoProvider = Provider((_) => TalkDao());
+final talkDaoProvider = Provider((ref) => TalkDao(ref));
 
 class TalkDao {
+  const TalkDao(this._ref);
+
+  final Ref _ref;
+
   ///
   /// スレッドを新規生成する
   ///
   Future<TalkThread> createThread(String message) async {
     final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+
+    // スレッドに表示するタイトルは一旦最初の会話の先頭30文字としている。タイトルは変更できるようにした方がよさそう
     final title = message.length < 30 ? message : message.substring(0, 30);
 
-    final threadId = (box.isEmpty) ? 1 : box.length + 1;
-    final talkThread = TalkThreadEntity(id: threadId, title: title, totalTalkTokenNum: 0);
-    box.put(threadId, talkThread);
+    final newThreadId = await _ref.read(idDaoProvider).generate();
+    final talkThread = TalkThreadEntity(id: newThreadId, createAt: DateTime.now(), title: title, totalTalkTokenNum: 0);
+    box.put(newThreadId, talkThread);
 
     return _toThreadModel(entity: talkThread, talkNum: 0, totalTalkTokenNum: 0);
   }
@@ -57,7 +64,7 @@ class TalkDao {
 
     return talkBox.values //
         .where((t) => t.threadId == threadId)
-        .map((t) => _toTalkModel(t))
+        .map((t) => _toTalkModel(entity: t))
         .toList();
   }
 
@@ -65,45 +72,64 @@ class TalkDao {
   /// ユーザーとアシストの2つ分の会話を保存する
   ///
   Future<void> save({required int threadId, required String message, required Talk talk}) async {
-    final box = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
-    await box.add(_toEntityForUserTalk(threadId, message));
-    await box.add(_toEntityForAssistTalk(threadId, talk));
+    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
+
+    final newUserTalkId = await _ref.read(idDaoProvider).generate();
+    await talkBox.put(newUserTalkId, _toEntityForUserTalk(id: newUserTalkId, threadId: threadId, message: message));
+
+    final newAssistTalkId = await _ref.read(idDaoProvider).generate();
+    await talkBox.put(newAssistTalkId, _toEntityForAssistTalk(id: newAssistTalkId, threadId: threadId, talk: talk));
 
     // スレッドの総トークン数を更新
     final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
-    // このタイミングでThreadIDでは絶対ヒットするので!をつける
+
+    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
     final updateThread = threadBox.get(threadId)!.updateTokenNum(talk.totalTokenNum);
-    threadBox.put(threadId, updateThread);
+    await threadBox.put(threadId, updateThread);
   }
 
+  ///
+  /// 会話を削除する
+  /// スレッドも削除してしまうと消費トークン数がわからなくなるので会話のみ削除している
+  ///
   Future<void> delete({required int threadId}) async {
-    // TODO 会話を削除
-    // TODO スレッドの削除日付を設定
+    final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+
+    // スレッドは削除状態にするのみ
+    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
+    final deleteThread = threadBox.get(threadId)!.toDelete();
+    await threadBox.put(threadId, deleteThread);
+
+    // 会話を削除
+    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
+    final targetTalks = talkBox.values.where((t) => t.threadId == threadId).map((t) => t.id);
+    await talkBox.deleteAll(targetTalks);
   }
 
-  TalkEntity _toEntityForUserTalk(int threadId, String message) {
+  // ここから下はModelクラスとEntityの変換関数
+
+  TalkEntity _toEntityForUserTalk({required int id, required int threadId, required String message}) {
     return TalkEntity(
+      id: id,
       threadId: threadId,
-      dateTime: DateTime.now(),
       roleTypeIndex: RoleType.user.index,
       message: message,
       totalTokenNum: 0,
     );
   }
 
-  TalkEntity _toEntityForAssistTalk(int threadId, Talk talk) {
+  TalkEntity _toEntityForAssistTalk({required int id, required int threadId, required Talk talk}) {
     return TalkEntity(
+      id: id,
       threadId: threadId,
-      dateTime: talk.dateTime,
       roleTypeIndex: talk.roleType.index,
       message: talk.message,
       totalTokenNum: talk.totalTokenNum,
     );
   }
 
-  Talk _toTalkModel(TalkEntity entity) {
+  Talk _toTalkModel({required TalkEntity entity}) {
     return Talk(
-      dateTime: entity.dateTime,
       roleType: Talk.toRole(entity.roleTypeIndex),
       message: entity.message,
       totalTokenNum: entity.totalTokenNum,
@@ -114,6 +140,7 @@ class TalkDao {
     return TalkThread(
       id: entity.id,
       title: entity.title,
+      createAt: entity.createAt,
       talkNum: talkNum,
       deleteAt: deleteAt,
       totalTalkTokenNum: totalTalkTokenNum,

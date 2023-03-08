@@ -4,11 +4,12 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
 class ViewHistoryCard extends StatelessWidget {
-  const ViewHistoryCard({super.key, required this.thread, required this.isSelected, required this.onTap});
+  const ViewHistoryCard({super.key, required this.thread, required this.isSelected, required this.onTap, required this.onDelete});
 
   final TalkThread thread;
   final bool isSelected;
   final void Function(int) onTap;
+  final void Function(int) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +21,13 @@ class ViewHistoryCard extends StatelessWidget {
         color: isSelected ? const Color.fromARGB(255, 117, 116, 116) : null,
         child: InkWell(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(thread.title, style: Theme.of(context).textTheme.bodySmall),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('トークン数: ${thread.totalTalkTokenNum}', style: Theme.of(context).textTheme.bodySmall),
-                    _ViewRowTalks(talkNum: thread.talkNum),
-                  ],
-                ),
+                _ViewContents(thread, onDelete),
+                _ViewThreadInfo(thread),
               ],
             ),
           ),
@@ -43,18 +38,46 @@ class ViewHistoryCard extends StatelessWidget {
   }
 }
 
-class _ViewRowTalks extends StatelessWidget {
-  const _ViewRowTalks({required this.talkNum});
+class _ViewContents extends StatelessWidget {
+  const _ViewContents(this.thread, this.onDelete);
 
-  final int talkNum;
+  final TalkThread thread;
+  final void Function(int) onDelete;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LineIcon(LineIcons.comment, size: 16),
-        const SizedBox(width: 4),
-        Text(talkNum.toString(), style: Theme.of(context).textTheme.bodySmall),
+        Flexible(child: Text(thread.title, style: Theme.of(context).textTheme.bodySmall)),
+        InkWell(
+          child: LineIcon(LineIcons.times, color: Colors.grey),
+          onLongPress: () => onDelete(thread.id),
+        ),
+      ],
+    );
+  }
+}
+
+class _ViewThreadInfo extends StatelessWidget {
+  const _ViewThreadInfo(this.thread);
+
+  final TalkThread thread;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('トークン数: ${thread.totalTalkTokenNum}', style: Theme.of(context).textTheme.bodySmall),
+        Row(
+          children: [
+            LineIcon(LineIcons.comment, size: 16),
+            const SizedBox(width: 4),
+            Text(thread.talkNum.toString(), style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
       ],
     );
   }

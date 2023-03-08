@@ -18,9 +18,10 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
-            SizedBox(height: 8),
-            _ViewInputApiKey(),
+            Text('【はじめに】'),
+            Text('・履歴を削除したい場合、カード右上のバツボタンを長押ししてください。'),
             SizedBox(height: 16),
+            _ViewInputApiKey(),
           ],
         ),
       ),
@@ -46,7 +47,7 @@ class _ViewInputApiKey extends ConsumerWidget {
               child: TextField(
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  label: Text('API Keyをここに入力してください'),
+                  label: Text('ここにGhatGPT API Keyを入力してください'),
                   counterText: '',
                 ),
                 maxLength: 50,

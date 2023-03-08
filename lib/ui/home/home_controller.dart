@@ -113,7 +113,6 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
 
   void addUserTalk(String message) {
     final talk = Talk.create(
-      dateTime: DateTime.now(),
       roleType: RoleType.user,
       message: message,
       totalTokenNum: 0,

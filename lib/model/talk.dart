@@ -1,27 +1,22 @@
-import 'package:intl/intl.dart';
-
 class Talk {
   const Talk({
-    required this.dateTime,
     required this.roleType,
     required this.message,
     required this.totalTokenNum,
   });
 
   factory Talk.create({
-    required DateTime dateTime,
     required RoleType roleType,
     required String message,
     required int totalTokenNum,
   }) {
-    return Talk(dateTime: dateTime, roleType: roleType, message: message, totalTokenNum: totalTokenNum);
+    return Talk(roleType: roleType, message: message, totalTokenNum: totalTokenNum);
   }
 
   factory Talk.loading() {
-    return Talk(dateTime: DateTime.now(), roleType: RoleType.assistant, message: '', totalTokenNum: 0);
+    return const Talk(roleType: RoleType.assistant, message: '', totalTokenNum: 0);
   }
 
-  final DateTime dateTime;
   final RoleType roleType;
   final String message;
   final int totalTokenNum;
@@ -46,9 +41,6 @@ class Talk {
   bool isLoading() => (message.isEmpty) && (roleType == RoleType.assistant);
 
   bool isRoleTypeUser() => roleType == RoleType.user;
-
-  static final _dateFormat = DateFormat('yyyy/MM/dd hh:mm');
-  String toDateTimeString() => _dateFormat.format(dateTime);
 }
 
 enum RoleType {

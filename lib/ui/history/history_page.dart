@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
@@ -57,6 +58,7 @@ class _ViewBody extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           Expanded(flex: 3, child: _ViewBodyHistories()),
+          _ViewThreadCreateDate(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -76,6 +78,19 @@ class _ViewBodyNonHistory extends StatelessWidget {
   }
 }
 
+class _ViewThreadCreateDate extends ConsumerWidget {
+  const _ViewThreadCreateDate();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentThread = ref.watch(historySelectedThreadProvider);
+    if (currentThread == null) {
+      return const SizedBox();
+    }
+    return Text(currentThread.toDateTimeString());
+  }
+}
+
 class _ViewBodyHistories extends ConsumerWidget {
   const _ViewBodyHistories();
 
@@ -90,11 +105,13 @@ class _ViewBodyHistories extends ConsumerWidget {
         children: threads
             .where((t) => t.deleteAt == null) //
             .map((t) => ViewHistoryCard(
-                thread: t,
-                isSelected: selectedThreadId == t.id,
-                onTap: (int threadId) {
-                  ref.read(historyControllerProvider.notifier).onLoad(threadId);
-                }))
+                  thread: t,
+                  isSelected: selectedThreadId == t.id,
+                  onTap: (int threadId) => ref.read(historyControllerProvider.notifier).onLoad(threadId),
+                  onDelete: (int threadId) {
+                    ref.read(historyControllerProvider.notifier).delete(threadId);
+                  },
+                ))
             .toList(),
       ),
     );

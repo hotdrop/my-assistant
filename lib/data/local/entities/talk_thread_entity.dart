@@ -7,12 +7,13 @@ class TalkThreadEntity extends HiveObject {
   TalkThreadEntity({
     required this.id,
     required this.title,
+    required this.createAt,
     this.deleteAt,
     required this.totalTalkTokenNum,
   });
 
   static const String boxName = 'talkthread';
-  static const String deleteTitle = 'deleted';
+  static const String _deleteTitle = 'deleted';
 
   @HiveField(0)
   final int id;
@@ -21,18 +22,32 @@ class TalkThreadEntity extends HiveObject {
   final String title;
 
   @HiveField(2)
+  final DateTime createAt;
+
+  @HiveField(3)
   final DateTime? deleteAt;
 
   // 会話の総トークン数は会話のリストから取得すればいいのだが、会話は物理削除してしまうのでスレッドで総トークン数を持っている
-  @HiveField(3)
+  @HiveField(4)
   final int totalTalkTokenNum;
 
   TalkThreadEntity updateTokenNum(int addTokenNum) {
     return TalkThreadEntity(
       id: id,
       title: title,
+      createAt: createAt,
       deleteAt: deleteAt,
       totalTalkTokenNum: totalTalkTokenNum + addTokenNum,
+    );
+  }
+
+  TalkThreadEntity toDelete() {
+    return TalkThreadEntity(
+      id: id,
+      title: _deleteTitle,
+      createAt: createAt,
+      deleteAt: DateTime.now(),
+      totalTalkTokenNum: totalTalkTokenNum,
     );
   }
 }
