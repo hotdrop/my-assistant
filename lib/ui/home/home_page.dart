@@ -116,7 +116,7 @@ class _ViewNewThreadButton extends ConsumerWidget {
         },
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text('内容をクリアしてスレッドを新規作成する'),
+          child: Text('この会話を終了し新規会話を始める'),
         ),
       ),
     );

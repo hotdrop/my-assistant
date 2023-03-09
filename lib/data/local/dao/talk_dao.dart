@@ -54,6 +54,27 @@ class TalkDao {
   }
 
   ///
+  /// 指定した範囲内のスレッドを全て取得する
+  /// スレッドが持っているトーク数は使用しない想定で0を設定しているので注意
+  ///
+  Future<List<TalkThread>> findRangeThread({required DateTime from, required DateTime to}) async {
+    final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+    if (box.isEmpty) {
+      return [];
+    }
+
+    return box.values //
+        .where((t) => t.createAt.isAfter(from) && t.createAt.isBefore(to))
+        .map((t) => _toThreadModel(
+              entity: t,
+              talkNum: 0,
+              deleteAt: t.deleteAt,
+              totalTalkTokenNum: t.totalTalkTokenNum,
+            ))
+        .toList();
+  }
+
+  ///
   /// スレッドに対応する会話情報をリスト形式で全て取得する
   ///
   Future<List<Talk>> findTalks(int threadId) async {

@@ -1,4 +1,3 @@
-import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';

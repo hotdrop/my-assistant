@@ -23,17 +23,24 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 
 @immutable
 class AppSettings {
-  const AppSettings({this.apiKey, this.maxTokenNum = maxToken});
+  const AppSettings({
+    this.apiKey,
+    this.maxTokenNum = 4096,
+    this.amountPerTokenNum = 1000,
+    this.amountDollerPerTokenNum = 0.002,
+  });
 
   final String? apiKey;
+  // 最大トークン数 コンストラクタで設定している値は2023年1月現在の最大数
   final int maxTokenNum;
+  // 金額算出時に使用するトークン単位 コンストラクタで設定している値は2023/1現在のもの
+  final int amountPerTokenNum;
+  // 上記トークン単位の金額（ドル） コンストラクタで設定している値は2023/1現在のもの
+  final double amountDollerPerTokenNum;
 
-  static const int maxToken = 4096;
-
-  AppSettings copyWith({String? apiKey, int? maxTokenNum}) {
+  AppSettings copyWith({String? apiKey}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,
-      maxTokenNum: maxTokenNum ?? this.maxTokenNum,
     );
   }
 }

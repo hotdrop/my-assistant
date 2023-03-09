@@ -1,3 +1,5 @@
+import 'package:assistant_me/common/extension.dart';
+import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/local/dao/talk_dao.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
@@ -12,6 +14,13 @@ class HistoryRepository {
 
   Future<List<TalkThread>> findAllThread() async {
     return _ref.read(talkDaoProvider).findAllThread();
+  }
+
+  Future<List<TalkThread>> findThreadOfMonth(DateTime targetDate) async {
+    final startAt = targetDate.getStartOfMonth();
+    final endAt = targetDate.getEndOfMonth();
+    AppLogger.d('$startAt 〜 $endAtのスレッド情報を取得します');
+    return _ref.read(talkDaoProvider).findRangeThread(from: startAt, to: endAt);
   }
 
   Future<List<Talk>> findTalks(int threadId) async {

@@ -22,6 +22,8 @@ dependencies:
   # UI
   line_icons: ^2.0.1
   loading_animation_widget: ^1.2.0+4
+  syncfusion_flutter_charts: ^20.4.53
+  month_picker_dialog: ^1.0.0
 
   # network
   http: ^0.13.5

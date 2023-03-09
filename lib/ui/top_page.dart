@@ -1,3 +1,4 @@
+import 'package:assistant_me/ui/graph/graph_page.dart';
 import 'package:flutter/material.dart';
 import 'package:assistant_me/ui/setting/settings_page.dart';
 import 'package:assistant_me/ui/history/history_page.dart';
@@ -38,6 +39,7 @@ class _TopPageState extends State<TopPage> {
   List<Destination> get destinations => <Destination>[
         Destination('ホーム', LineIcon(LineIcons.home)),
         Destination('履歴', LineIcon(LineIcons.history)),
+        Destination('利用量', LineIcon(LineIcons.poll)),
         Destination('設定', LineIcon(LineIcons.cog)),
       ];
 
@@ -48,6 +50,8 @@ class _TopPageState extends State<TopPage> {
       case 1:
         return const HistoryPage();
       case 2:
+        return const GraphPage();
+      case 3:
         return const SettingsPage();
       default:
         throw Exception(['不正なIndexです index=$index']);

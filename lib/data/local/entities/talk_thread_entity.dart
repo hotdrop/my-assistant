@@ -13,7 +13,6 @@ class TalkThreadEntity extends HiveObject {
   });
 
   static const String boxName = 'talkthread';
-  static const String _deleteTitle = 'deleted';
 
   @HiveField(0)
   final int id;
@@ -44,7 +43,7 @@ class TalkThreadEntity extends HiveObject {
   TalkThreadEntity toDelete() {
     return TalkThreadEntity(
       id: id,
-      title: _deleteTitle,
+      title: title,
       createAt: createAt,
       deleteAt: DateTime.now(),
       totalTalkTokenNum: totalTalkTokenNum,
