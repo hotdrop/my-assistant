@@ -14,7 +14,10 @@ class UserChatRowWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(width: 8),
-        LineIcon(LineIcons.userCircle),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: LineIcon(LineIcons.userCircle),
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8),
