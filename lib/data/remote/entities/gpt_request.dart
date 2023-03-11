@@ -5,11 +5,13 @@ import 'package:assistant_me/model/talk.dart';
 class GptRequest {
   GptRequest({
     required this.apiKey,
+    required this.systemRoles,
     required this.newContents,
     required this.histories,
   });
 
   final String apiKey;
+  final List<Map<String, String>> systemRoles;
   final String newContents;
   final List<Talk> histories;
 
@@ -19,11 +21,6 @@ class GptRequest {
         'authorization': apiKey,
         'Content-type': 'application/json',
       };
-
-  List<Map<String, String>> get systemMessages => [
-        {'role': 'system', 'content': 'あなたはIT業界で仕事をしているエンジニアのアシスタントです。'},
-        {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートです。'},
-      ];
 
   String body() {
     final historyMessages = [];
@@ -41,7 +38,7 @@ class GptRequest {
     return json.encode({
       'model': 'gpt-3.5-turbo',
       'messages': [
-        ...systemMessages,
+        ...systemRoles,
         ...historyMessages,
         {'role': 'user', 'content': newContents}
       ]

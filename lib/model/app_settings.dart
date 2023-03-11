@@ -13,7 +13,10 @@ final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>(A
 class AppSettingsNotifier extends Notifier<AppSettings> {
   @override
   AppSettings build() {
-    return const AppSettings();
+    return const AppSettings(systemMessages: [
+      {'role': 'system', 'content': 'あなたはIT業界で仕事をしているエンジニアのアシスタントです。'},
+      {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートです。'},
+    ]);
   }
 
   void setApiKey(String newApiKey) {
@@ -25,12 +28,17 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 class AppSettings {
   const AppSettings({
     this.apiKey,
+    required this.systemMessages,
     this.maxTokenNum = 4096,
     this.amountPerTokenNum = 1000,
     this.amountDollerPerTokenNum = 0.002,
   });
 
+  // API Key
   final String? apiKey;
+  // GhatGPT APIを使うときのsystem Roleに設定する文字列
+  final List<Map<String, String>> systemMessages;
+
   // 最大トークン数 コンストラクタで設定している値は2023年1月現在の最大数
   final int maxTokenNum;
   // 金額算出時に使用するトークン単位 コンストラクタで設定している値は2023/1現在のもの
@@ -38,9 +46,10 @@ class AppSettings {
   // 上記トークン単位の金額（ドル） コンストラクタで設定している値は2023/1現在のもの
   final double amountDollerPerTokenNum;
 
-  AppSettings copyWith({String? apiKey}) {
+  AppSettings copyWith({String? apiKey, List<Map<String, String>>? systemMessages}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,
+      systemMessages: systemMessages ?? this.systemMessages,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:assistant_me/data/local/dao/talk_dao.dart';
 import 'package:assistant_me/data/remote/entities/gpt_request.dart';
 import 'package:assistant_me/data/remote/entities/gpt_response.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,9 +28,11 @@ class AssistRepository {
     final historyTalks = await _ref.read(talkDaoProvider).findTalks(thread.id);
     final request = GptRequest(
       apiKey: apiKey,
+      systemRoles: _ref.read(appSettingsProvider).systemMessages,
       newContents: message,
       histories: historyTalks,
     );
+
     AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');
 
     // TODO 検証中なのでAPIは叩かない
