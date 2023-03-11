@@ -16,13 +16,9 @@ class UserChatRowWidget extends StatelessWidget {
         const SizedBox(width: 8),
         LineIcon(LineIcons.userCircle),
         Expanded(
-          child: Card(
-            elevation: 1.0,
-            color: Theme.of(context).colorScheme.background,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: SelectableText(talk.message),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: SelectableText(talk.message),
           ),
         ),
         const SizedBox(width: 32),
