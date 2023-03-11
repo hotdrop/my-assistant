@@ -43,7 +43,7 @@ class _ViewHeader extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(children: [
-        Text('このスレッドのトークン利用数: $totalTokenNum/$maxTokenNum'),
+        Text('この会話のトークン利用数: $totalTokenNum/$maxTokenNum'),
         const SizedBox(width: 8),
         Tooltip(
           message: '最大トークン数は$maxTokenNumです。最大トークンに達したら会話続行はできません。',
