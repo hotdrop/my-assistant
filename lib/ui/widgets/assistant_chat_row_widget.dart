@@ -5,6 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+// ignore: depend_on_referenced_packages
 import 'package:markdown/markdown.dart' as md;
 
 class AssistantChatRowWidget extends StatelessWidget {
