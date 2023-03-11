@@ -43,7 +43,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-## custom
+# custom
 *.g.dart
 *.freezed.dart
 *.mocks.dart
+.firebaserc
+lib/firebase_options.dart 

@@ -2,14 +2,24 @@
 ChatGPTAPIを利用したアシスタントWebアプリです。  
 公式UIが個人的に使いづらく自分用にカスタマイズしたかったのが作成動機です。
 
-# 使い方
-1. どこか適当なホスティングサイトにデプロイします。（このリポジトリはFirebase Hostingを使う想定です）
-2. ChatGPI API Keyを取得して設定ページの入力欄にコピペします。
-（APIKeyはメモリに持ち、永続領域には保存しません)
+本アプリは`Firebase Hosting`にデプロイする想定で作っています。  
+`flutterfire`を使っていますので`main.dart`の`DefaultFirebaseOptions`は`flutterfire configure`で自動生成されます。  
+
+また、APIKeyは永続領域には持たず、メモリに保持しているのでページをリロードしたり開き直すと再度設定が必要となります。  
+
+# コマンド
+```
+// ビルド 自分用なのでweb-rendererは指定しません
+flutter build web
+
+// デプロイ
+firebase deploy
+```
 
 # スクショ
 
-# 第二弾 TODO
+# TODO
+- favicon変える
 - 履歴画面
   - 履歴の検索機能 (優先度高)
   - スレッドのタイトル編集
