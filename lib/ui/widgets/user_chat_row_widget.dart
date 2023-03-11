@@ -10,28 +10,22 @@ class UserChatRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(width: 4),
-            LineIcon(LineIcons.userCircle),
-            Flexible(
-              child: Card(
-                elevation: 4.0,
-                color: Theme.of(context).colorScheme.background,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: SelectableText(talk.message, style: const TextStyle(fontSize: 12)),
-                ),
-              ),
+        const SizedBox(width: 8),
+        LineIcon(LineIcons.userCircle),
+        Expanded(
+          child: Card(
+            elevation: 1.0,
+            color: Theme.of(context).colorScheme.background,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: SelectableText(talk.message),
             ),
-            const SizedBox(width: 32),
-          ],
+          ),
         ),
+        const SizedBox(width: 32),
       ],
     );
   }

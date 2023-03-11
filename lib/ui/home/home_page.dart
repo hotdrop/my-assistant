@@ -73,7 +73,6 @@ class _ViewInputTalk extends ConsumerWidget {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
-              style: const TextStyle(fontSize: 12),
             ),
           ),
           RawMaterialButton(
@@ -116,7 +115,7 @@ class _ViewNewThreadButton extends ConsumerWidget {
         },
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text('この会話を終了し新規会話を始める'),
+          child: Text('この会話を終了し新しく会話を始める'),
         ),
       ),
     );

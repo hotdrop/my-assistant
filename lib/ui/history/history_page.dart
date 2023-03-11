@@ -86,7 +86,7 @@ class _ViewThreadCreateDate extends ConsumerWidget {
     if (currentThread == null) {
       return const SizedBox();
     }
-    return Text(currentThread.toDateTimeString());
+    return Center(child: Text(currentThread.toDateTimeString()));
   }
 }
 

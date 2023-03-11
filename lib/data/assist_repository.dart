@@ -57,14 +57,17 @@ class AssistRepository {
       choices: [
         ChoiceResponse(
           index: 0,
-          message: MessageResponse(role: 'assistant', content: 'おはようございます。これはテストです。'),
+          message: MessageResponse(
+              role: 'assistant',
+              content:
+                  'おはようございます。これはテストです。\n\n1. 白色\n2. 黒色\n3. 茶色\n以下のような関数を作成します。\n\n```dart\nDateTime StringToDate(String dateString) {\n    return DateTime.parse(dateString);\n}\n```'),
           finishReason: 'stop',
         )
       ],
       usage: UsageResponse(
-        promptTokens: 9,
-        completionTokens: 12,
-        totalTokens: 21,
+        promptTokens: 35,
+        completionTokens: 430,
+        totalTokens: 465,
       ),
     );
   }
