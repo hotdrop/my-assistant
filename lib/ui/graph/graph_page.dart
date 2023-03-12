@@ -1,4 +1,3 @@
-import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/graph/graph_controller.dart';
