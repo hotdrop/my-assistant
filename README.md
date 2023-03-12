@@ -1,6 +1,6 @@
 # assistant_me
-ChatGPTAPIを利用したアシスタントWebアプリです。  
-公式UIが個人的に使いづらく自分用にカスタマイズしたかったのが作成動機です。
+ChatGPT APIを利用したアシスタントWebアプリです。  
+公式UIが個人的に使いづらく自分用にカスタマイズしたかったのが作成動機です。  
 
 本アプリは`Firebase Hosting`にデプロイする想定で作っています。  
 `flutterfire`を使っていますので`main.dart`の`DefaultFirebaseOptions`は`flutterfire configure`で自動生成されます。  
@@ -19,7 +19,6 @@ firebase deploy
 # スクショ
 
 # TODO
-- favicon変える
 - 履歴画面
   - 履歴の検索機能 (優先度高)
   - スレッドのタイトル編集
