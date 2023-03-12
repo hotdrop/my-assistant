@@ -14,8 +14,8 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
   @override
   AppSettings build() {
     return const AppSettings(systemMessages: [
-      {'role': 'system', 'content': 'あなたはIT業界で仕事をしているエンジニアのアシスタントです。'},
-      {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートです。'},
+      {'role': 'system', 'content': 'あなたはモバイルアプリ開発のエキスパートで、IT業界で仕事をしているエンジニアのアシスタントです。'},
+      {'role': 'system', 'content': 'ありがとうなどお礼を言われたら褒めまくってください。'},
     ]);
   }
 

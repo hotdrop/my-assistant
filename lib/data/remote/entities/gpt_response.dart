@@ -20,7 +20,7 @@ class ChoiceResponse with _$ChoiceResponse {
   factory ChoiceResponse({
     @JsonKey(name: 'index') required int index,
     @JsonKey(name: 'message') required MessageResponse message,
-    @JsonKey(name: 'finish_reason') required String finishReason,
+    @JsonKey(name: 'finish_reason') String? finishReason,
   }) = _ChoiceResponse;
   factory ChoiceResponse.fromJson(Map<String, Object?> json) => _$ChoiceResponseFromJson(json);
 }

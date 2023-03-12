@@ -43,7 +43,7 @@ class _ViewInputApiKey extends ConsumerWidget {
           const SizedBox(width: 8),
           Flexible(
             child: SizedBox(
-              width: 500,
+              width: 700,
               child: TextFormField(
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -51,7 +51,7 @@ class _ViewInputApiKey extends ConsumerWidget {
                   counterText: '',
                 ),
                 initialValue: ref.watch(appSettingsProvider).apiKey,
-                maxLength: 50,
+                maxLength: 100,
                 onChanged: (String? value) {
                   if (value != null) {
                     ref.read(appSettingsProvider.notifier).setApiKey(value);

@@ -21,6 +21,12 @@ class Talk {
   final String message;
   final int totalTokenNum;
 
+  // このトークがロード中か？
+  // ロード中状態を別にもつのは嫌だったので既存のフィールドで判別することにした。
+  bool isLoading() => (message.isEmpty) && (roleType == RoleType.assistant);
+
+  bool isRoleTypeUser() => roleType == RoleType.user;
+
   static RoleType toRoleType(String roleName) {
     if (roleName == RoleType.user.roleStr) {
       return RoleType.user;
@@ -36,11 +42,6 @@ class Talk {
       return RoleType.assistant;
     }
   }
-
-  // このトークがロード中かを取得する。ロード中状態を別にもつのは嫌だったので既存のフィールドで判別することにした。
-  bool isLoading() => (message.isEmpty) && (roleType == RoleType.assistant);
-
-  bool isRoleTypeUser() => roleType == RoleType.user;
 }
 
 enum RoleType {

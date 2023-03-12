@@ -60,7 +60,7 @@ class _ViewInputTalk extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isError = ref.watch(errorProvider) != null;
+    final cannotTalk = ref.watch(appSettingsProvider).apiKey?.isEmpty ?? true;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
@@ -77,7 +77,7 @@ class _ViewInputTalk extends ConsumerWidget {
             ),
           ),
           RawMaterialButton(
-            onPressed: isError ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
+            onPressed: cannotTalk ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
             padding: const EdgeInsets.all(8),
             fillColor: AppTheme.primaryColor,
             shape: const CircleBorder(),

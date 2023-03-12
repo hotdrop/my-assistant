@@ -1,4 +1,5 @@
 import 'package:assistant_me/data/assist_repository.dart';
+import 'package:assistant_me/model/app_exception.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
@@ -18,6 +19,8 @@ class HomeController extends _$HomeController {
     if (!_canContinueProcess()) {
       return;
     }
+    // エラーをクリア
+    ref.invalidate(_apiErrorMessage);
 
     final apiKey = ref.read(appSettingsProvider).apiKey;
     final message = ref.read(talkControllerProvider).text;
@@ -38,8 +41,17 @@ class HomeController extends _$HomeController {
     _autoScrollToEndOfTalkArea();
 
     // アシスタントのレスポンス会話更新
-    final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey!, thread);
-    ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+    try {
+      final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey!, thread);
+      ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+    } on AppException catch (e) {
+      ref.read(_apiErrorMessage.notifier).state = e.message;
+      ref.read(currentTalksProvider.notifier).errorAssistantResponse();
+    } catch (e) {
+      ref.read(_apiErrorMessage.notifier).state = '$e';
+      ref.read(currentTalksProvider.notifier).errorAssistantResponse();
+    }
+
     _autoScrollToEndOfTalkArea();
   }
 
@@ -130,6 +142,16 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
     state = List.of(state)..[lastIndex] = talk;
   }
 
+  void errorAssistantResponse() {
+    final lastIndex = state.length - 1;
+    state = List.of(state)
+      ..[lastIndex] = const Talk(
+        roleType: RoleType.assistant,
+        message: 'エラーが発生しました。お手数をおかけしますが、会話入力欄の下のエラー内容をご確認ください。',
+        totalTokenNum: 0,
+      );
+  }
+
   void clear() {
     state = [];
   }
@@ -151,14 +173,20 @@ final chatScrollControllerProvider = StateProvider((_) => ScrollController());
 final errorProvider = Provider<String?>((ref) {
   final appSettings = ref.watch(appSettingsProvider);
   final isReachedMaxToken = ref.watch(_isReachedMaxTokenProvider);
+  final apiErrorMessage = ref.watch(_apiErrorMessage);
 
   if (appSettings.apiKey == null) {
     return 'API Keyが設定されていません。API Keyを設定してから実行してください。';
   } else if (isReachedMaxToken) {
     return '最大トークン数(${appSettings.maxTokenNum})に達したのでこれ以上会話はできません。';
+  } else if (apiErrorMessage != null) {
+    return apiErrorMessage;
   }
   return null;
 });
+
+// APIのエラー
+final _apiErrorMessage = StateProvider<String?>((_) => null);
 
 // 最大トークン数に達したか？
 final _isReachedMaxTokenProvider = Provider<bool>((ref) {

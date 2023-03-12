@@ -18,7 +18,7 @@ class GptRequest {
   Uri get uri => Uri.parse('https://api.openai.com/v1/chat/completions');
 
   Map<String, String> get header => {
-        'authorization': apiKey,
+        'Authorization': 'Bearer $apiKey',
         'Content-type': 'application/json',
       };
 
