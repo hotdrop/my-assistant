@@ -42,11 +42,18 @@ class _ViewDate extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        const Spacer(),
         Text('${selectedDate.year}年 ${selectedDate.month}月', style: const TextStyle(fontSize: 24)),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         IconButton(
           onPressed: () => _showMonthPicker(context, ref, selectedDate),
           icon: LineIcon(LineIcons.calendar, color: Colors.blue),
+        ),
+        const Spacer(),
+        IconButton(
+          onPressed: () => ref.read(graphControllerProvider.notifier).refresh(),
+          icon: LineIcon(LineIcons.syncIcon, color: Colors.blue),
+          tooltip: 'グラフを更新する',
         ),
       ],
     );

@@ -25,6 +25,10 @@ class GraphController extends _$GraphController {
     }
     ref.read(yenPerDollar.notifier).state = yen;
   }
+
+  void refresh() {
+    ref.invalidate(threadsByMonthFutureProvider);
+  }
 }
 
 // 選択月
