@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/graph/graph_controller.dart';
@@ -47,12 +48,12 @@ class _ViewDate extends ConsumerWidget {
         const SizedBox(width: 4),
         IconButton(
           onPressed: () => _showMonthPicker(context, ref, selectedDate),
-          icon: LineIcon(LineIcons.calendar, color: Colors.blue),
+          icon: LineIcon(LineIcons.calendar),
         ),
         const Spacer(),
         IconButton(
           onPressed: () => ref.read(graphControllerProvider.notifier).refresh(),
-          icon: LineIcon(LineIcons.syncIcon, color: Colors.blue),
+          icon: LineIcon(LineIcons.syncIcon),
           tooltip: 'グラフを更新する',
         ),
       ],

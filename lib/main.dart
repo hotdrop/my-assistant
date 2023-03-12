@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/firebase_options.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/top_page.dart';
@@ -28,14 +29,7 @@ class MyApp extends ConsumerWidget {
       ],
       supportedLocales: const [Locale('ja', '')],
       title: 'マイアシスト',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        fontFamily: 'Note Sans JP',
-        primaryColor: Colors.purple,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-        ),
-      ),
+      theme: AppTheme.theme,
       home: ref.watch(appInitFutureProvider).when(
             data: (_) => const TopPage(),
             error: (error, s) => _ViewOnLoading(errorMessage: '$error'),

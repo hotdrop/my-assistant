@@ -63,7 +63,7 @@ class AssistRepository {
           message: MessageResponse(
               role: 'assistant',
               content:
-                  'おはようございます。これはテストです。\n\n1. 白色\n2. 黒色\n3. 茶色\n以下のような関数を作成します。\n\n```dart\nDateTime StringToDate(String dateString) {\n    return DateTime.parse(dateString);\n}\n```'),
+                  'Dartでは、DateTimeクラスを使用して、文字列をDate型に変換することができます。以下は、引数の文字列をDate型に変換する関数の例です。\n\n```\nDateTime parseDate(String dateStr) {\n  // Date format: "yyyy-MM-dd"\n  var format = DateFormat(\'yyyy-MM-dd\');\n  return format.parse(dateStr);\n}\n```\n\nこの関数は、引数で与えられたdateStrを指定された形式の日付に変換し、DateTime型で返します。DateFormatクラスを使用して、yyyy-MM-dd形式の日付をパースしています。この形式は、例えば「2023-03-11」といった日付の形式になります。引数の日付フォーマットに応じて、使用するフォーマットを変更する必要があります。\n\n例えば、"2023-03-11"という文字列を引数として渡すと、DateTimeオブジェクトとして返されます。\n'),
           finishReason: 'stop',
         )
       ],

@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
@@ -78,9 +79,9 @@ class _ViewInputTalk extends ConsumerWidget {
           RawMaterialButton(
             onPressed: isError ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
             padding: const EdgeInsets.all(8),
-            fillColor: Colors.blue,
+            fillColor: AppTheme.primaryColor,
             shape: const CircleBorder(),
-            child: LineIcon(LineIcons.paperPlane, size: 28),
+            child: LineIcon(LineIcons.paperPlane, size: 28, color: Colors.white),
           ),
         ],
       ),
