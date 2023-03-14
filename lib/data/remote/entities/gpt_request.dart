@@ -11,7 +11,7 @@ class GptRequest {
   });
 
   final String apiKey;
-  final List<Map<String, String>> systemRoles;
+  final List<Map<String, String>>? systemRoles;
   final String newContents;
   final List<Talk> histories;
 
@@ -22,6 +22,7 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
+  // TODO ここでmaxTokenを受け取って過去の会話を削る
   String body() {
     final historyMessages = [];
     for (var history in histories) {
@@ -38,7 +39,7 @@ class GptRequest {
     return json.encode({
       'model': 'gpt-3.5-turbo',
       'messages': [
-        ...systemRoles,
+        ...systemRoles ?? [],
         ...historyMessages,
         {'role': 'user', 'content': newContents}
       ]
