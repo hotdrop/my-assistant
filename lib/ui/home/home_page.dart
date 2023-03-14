@@ -39,17 +39,12 @@ class _ViewHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final totalTokenNum = ref.watch(totalTokenNumProvider);
-    final maxTokenNum = ref.watch(appSettingsProvider.select((value) => value.maxTokenNum));
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(children: [
-        Text('この会話のトークン利用数: $totalTokenNum/$maxTokenNum'),
+        Text('この会話のトークン利用数: $totalTokenNum'),
         const SizedBox(width: 8),
-        Tooltip(
-          message: '最大トークン数は$maxTokenNumです。最大トークンに達したら会話続行はできません。',
-          child: LineIcon(LineIcons.questionCircle),
-        )
       ]),
     );
   }

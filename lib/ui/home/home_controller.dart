@@ -169,16 +169,13 @@ final totalTokenNumProvider = Provider((ref) {
 // 会話は上から下方向に時系列で進んでいくのでスクロールを常に一番下に移動させるためこれを定義する
 final chatScrollControllerProvider = StateProvider((_) => ScrollController());
 
-// 入力枠の下に表示するエラーメッセージ。今のところAPIKeyのエラーしかない
+// 入力枠の下に表示するエラーメッセージ
 final errorProvider = Provider<String?>((ref) {
   final appSettings = ref.watch(appSettingsProvider);
-  final isReachedMaxToken = ref.watch(_isReachedMaxTokenProvider);
   final apiErrorMessage = ref.watch(_apiErrorMessage);
 
   if (appSettings.apiKey == null) {
     return 'API Keyが設定されていません。API Keyを設定してから実行してください。';
-  } else if (isReachedMaxToken) {
-    return '最大トークン数(${appSettings.maxTokenNum})に達したのでこれ以上会話はできません。';
   } else if (apiErrorMessage != null) {
     return apiErrorMessage;
   }
@@ -187,10 +184,3 @@ final errorProvider = Provider<String?>((ref) {
 
 // APIのエラー
 final _apiErrorMessage = StateProvider<String?>((_) => null);
-
-// 最大トークン数に達したか？
-final _isReachedMaxTokenProvider = Provider<bool>((ref) {
-  final maxToken = ref.watch(appSettingsProvider.select((value) => value.maxTokenNum));
-  final currentToken = ref.watch(totalTokenNumProvider);
-  return currentToken >= maxToken;
-});
