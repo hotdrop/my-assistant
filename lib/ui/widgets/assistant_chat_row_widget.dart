@@ -76,7 +76,7 @@ class _PreWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: SelectableText(
+            child: Text(
               text,
               // ここ本当はシンタックスハイライトにしたい・・
               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
