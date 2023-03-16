@@ -111,7 +111,7 @@ class _ViewNewThreadButton extends ConsumerWidget {
         },
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text('この会話を終了し新しく会話を始める'),
+          child: Text('新しく会話を始める'),
         ),
       ),
     );

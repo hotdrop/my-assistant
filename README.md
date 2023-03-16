@@ -17,7 +17,6 @@ firebase deploy
 ```
 
 # スクショ
-<img src="./images/01_home.png" width=300>
 <img src="./images/02_history.png" width=300>
 <img src="./images/03_graph.png" width=300>
 
@@ -25,12 +24,11 @@ firebase deploy
 ## 優先度高
 1. 履歴の文字列検索機能
 2. 質問用のテンプレートをいくつか用意したい
+
 ## 優先度低
 1. 履歴のタイトル編集（現在は最初の会話の先頭30文字）
 2. 履歴でも会話を再開できるようにする
 3. temperatureやpresence_penaltyなどのパラメータを設定できるようにする
    1. →デフォルトでも十分そうなので実装しても使わなさそう
-4. アシスタントのMarkDownでコードのシンタックスハイライトを実装する
-   1. →対応したいが難易度高い
-5. Stream対応してみたい
+4. Stream対応してみたい
    1. →今のところあまり不便ではないがやってみたい

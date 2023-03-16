@@ -22,7 +22,6 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
-  // TODO ここでmaxTokenを受け取って過去の会話を削る
   String body() {
     final historyMessages = [];
     for (var history in histories) {
