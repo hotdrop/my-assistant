@@ -30,7 +30,13 @@ class AssistantChatRowWidget extends StatelessWidget {
             ),
           ),
         ),
-        Image.asset('assets/images/ic_assistant.png', width: 24, height: 24),
+        InkWell(
+          onTap: () {
+            final t = ClipboardData(text: talk.message);
+            Clipboard.setData(t);
+          },
+          child: Image.asset('assets/images/ic_assistant.png', width: 24, height: 24),
+        ),
         const SizedBox(width: 8),
       ],
     );

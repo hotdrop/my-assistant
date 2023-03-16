@@ -20,6 +20,7 @@ class SettingsPage extends StatelessWidget {
           children: const [
             Text('【メモ】'),
             Text('・履歴を削除したい場合、カード右上のバツボタンを長押ししてください。'),
+            Text('・アシスタント側の回答はアイコンをクリックするとコピーできます。'),
             SizedBox(height: 16),
             _ViewInputApiKey(),
           ],
