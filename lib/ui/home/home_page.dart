@@ -61,7 +61,7 @@ class _ViewInputTalk extends ConsumerWidget {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
+            child: TextFormField(
               controller: ref.watch(talkControllerProvider),
               minLines: 1,
               maxLines: 5,
