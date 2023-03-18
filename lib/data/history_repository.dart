@@ -13,21 +13,21 @@ class HistoryRepository {
   final Ref _ref;
 
   Future<List<TalkThread>> findAllThread() async {
-    return _ref.read(talkDaoProvider).findAllThread();
+    return await _ref.read(talkDaoProvider).findAllThread();
   }
 
   Future<List<TalkThread>> findThreadOfMonth(DateTime targetDate) async {
     final startAt = targetDate.getStartOfMonth();
     final endAt = targetDate.getEndOfMonth();
     AppLogger.d('$startAt 〜 $endAtのスレッド情報を取得します');
-    return _ref.read(talkDaoProvider).findRangeThread(from: startAt, to: endAt);
+    return await _ref.read(talkDaoProvider).findRangeThread(from: startAt, to: endAt);
   }
 
   Future<List<Talk>> findTalks(int threadId) async {
-    return _ref.read(talkDaoProvider).findTalks(threadId);
+    return await _ref.read(talkDaoProvider).findTalks(threadId);
   }
 
   Future<void> delete(int threadId) async {
-    return _ref.read(talkDaoProvider).delete(threadId: threadId);
+    await _ref.read(talkDaoProvider).delete(threadId: threadId);
   }
 }

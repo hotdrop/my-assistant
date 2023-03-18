@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
@@ -18,7 +19,7 @@ class ViewHistoryCard extends StatelessWidget {
       height: 100,
       child: Card(
         elevation: 4,
-        color: isSelected ? const Color.fromARGB(255, 117, 116, 116) : null,
+        color: isSelected ? AppTheme.selectedCardColor : null,
         child: InkWell(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

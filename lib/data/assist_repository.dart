@@ -18,13 +18,11 @@ class AssistRepository {
   /// 会話の初回でのみ実行する
   ///
   Future<TalkThread> createThread(String message) async {
-    final newThread = await _ref.read(talkDaoProvider).createThread(message);
-    return newThread;
+    return await _ref.read(talkDaoProvider).createThread(message);
   }
 
   Future<Talk> talk(String message, String apiKey, TalkThread thread) async {
     final historyTalks = await _ref.read(talkDaoProvider).findTalks(thread.id);
-    // TODO ここで履歴をセットする際、maxTokenを計算して最初の方の会話を除外する
     final request = GptRequest(
       apiKey: apiKey,
       systemRoles: _ref.read(appSettingsProvider).systemMessages,

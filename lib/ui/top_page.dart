@@ -1,4 +1,5 @@
 import 'package:assistant_me/ui/graph/graph_page.dart';
+import 'package:assistant_me/ui/template/template_page.dart';
 import 'package:flutter/material.dart';
 import 'package:assistant_me/ui/setting/settings_page.dart';
 import 'package:assistant_me/ui/history/history_page.dart';
@@ -41,6 +42,7 @@ class _TopPageState extends State<TopPage> {
         Destination('履歴', LineIcon(LineIcons.history)),
         Destination('利用量', LineIcon(LineIcons.poll)),
         Destination('設定', LineIcon(LineIcons.cog)),
+        Destination('テンプレ', LineIcon(LineIcons.alternateFileAlt)),
       ];
 
   Widget _menuView(int index) {
@@ -53,6 +55,8 @@ class _TopPageState extends State<TopPage> {
         return const GraphPage();
       case 3:
         return const SettingsPage();
+      case 4:
+        return const TemplatePage();
       default:
         throw Exception(['不正なIndexです index=$index']);
     }
