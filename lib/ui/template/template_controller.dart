@@ -76,8 +76,8 @@ class TemplateController extends _$TemplateController {
   ///
   /// テンプレートを削除する
   ///
-  Future<void> deleteTemplate(Template template) async {
-    await ref.read(templateRepositoryProvider).delete(template);
+  Future<void> deleteTemplate(int id) async {
+    await ref.read(templateRepositoryProvider).delete(id);
     await _refresh();
   }
 

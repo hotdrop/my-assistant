@@ -26,6 +26,12 @@ class AppTheme {
         foregroundColor: primaryLightColor,
       ),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryLightColor,
+        foregroundColor: Colors.black,
+      ),
+    ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: primaryColor,
     ),

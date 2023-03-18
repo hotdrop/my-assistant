@@ -51,20 +51,11 @@ class _ViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('ここでは会話に使用するテンプレートを管理することができます。'),
-          const SizedBox(height: 16),
-          Flexible(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Flexible(flex: 1, child: _ViewListArea()),
-                Flexible(flex: 2, child: _ViewEditArea()),
-              ],
-            ),
-          ),
+        children: const [
+          Flexible(flex: 1, child: _ViewListArea()),
+          Flexible(flex: 2, child: _ViewEditArea()),
         ],
       ),
     );
@@ -107,7 +98,17 @@ class _RowList extends ConsumerWidget {
       child: InkWell(
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Text(template.title, overflow: TextOverflow.ellipsis),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(child: Text(template.title, overflow: TextOverflow.ellipsis)),
+              InkWell(
+                child: LineIcon(LineIcons.times, color: Colors.grey),
+                onLongPress: () async => await ref.read(templateControllerProvider.notifier).deleteTemplate(template.id),
+              ),
+            ],
+          ),
         ),
         onTap: () {
           ref.read(templateControllerProvider.notifier).select(template.id);
@@ -169,7 +170,10 @@ class _ViewSaveButton extends ConsumerWidget {
         }
       },
       icon: LineIcon(LineIcons.save),
-      label: Text(isUpdate ? '更新する' : '登録する'),
+      label: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Text(isUpdate ? '更新する' : '登録する'),
+      ),
     );
   }
 }

@@ -37,8 +37,8 @@ class TemplateDao {
     await box.put(t.id, t);
   }
 
-  Future<void> delete(Template template) async {
+  Future<void> delete(int id) async {
     final box = await Hive.openBox<TemplateEntity>(TemplateEntity.boxName);
-    await box.delete(template.id);
+    await box.delete(id);
   }
 }

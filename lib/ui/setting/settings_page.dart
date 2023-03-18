@@ -21,6 +21,7 @@ class SettingsPage extends StatelessWidget {
             Text('【メモ】'),
             Text('・履歴を削除したい場合、カード右上のバツボタンを長押ししてください。'),
             Text('・アシスタント側の回答はアイコンをクリックするとコピーできます。'),
+            Text('・よく使いそうなPromptや面白いPromptを見つけたらテンプレートに登録しましょう。'),
             SizedBox(height: 16),
             _ViewInputApiKey(),
           ],

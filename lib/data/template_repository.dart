@@ -21,7 +21,7 @@ class TemplateRepository {
     await _ref.read(templateDaoProvider).update(template);
   }
 
-  Future<void> delete(Template template) async {
-    await _ref.read(templateDaoProvider).delete(template);
+  Future<void> delete(int id) async {
+    await _ref.read(templateDaoProvider).delete(id);
   }
 }
