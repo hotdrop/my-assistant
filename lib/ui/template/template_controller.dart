@@ -1,4 +1,3 @@
-import 'package:assistant_me/data/template_repository.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,9 +10,7 @@ class TemplateController extends _$TemplateController {
   static const int unselecId = 0;
 
   @override
-  Future<void> build() async {
-    await _refresh();
-  }
+  void build() {}
 
   void select(int id) {
     final selectedId = ref.read(selectTemplateIdStateProvider);
@@ -25,7 +22,7 @@ class TemplateController extends _$TemplateController {
     }
 
     ref.read(selectTemplateIdStateProvider.notifier).state = id;
-    final target = ref.read(templatesStateProvider).where((t) => t.id == id).first;
+    final target = ref.read(templateNotifierProvider).where((t) => t.id == id).first;
     ref.read(titleControllerStateProvider).text = target.title;
     ref.read(contentsControllerStateProvider).text = target.contents;
   }
@@ -40,11 +37,11 @@ class TemplateController extends _$TemplateController {
       return;
     }
 
-    await ref.read(templateRepositoryProvider).create(
+    await ref.read(templateNotifierProvider.notifier).add(
           title: inputTitle,
           contents: inputContents,
         );
-    await _refresh();
+    _clear();
   }
 
   ///
@@ -59,31 +56,26 @@ class TemplateController extends _$TemplateController {
 
     // 同じ値であれば無視
     final selectId = ref.read(selectTemplateIdStateProvider);
-    final t = ref.watch(templatesStateProvider).where((t) => t.id == selectId).first;
+    final t = ref.read(templateNotifierProvider).where((t) => t.id == selectId).first;
     if (t.title == inputTitle && t.contents == inputContents) {
       return;
     }
 
-    final updateTemplate = Template(
-      id: ref.read(selectTemplateIdStateProvider),
-      title: inputTitle,
-      contents: inputContents,
-    );
-    await ref.read(templateRepositoryProvider).update(updateTemplate);
-    await _refresh();
+    await ref.read(templateNotifierProvider.notifier).update(
+          Template(
+            id: ref.read(selectTemplateIdStateProvider),
+            title: inputTitle,
+            contents: inputContents,
+          ),
+        );
+    _clear();
   }
 
   ///
   /// テンプレートを削除する
   ///
-  Future<void> deleteTemplate(int id) async {
-    await ref.read(templateRepositoryProvider).delete(id);
-    await _refresh();
-  }
-
-  Future<void> _refresh() async {
-    final templates = await ref.read(templateRepositoryProvider).findAll();
-    ref.read(templatesStateProvider.notifier).state = templates;
+  Future<void> deleteTemplate(Template template) async {
+    ref.read(templateNotifierProvider.notifier).delete(template);
     _clear();
   }
 
@@ -93,9 +85,6 @@ class TemplateController extends _$TemplateController {
     ref.read(contentsControllerStateProvider).clear();
   }
 }
-
-// テンプレートのリスト
-final templatesStateProvider = StateProvider<List<Template>>((_) => []);
 
 // 選択中のテンプレートID
 final selectTemplateIdStateProvider = StateProvider<int>((_) => TemplateController.unselecId);

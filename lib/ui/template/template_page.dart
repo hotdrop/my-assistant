@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TemplatePage extends ConsumerWidget {
   const TemplatePage({super.key});
@@ -16,47 +15,15 @@ class TemplatePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('テンプレート'),
       ),
-      body: ref.watch(templateControllerProvider).when(
-            data: (_) => const _ViewBody(),
-            error: (error, stackTrace) => _ViewOnLoading(errorMessage: '$error'),
-            loading: () => const _ViewOnLoading(),
-          ),
-    );
-  }
-}
-
-class _ViewOnLoading extends StatelessWidget {
-  const _ViewOnLoading({this.errorMessage});
-
-  final String? errorMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    if (errorMessage != null) {
-      return Center(
-        child: Text(errorMessage!, style: const TextStyle(color: Colors.red)),
-      );
-    }
-
-    return Center(
-      child: LoadingAnimationWidget.fourRotatingDots(color: Theme.of(context).primaryColor, size: 32),
-    );
-  }
-}
-
-class _ViewBody extends StatelessWidget {
-  const _ViewBody();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Flexible(flex: 1, child: _ViewListArea()),
-          Flexible(flex: 2, child: _ViewEditArea()),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Flexible(flex: 1, child: _ViewListArea()),
+            Flexible(flex: 2, child: _ViewEditArea()),
+          ],
+        ),
       ),
     );
   }
@@ -67,7 +34,7 @@ class _ViewListArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final templates = ref.watch(templatesStateProvider);
+    final templates = ref.watch(templateNotifierProvider);
     if (templates.isEmpty) {
       return const Text('テンプレートは未登録です。タイトルとテンプレート内容を入力して登録しましょう！');
     }
@@ -105,7 +72,7 @@ class _RowList extends ConsumerWidget {
               Flexible(child: Text(template.title, overflow: TextOverflow.ellipsis)),
               InkWell(
                 child: LineIcon(LineIcons.times, color: Colors.grey),
-                onLongPress: () async => await ref.read(templateControllerProvider.notifier).deleteTemplate(template.id),
+                onLongPress: () async => await ref.read(templateControllerProvider.notifier).deleteTemplate(template),
               ),
             ],
           ),

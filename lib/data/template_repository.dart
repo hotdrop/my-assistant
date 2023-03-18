@@ -13,8 +13,8 @@ class TemplateRepository {
     return await _ref.read(templateDaoProvider).findAll();
   }
 
-  Future<void> create({required String title, required String contents}) async {
-    await _ref.read(templateDaoProvider).create(title, contents);
+  Future<Template> create({required String title, required String contents}) async {
+    return await _ref.read(templateDaoProvider).create(title, contents);
   }
 
   Future<void> update(Template template) async {

@@ -20,11 +20,12 @@ class TemplateDao {
     return box.values.map((e) => Template(id: e.id, title: e.title, contents: e.contents)).toList();
   }
 
-  Future<void> create(String title, String contents) async {
+  Future<Template> create(String title, String contents) async {
     final newId = await _ref.read(idDaoProvider).generate();
     final entity = TemplateEntity(id: newId, title: title, contents: contents);
     final box = await Hive.openBox<TemplateEntity>(TemplateEntity.boxName);
     await box.put(newId, entity);
+    return Template(id: newId, title: entity.title, contents: entity.contents);
   }
 
   Future<void> update(Template newTemplate) async {
