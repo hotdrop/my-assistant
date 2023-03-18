@@ -47,11 +47,14 @@ class _ViewContents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final title = thread.title;
+    final titleNoneLine = title.replaceAll('\n', '');
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Flexible(child: Text(thread.title, style: Theme.of(context).textTheme.bodySmall)),
+        Flexible(child: Text(titleNoneLine, style: Theme.of(context).textTheme.bodySmall)),
         InkWell(
           child: LineIcon(LineIcons.times, color: Colors.grey),
           onLongPress: () => onDelete(thread.id),

@@ -109,6 +109,10 @@ class HomeController extends _$HomeController {
     final lastTalk = ref.read(currentTalksProvider).last;
     return lastTalk.isLoading();
   }
+
+  void setTemplate(String templateContents) {
+    ref.read(talkControllerProvider).text = templateContents;
+  }
 }
 
 // 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）

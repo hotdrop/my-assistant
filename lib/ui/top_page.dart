@@ -41,8 +41,8 @@ class _TopPageState extends State<TopPage> {
         Destination('ホーム', LineIcon(LineIcons.home)),
         Destination('履歴', LineIcon(LineIcons.history)),
         Destination('利用量', LineIcon(LineIcons.poll)),
-        Destination('設定', LineIcon(LineIcons.cog)),
         Destination('テンプレ', LineIcon(LineIcons.alternateFileAlt)),
+        Destination('設定', LineIcon(LineIcons.cog)),
       ];
 
   Widget _menuView(int index) {
@@ -54,9 +54,9 @@ class _TopPageState extends State<TopPage> {
       case 2:
         return const GraphPage();
       case 3:
-        return const SettingsPage();
-      case 4:
         return const TemplatePage();
+      case 4:
+        return const SettingsPage();
       default:
         throw Exception(['不正なIndexです index=$index']);
     }
