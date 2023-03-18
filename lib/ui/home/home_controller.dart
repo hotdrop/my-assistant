@@ -109,6 +109,10 @@ class HomeController extends _$HomeController {
     final lastTalk = ref.read(currentTalksProvider).last;
     return lastTalk.isLoading();
   }
+
+  void setTemplate(String templateContents) {
+    ref.read(talkControllerProvider).text = templateContents;
+  }
 }
 
 // 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）
@@ -175,7 +179,7 @@ final errorProvider = Provider<String?>((ref) {
   final apiErrorMessage = ref.watch(_apiErrorMessage);
 
   if (appSettings.apiKey == null) {
-    return 'API Keyが設定されていません。API Keyを設定してから実行してください。';
+    return 'API Keyが設定されていません。左のメニューから設定ページを開き設定してください。';
   } else if (apiErrorMessage != null) {
     return apiErrorMessage;
   }

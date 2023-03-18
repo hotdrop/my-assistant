@@ -5,6 +5,7 @@ class AppTheme {
 
   static const Color primaryColor = Colors.green;
   static const Color primaryLightColor = Color.fromARGB(255, 141, 251, 165);
+  static const Color selectedCardColor = Color.fromARGB(255, 117, 116, 116);
 
   static final ThemeData theme = ThemeData(
     brightness: Brightness.dark,
@@ -23,6 +24,12 @@ class AppTheme {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: primaryLightColor,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryLightColor,
+        foregroundColor: Colors.black,
       ),
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(

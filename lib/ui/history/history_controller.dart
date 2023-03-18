@@ -10,7 +10,7 @@ part 'history_controller.g.dart';
 class HistoryController extends _$HistoryController {
   @override
   Future<void> build() async {
-    _refresh();
+    await _refresh();
   }
 
   Future<void> onLoad(int threadId) async {
