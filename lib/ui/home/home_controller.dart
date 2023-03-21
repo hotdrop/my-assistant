@@ -32,7 +32,7 @@ class HomeController extends _$HomeController {
     }
     final thread = ref.read(threadProvider);
 
-    // こちらの会話追加
+    // ユーザーの会話追加
     ref.read(currentTalksProvider.notifier).addUserTalk(message);
     ref.read(talkControllerProvider).clear();
 
@@ -51,6 +51,10 @@ class HomeController extends _$HomeController {
       ref.read(_apiErrorMessage.notifier).state = '$e';
       ref.read(currentTalksProvider.notifier).errorAssistantResponse();
     }
+
+    // スレッド更新
+    final newThread = await ref.read(assistRepositoryProvider).findThread(thread.id);
+    ref.read(threadProvider.notifier).state = newThread;
 
     _autoScrollToEndOfTalkArea();
   }
@@ -78,6 +82,7 @@ class HomeController extends _$HomeController {
     ref.read(threadProvider.notifier).state = TalkThread.createEmpty();
     ref.read(currentTalksProvider.notifier).clear();
     ref.read(talkControllerProvider).clear();
+    ref.read(_apiErrorMessage.notifier).state = null;
   }
 
   ///
@@ -131,7 +136,7 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
     final talk = Talk.create(
       roleType: RoleType.user,
       message: message,
-      totalTokenNum: 0,
+      tokenNum: 0,
     );
     state = [...state, talk];
   }
@@ -152,7 +157,7 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
       ..[lastIndex] = const Talk(
         roleType: RoleType.assistant,
         message: 'エラーが発生しました。お手数をおかけしますが、会話入力欄の下のエラー内容をご確認ください。',
-        totalTokenNum: 0,
+        tokenNum: 0,
       );
   }
 
@@ -163,12 +168,6 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
 
 // 会話入力フィールド
 final talkControllerProvider = StateProvider<TextEditingController>((_) => TextEditingController());
-
-// このスレッドの総トークン数
-final totalTokenNumProvider = Provider((ref) {
-  final currentTalks = ref.watch(currentTalksProvider);
-  return currentTalks.map((e) => e.totalTokenNum).fold(0, (value, element) => value + element);
-});
 
 // 会話は上から下方向に時系列で進んでいくのでスクロールを常に一番下に移動させるためこれを定義する
 final chatScrollControllerProvider = StateProvider((_) => ScrollController());

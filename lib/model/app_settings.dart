@@ -28,7 +28,7 @@ class AppSettings {
   const AppSettings({
     this.apiKey,
     this.systemMessages,
-    this.maxTokenNum = 4096,
+    this.maxTokensNum = 4096 - 300, // 最大トークンにすると1会話分削ってもエラーになる可能性があるので余裕を見る
     this.amountPerTokenNum = 1000,
     this.amountDollerPerTokenNum = 0.002,
   });
@@ -38,7 +38,7 @@ class AppSettings {
   // GhatGPT APIを使うときのsystem Roleに設定する文字列。今のところ役に立たないので空にする
   final List<Map<String, String>>? systemMessages;
   // 最大トークン数
-  final int maxTokenNum;
+  final int maxTokensNum;
   // 金額算出時に使用するトークン単位 コンストラクタで設定している値は2023/1現在のもの
   final int amountPerTokenNum;
   // 上記トークン単位の金額（ドル） コンストラクタで設定している値は2023/1現在のもの

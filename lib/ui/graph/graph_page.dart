@@ -86,7 +86,7 @@ class _ViewTotalUsage extends ConsumerWidget {
             const Text('当月の総利用トークン数', style: TextStyle(fontSize: 20)),
             Text('$tokenNum (約 $amount 円)', style: const TextStyle(fontSize: 24)),
             Text(
-              '(${appSettings.amountDollerPerTokenNum}トークンあたり＄${appSettings.amountDollerPerTokenNum}で計算してます。)',
+              '(${appSettings.amountPerTokenNum}トークンあたり＄${appSettings.amountDollerPerTokenNum}で計算してます。)',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],

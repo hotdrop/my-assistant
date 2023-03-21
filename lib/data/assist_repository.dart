@@ -21,11 +21,16 @@ class AssistRepository {
     return await _ref.read(talkDaoProvider).createThread(message);
   }
 
+  Future<TalkThread> findThread(int id) async {
+    return await _ref.read(talkDaoProvider).findThread(id);
+  }
+
   Future<Talk> talk(String message, String apiKey, TalkThread thread) async {
     final historyTalks = await _ref.read(talkDaoProvider).findTalks(thread.id);
     final request = GptRequest(
       apiKey: apiKey,
       systemRoles: _ref.read(appSettingsProvider).systemMessages,
+      maxLimitTokenNum: _ref.read(appSettingsProvider).maxTokensNum,
       newContents: message,
       histories: historyTalks,
     );
@@ -34,13 +39,23 @@ class AssistRepository {
     final response = await _ref.read(httpClientProvider).post(request);
 
     final messageObj = response.choices.first.message;
+
+    // ここ紛らわしいので注意！
+    // Threadには消費トークン数を保持する
+    // Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
+    final currentTotalTokenNum = historyTalks.map((e) => e.tokenNum).fold(0, (prev, e) => prev + e);
     final talk = Talk.create(
       roleType: Talk.toRoleType(messageObj.role),
       message: messageObj.content,
-      totalTokenNum: response.usage.totalTokens,
+      tokenNum: response.usage.totalTokens - currentTotalTokenNum,
     );
 
-    await _ref.read(talkDaoProvider).save(threadId: thread.id, message: message, talk: talk);
+    await _ref.read(talkDaoProvider).save(
+          threadId: thread.id,
+          message: message,
+          talk: talk,
+          currentTotalTokens: response.usage.totalTokens,
+        );
 
     return talk;
   }
