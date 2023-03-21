@@ -2,24 +2,24 @@ class Talk {
   const Talk({
     required this.roleType,
     required this.message,
-    required this.totalTokenNum,
+    required this.tokenNum,
   });
 
   factory Talk.create({
     required RoleType roleType,
     required String message,
-    required int totalTokenNum,
+    required int tokenNum,
   }) {
-    return Talk(roleType: roleType, message: message, totalTokenNum: totalTokenNum);
+    return Talk(roleType: roleType, message: message, tokenNum: tokenNum);
   }
 
   factory Talk.loading() {
-    return const Talk(roleType: RoleType.assistant, message: '', totalTokenNum: 0);
+    return const Talk(roleType: RoleType.assistant, message: '', tokenNum: 0);
   }
 
   final RoleType roleType;
   final String message;
-  final int totalTokenNum;
+  final int tokenNum;
 
   // このトークがロード中か？
   // ロード中状態を別にもつのは嫌だったので既存のフィールドで判別することにした。

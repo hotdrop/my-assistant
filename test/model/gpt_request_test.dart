@@ -11,6 +11,7 @@ void main() {
     final request = GptRequest(
       apiKey: 'test',
       systemRoles: container.read(appSettingsProvider).systemMessages,
+      maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'こんにちわ',
       histories: [],
     );
@@ -24,10 +25,11 @@ void main() {
     final request = GptRequest(
       apiKey: 'test',
       systemRoles: container.read(appSettingsProvider).systemMessages,
+      maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございます。',
       histories: [
-        const Talk(roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
       ],
     );
     expect(request.body(), expectSecondTalkBody);
@@ -40,14 +42,38 @@ void main() {
     final request = GptRequest(
       apiKey: 'test',
       systemRoles: container.read(appSettingsProvider).systemMessages,
+      maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございました!',
       histories: [
-        const Talk(roleType: RoleType.user, message: 'これはテストですか？', totalTokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', totalTokenNum: 0),
-        const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', totalTokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', totalTokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
+        const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', tokenNum: 0),
       ],
     );
     expect(request.body(), expectThirdTalkBody);
+  });
+
+  const String expectForthTalkBody =
+      '{"model":"gpt-3.5-turbo","messages":[{"role":"user","content":"ありがとうございます。4回目のやりとりをしましょう"},{"role":"assistant","content":"はい、4回目のやり取りをしました。"},{"role":"user","content":"ありがとうございました!"}]}';
+  test('合計トークン数がMaxを超えた場合、先頭のトークンから削除していくか？', () {
+    final container = ProviderContainer();
+    final request = GptRequest(
+      apiKey: 'test',
+      systemRoles: container.read(appSettingsProvider).systemMessages,
+      maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
+      newContents: 'ありがとうございました!',
+      histories: [
+        const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 100),
+        const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', tokenNum: 100),
+        const Talk(roleType: RoleType.user, message: 'ありがとうございます。3回目のやりとりをしましょう', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、3回目のやり取りをしました。', tokenNum: 100),
+        const Talk(roleType: RoleType.user, message: 'ありがとうございます。4回目のやりとりをしましょう', tokenNum: 0),
+        const Talk(roleType: RoleType.assistant, message: 'はい、4回目のやり取りをしました。', tokenNum: 3700),
+      ],
+    );
+    expect(request.body(), expectForthTalkBody);
   });
 }

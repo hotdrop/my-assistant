@@ -18,15 +18,15 @@ firebase deploy
 ```
 
 # スクショ
-<img src="./images/01_home.png" width=300>
-<img src="./images/02_history.png" width=300>
-<img src="./images/03_graph.png" width=300>
-<img src="./images/04_template.png" width=300>
+<img src="./images/01_home.png" width=300><img src="./images/02_history.png" width=300>
+<img src="./images/03_graph.png" width=300><img src="./images/04_template.png" width=300>
 
 # TODO
-1. Stream対応
-2. 履歴のタイトル編集（今は会話の先頭30文字）
+1. 履歴のタイトル編集（今は会話の先頭30文字）
+2. 履歴の文字列検索機能
+3. systemを会話を開始する際に設定する機能つける。設定は会話用テンプレと同じ枠に
+   1. →今のモデルではあまり有効ではない。今後のモデルでは活用できそうなことが書いてあったので優先度は低いが対応したい
 
-## 優先度低
-1. 履歴の文字列検索機能
-2. 今後のモデルのためにsystemを会話を開始する際に設定する機能つける。設定は会話用テンプレと同じ枠に
+# 対応しない
+1. Stream対応
+   1. →total_tokensが取れないのと現状あまり困っていないので一旦保留
