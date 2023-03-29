@@ -45,8 +45,8 @@ class Talk {
 }
 
 enum RoleType {
-  user("user"),
-  assistant("assistant");
+  user('user'),
+  assistant('assistant');
 
   final String roleStr;
 

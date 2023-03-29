@@ -1,6 +1,7 @@
 import 'package:assistant_me/data/assist_repository.dart';
 import 'package:assistant_me/model/app_exception.dart';
 import 'package:assistant_me/model/app_settings.dart';
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter/material.dart';
@@ -117,6 +118,10 @@ class HomeController extends _$HomeController {
 
   void setTemplate(String templateContents) {
     ref.read(talkControllerProvider).text = templateContents;
+  }
+
+  void selectModel(LlmModel selectValue) {
+    ref.read(appSettingsProvider).copyWith(llmModel: selectValue);
   }
 }
 

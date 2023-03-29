@@ -14,6 +14,7 @@ void main() {
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'こんにちわ',
       histories: [],
+      useModel: container.read(appSettingsProvider).llmModel,
     );
     expect(request.body(), expectFirstTalkBody);
   });
@@ -31,6 +32,7 @@ void main() {
         const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
         const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
       ],
+      useModel: container.read(appSettingsProvider).llmModel,
     );
     expect(request.body(), expectSecondTalkBody);
   });
@@ -50,6 +52,7 @@ void main() {
         const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', tokenNum: 0),
         const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', tokenNum: 0),
       ],
+      useModel: container.read(appSettingsProvider).llmModel,
     );
     expect(request.body(), expectThirdTalkBody);
   });
@@ -73,6 +76,7 @@ void main() {
         const Talk(roleType: RoleType.user, message: 'ありがとうございます。4回目のやりとりをしましょう', tokenNum: 0),
         const Talk(roleType: RoleType.assistant, message: 'はい、4回目のやり取りをしました。', tokenNum: 3700),
       ],
+      useModel: container.read(appSettingsProvider).llmModel,
     );
     expect(request.body(), expectForthTalkBody);
   });

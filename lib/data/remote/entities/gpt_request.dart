@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/talk.dart';
 
 class GptRequest {
@@ -9,6 +10,7 @@ class GptRequest {
     required this.newContents,
     required this.histories,
     required this.maxLimitTokenNum,
+    required this.useModel,
   });
 
   final String apiKey;
@@ -16,6 +18,7 @@ class GptRequest {
   final String newContents;
   final List<Talk> histories;
   final int maxLimitTokenNum;
+  final LlmModel useModel;
 
   Uri get uri => Uri.parse('https://api.openai.com/v1/chat/completions');
 
@@ -52,7 +55,7 @@ class GptRequest {
     }
 
     return json.encode({
-      'model': 'gpt-3.5-turbo',
+      'model': useModel.name,
       'messages': [
         ...systemRoles ?? [],
         ...historyTalks.reversed,
