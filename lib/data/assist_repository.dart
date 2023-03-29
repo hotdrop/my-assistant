@@ -33,6 +33,7 @@ class AssistRepository {
       maxLimitTokenNum: _ref.read(appSettingsProvider).maxTokensNum,
       newContents: message,
       histories: historyTalks,
+      useModel: _ref.read(appSettingsProvider).llmModel,
     );
 
     AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');

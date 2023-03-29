@@ -1,4 +1,5 @@
 import 'package:assistant_me/data/local/local_data_source.dart';
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,9 +29,11 @@ class AppSettings {
   const AppSettings({
     this.apiKey,
     this.systemMessages,
-    this.maxTokensNum = 4096 - 300, // 最大トークンにすると1会話分削ってもエラーになる可能性があるので余裕を見る
+    // TODO 要修正。最大トークンにすると1会話分削ってもエラーになる可能性があるので余裕をみる
+    this.maxTokensNum = 4096 - 300,
     this.amountPerTokenNum = 1000,
     this.amountDollerPerTokenNum = 0.002,
+    this.llmModel = LlmModel.gpt3,
   });
 
   // API Key
@@ -43,11 +46,14 @@ class AppSettings {
   final int amountPerTokenNum;
   // 上記トークン単位の金額（ドル） コンストラクタで設定している値は2023/1現在のもの
   final double amountDollerPerTokenNum;
+  // 利用対象のモデル
+  final LlmModel llmModel;
 
-  AppSettings copyWith({String? apiKey, List<Map<String, String>>? systemMessages}) {
+  AppSettings copyWith({String? apiKey, List<Map<String, String>>? systemMessages, LlmModel? llmModel}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,
       systemMessages: systemMessages ?? this.systemMessages,
+      llmModel: llmModel ?? this.llmModel,
     );
   }
 }

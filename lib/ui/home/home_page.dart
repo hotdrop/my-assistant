@@ -1,5 +1,6 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
@@ -25,7 +26,7 @@ class HomePage extends StatelessWidget {
           children: const [
             _ViewHeader(),
             SizedBox(height: 8),
-            _ViewTemplate(),
+            _ViewSupportRow(),
             SizedBox(height: 8),
             _ViewInputTalk(),
             _ViewErrorLabel(),
@@ -49,6 +50,22 @@ class _ViewHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Text(
       'この会話のトークン数: ${ref.watch(threadProvider.select((value) => value.currentTalkNum))}',
+    );
+  }
+}
+
+class _ViewSupportRow extends StatelessWidget {
+  const _ViewSupportRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      alignment: WrapAlignment.start,
+      children: const [
+        _ViewTemplate(),
+        SizedBox(width: 24),
+        _ViewUseModel(),
+      ],
     );
   }
 }
@@ -115,6 +132,38 @@ class _RowTemplate extends ConsumerWidget {
         onTap: () {
           ref.read(homeControllerProvider.notifier).setTemplate(template.contents);
         },
+      ),
+    );
+  }
+}
+
+class _ViewUseModel extends ConsumerWidget {
+  const _ViewUseModel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        border: Border.all(width: 1, color: Colors.grey),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: DropdownButton<LlmModel>(
+        value: ref.watch(appSettingsProvider).llmModel,
+        icon: LineIcon(LineIcons.angleDown),
+        elevation: 8,
+        underline: Container(color: Colors.transparent),
+        onChanged: (LlmModel? selectValue) {
+          if (selectValue != null) {
+            ref.read(homeControllerProvider.notifier).selectModel(selectValue);
+          }
+        },
+        items: LlmModel.values.map<DropdownMenuItem<LlmModel>>((m) {
+          return DropdownMenuItem<LlmModel>(
+            value: m,
+            child: Text('利用するモデル: ${m.name} '),
+          );
+        }).toList(),
       ),
     );
   }
