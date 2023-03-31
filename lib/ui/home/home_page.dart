@@ -48,9 +48,9 @@ class _ViewHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Text(
-      'この会話のトークン数: ${ref.watch(threadProvider.select((value) => value.currentTalkNum))}',
-    );
+    final useToken = ref.watch(threadProvider.select((value) => value.currentTalkNum));
+    final maxToken = ref.watch(appSettingsProvider.select((value) => value.maxTokensNum));
+    return Text('現在の利用トークン数: $useToken / $maxToken');
   }
 }
 

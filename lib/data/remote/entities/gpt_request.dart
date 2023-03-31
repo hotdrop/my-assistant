@@ -27,38 +27,21 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
-  ///
-  /// ここでcontextが最大値を超えた場合にcontext_legnth_exceededエラーで会話が止まらないように過去の会話を履歴に含めないようにしている。
-  /// ただ、この実装は根本的な解決をしておらず一旦応急処置としている。そのため以下のような穴がある。
-  /// ・これから送信する会話のcontext数がわかっていないので余裕を持って過去の会話を削除する。そのため削除不要な会話まで削除してしまう可能性がある。
-  /// ・それでも一気にcontextを消費するような回答だったら会話継続ができなくなる。
-  ///
   String body() {
-    final historyTalks = [];
-    var totalTokens = 0;
-
-    final reversedHistories = histories.reversed;
-    for (var history in reversedHistories) {
-      if (totalTokens + history.tokenNum > maxLimitTokenNum) {
-        break;
-      }
-
-      switch (history.roleType) {
+    final historyTalks = histories.map((h) {
+      switch (h.roleType) {
         case RoleType.user:
-          historyTalks.add({'role': 'user', 'content': history.message});
-          break;
+          return {'role': 'user', 'content': h.message};
         case RoleType.assistant:
-          historyTalks.add({'role': 'assistant', 'content': history.message});
-          break;
+          return {'role': 'assistant', 'content': h.message};
       }
-      totalTokens += history.tokenNum;
-    }
+    }).toList();
 
     return json.encode({
       'model': useModel.name,
       'messages': [
         ...systemRoles ?? [],
-        ...historyTalks.reversed,
+        ...historyTalks,
         {'role': 'user', 'content': newContents}
       ]
     });
