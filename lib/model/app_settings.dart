@@ -29,8 +29,7 @@ class AppSettings {
   const AppSettings({
     this.apiKey,
     this.systemMessages,
-    // TODO 要修正。最大トークンにすると1会話分削ってもエラーになる可能性があるので余裕をみる
-    this.maxTokensNum = 4096 - 300,
+    this.maxTokensNum = 4096, // TODO モデルによって変動する
     this.amountPerTokenNum = 1000,
     this.amountDollerPerTokenNum = 0.002,
     this.llmModel = LlmModel.gpt3,
