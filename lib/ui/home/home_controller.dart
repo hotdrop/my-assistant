@@ -121,7 +121,7 @@ class HomeController extends _$HomeController {
   }
 
   void selectModel(LlmModel selectValue) {
-    ref.read(appSettingsProvider).copyWith(llmModel: selectValue);
+    ref.read(appSettingsProvider.notifier).selectModel(selectValue);
   }
 }
 
