@@ -176,17 +176,26 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
 }
 
 // 会話入力フィールド
-final talkControllerProvider = StateProvider<TextEditingController>((_) => TextEditingController());
+final talkControllerProvider = StateProvider<TextEditingController>((ref) {
+  final controller = TextEditingController();
+  controller.addListener(() {
+    ref.read(isInputTextEmpty.notifier).state = controller.text.isEmpty;
+  });
+  return controller;
+});
+
+// 入力フィールドのリスナー
+final isInputTextEmpty = StateProvider((_) => true);
 
 // 会話は上から下方向に時系列で進んでいくのでスクロールを常に一番下に移動させるためこれを定義する
 final chatScrollControllerProvider = StateProvider((_) => ScrollController());
 
 // 入力枠の下に表示するエラーメッセージ
 final errorProvider = Provider<String?>((ref) {
-  final appSettings = ref.watch(appSettingsProvider);
+  final apiKey = ref.watch(appSettingsProvider.select((value) => value.apiKey));
   final apiErrorMessage = ref.watch(_apiErrorMessage);
 
-  if (appSettings.apiKey == null) {
+  if (apiKey == null || apiKey.isEmpty) {
     return 'API Keyが設定されていません。左のメニューから設定ページを開き設定してください。';
   } else if (apiErrorMessage != null) {
     return apiErrorMessage;

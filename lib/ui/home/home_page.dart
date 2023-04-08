@@ -142,7 +142,7 @@ class _ViewUseModel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 一度会話を始めたらモデルの変更はできない
+    // 一度会話を始めたらモデルの変更は抑止
     final isStartTalk = ref.watch(currentTalksProvider).isNotEmpty;
 
     return Container(
@@ -180,6 +180,7 @@ class _ViewInputTalk extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cannotTalk = ref.watch(appSettingsProvider).apiKey?.isEmpty ?? true;
+    final emptyInputTalk = ref.watch(isInputTextEmpty);
 
     return Row(
       children: [
@@ -195,9 +196,9 @@ class _ViewInputTalk extends ConsumerWidget {
           ),
         ),
         RawMaterialButton(
-          onPressed: cannotTalk ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
+          onPressed: (cannotTalk || emptyInputTalk) ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
           padding: const EdgeInsets.all(8),
-          fillColor: AppTheme.primaryColor,
+          fillColor: (cannotTalk || emptyInputTalk) ? Colors.grey : AppTheme.primaryColor,
           shape: const CircleBorder(),
           child: LineIcon(LineIcons.paperPlane, size: 28, color: Colors.white),
         ),
