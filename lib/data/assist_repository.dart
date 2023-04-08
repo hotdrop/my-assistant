@@ -18,7 +18,8 @@ class AssistRepository {
   /// 会話の初回でのみ実行する
   ///
   Future<TalkThread> createThread(String message) async {
-    return await _ref.read(talkDaoProvider).createThread(message);
+    final useModel = _ref.read(appSettingsProvider).useLlmModel;
+    return await _ref.read(talkDaoProvider).createThread(message, useModel);
   }
 
   Future<TalkThread> findThread(int id) async {
@@ -33,7 +34,7 @@ class AssistRepository {
       maxLimitTokenNum: _ref.read(appSettingsProvider).maxTokensNum,
       newContents: message,
       histories: historyTalks,
-      useModel: _ref.read(appSettingsProvider).llmModel,
+      useModel: _ref.read(appSettingsProvider).useLlmModel,
     );
 
     AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');

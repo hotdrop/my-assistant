@@ -49,7 +49,7 @@ class _ViewHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final useToken = ref.watch(threadProvider.select((value) => value.currentTalkNum));
-    final maxToken = ref.watch(appSettingsProvider.select((value) => value.llmModel)).maxContext;
+    final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
     return Text('現在の利用トークン数: $useToken / $maxToken');
   }
 }
@@ -142,6 +142,9 @@ class _ViewUseModel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 一度会話を始めたらモデルの変更は抑止
+    final isStartTalk = ref.watch(currentTalksProvider).isNotEmpty;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
@@ -149,15 +152,17 @@ class _ViewUseModel extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<LlmModel>(
-        value: ref.watch(appSettingsProvider).llmModel,
+        value: ref.watch(appSettingsProvider).useLlmModel,
         icon: LineIcon(LineIcons.angleDown),
         elevation: 8,
         underline: Container(color: Colors.transparent),
-        onChanged: (LlmModel? selectValue) {
-          if (selectValue != null) {
-            ref.read(homeControllerProvider.notifier).selectModel(selectValue);
-          }
-        },
+        onChanged: isStartTalk
+            ? null
+            : (LlmModel? selectValue) {
+                if (selectValue != null) {
+                  ref.read(homeControllerProvider.notifier).selectModel(selectValue);
+                }
+              },
         items: LlmModel.values.map<DropdownMenuItem<LlmModel>>((m) {
           return DropdownMenuItem<LlmModel>(
             value: m,
@@ -175,6 +180,7 @@ class _ViewInputTalk extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cannotTalk = ref.watch(appSettingsProvider).apiKey?.isEmpty ?? true;
+    final emptyInputTalk = ref.watch(isInputTextEmpty);
 
     return Row(
       children: [
@@ -190,9 +196,9 @@ class _ViewInputTalk extends ConsumerWidget {
           ),
         ),
         RawMaterialButton(
-          onPressed: cannotTalk ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
+          onPressed: (cannotTalk || emptyInputTalk) ? null : () => ref.read(homeControllerProvider.notifier).postTalk(),
           padding: const EdgeInsets.all(8),
-          fillColor: AppTheme.primaryColor,
+          fillColor: (cannotTalk || emptyInputTalk) ? Colors.grey : AppTheme.primaryColor,
           shape: const CircleBorder(),
           child: LineIcon(LineIcons.paperPlane, size: 28, color: Colors.white),
         ),
