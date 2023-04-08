@@ -35,7 +35,7 @@ class TalkThread {
   final int talkNum;
   // このスレッドで消費した総トークン数
   final int totalTalkTokenNum;
-  // このスレッドの利用トークン数。このトークン数はGPT3.5 turboモデルでMAX4096
+  // このスレッドの利用トークン数
   final int currentTalkNum;
 
   static const int noneId = -1;

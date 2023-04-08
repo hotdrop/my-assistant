@@ -1,3 +1,4 @@
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/graph/graph_controller.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +74,8 @@ class _ViewTotalUsage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokenNum = ref.watch(totalTokenByMonthProvider);
-    final amount = ref.watch(amountByMonthStateProvider);
+    final tokenNum = ref.watch(totalTokenNumProvider);
+    final amount = ref.watch(amountByMonthProvider);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -158,17 +159,23 @@ class _ViewGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCartesianChart(
-      primaryXAxis: NumericAxis(
-        labelFormat: '{value}日',
-        interval: 1,
-      ),
-      primaryYAxis: NumericAxis(
-        numberFormat: NumberFormat('###,###'),
-      ),
+      primaryXAxis: NumericAxis(labelFormat: '{value}日', interval: 1),
+      primaryYAxis: NumericAxis(numberFormat: NumberFormat('###,###')),
       tooltipBehavior: TooltipBehavior(enable: true, header: '詳細'),
       series: <ChartSeries>[
-        LineSeries<_ChartData, int>(
-          dataSource: _dataToChartData(),
+        StackedColumnSeries<_ChartData, int>(
+          color: Colors.blueAccent,
+          dataLabelMapper: (datum, index) => 'gpt3',
+          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.white, fontSize: 18)),
+          dataSource: _createChartData(targetModel: LlmModel.gpt3),
+          xValueMapper: (_ChartData data, _) => data.day,
+          yValueMapper: (_ChartData data, _) => data.tokenNum,
+        ),
+        StackedColumnSeries<_ChartData, int>(
+          color: Colors.greenAccent,
+          dataLabelMapper: (datum, index) => 'gpt4',
+          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(fontSize: 18)),
+          dataSource: _createChartData(targetModel: LlmModel.gpt4),
           xValueMapper: (_ChartData data, _) => data.day,
           yValueMapper: (_ChartData data, _) => data.tokenNum,
         ),
@@ -176,10 +183,11 @@ class _ViewGraph extends StatelessWidget {
     );
   }
 
-  List<_ChartData> _dataToChartData() {
+  List<_ChartData> _createChartData({required LlmModel targetModel}) {
     // 同日をまとめながらチャートデータを作成する
     final resultMap = <int, _ChartData>{};
-    for (var thread in threads) {
+    final targetThread = threads.where((e) => e.llmModel == targetModel);
+    for (var thread in targetThread) {
       final key = thread.createAt.day;
       if (resultMap.containsKey(key)) {
         resultMap.update(key, (value) => value.copyWithAddToken(thread.totalTalkTokenNum));
@@ -187,9 +195,9 @@ class _ViewGraph extends StatelessWidget {
         resultMap[key] = _ChartData(key, thread.totalTalkTokenNum);
       }
     }
-    final results = resultMap.values.toList();
-    results.sort((a, b) => a.day.compareTo(b.day));
-    return results;
+    final t = resultMap.values.toList();
+    t.sort((a, b) => a.day.compareTo(b.day));
+    return t;
   }
 }
 
