@@ -79,8 +79,9 @@ class HomeController extends _$HomeController {
     if (!_canContinueProcess()) {
       return;
     }
+    final currentModel = ref.read(appSettingsProvider).useLlmModel;
 
-    ref.read(threadProvider.notifier).state = TalkThread.createEmpty();
+    ref.read(threadProvider.notifier).state = TalkThread.createEmpty(currentModel);
     ref.read(currentTalksProvider.notifier).clear();
     ref.read(talkControllerProvider).clear();
     ref.read(_apiErrorMessage.notifier).state = null;
@@ -126,7 +127,10 @@ class HomeController extends _$HomeController {
 }
 
 // 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）
-final threadProvider = StateProvider((_) => TalkThread.createEmpty());
+final threadProvider = StateProvider((ref) {
+  final useModel = ref.watch(appSettingsProvider).useLlmModel;
+  return TalkThread.createEmpty(useModel);
+});
 
 // 会話データ
 final currentTalksProvider = NotifierProvider<CurrentTalksNotifier, List<Talk>>(CurrentTalksNotifier.new);

@@ -1,3 +1,4 @@
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'talk_thread_entity.g.dart';
@@ -11,6 +12,7 @@ class TalkThreadEntity extends HiveObject {
     this.deleteAt,
     required this.totalTalkTokenNum,
     required this.currentTokenNum,
+    required this.llmModelName,
   });
 
   static const String boxName = 'talkthread';
@@ -33,6 +35,9 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(5, defaultValue: 0)
   final int currentTokenNum;
 
+  @HiveField(6, defaultValue: LlmModel.gpt3ModelName)
+  final String llmModelName;
+
   TalkThreadEntity updateTokenNum(int tokenNum) {
     return TalkThreadEntity(
       id: id,
@@ -41,6 +46,7 @@ class TalkThreadEntity extends HiveObject {
       deleteAt: deleteAt,
       totalTalkTokenNum: totalTalkTokenNum + tokenNum,
       currentTokenNum: tokenNum,
+      llmModelName: llmModelName,
     );
   }
 
@@ -52,6 +58,7 @@ class TalkThreadEntity extends HiveObject {
       deleteAt: DateTime.now(),
       totalTalkTokenNum: totalTalkTokenNum,
       currentTokenNum: currentTokenNum,
+      llmModelName: llmModelName,
     );
   }
 }

@@ -49,7 +49,7 @@ class _ViewHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final useToken = ref.watch(threadProvider.select((value) => value.currentTalkNum));
-    final maxToken = ref.watch(appSettingsProvider.select((value) => value.llmModel)).maxContext;
+    final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
     return Text('現在の利用トークン数: $useToken / $maxToken');
   }
 }
@@ -142,6 +142,9 @@ class _ViewUseModel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 一度会話を始めたらモデルの変更はできない
+    final isStartTalk = ref.watch(currentTalksProvider).isNotEmpty;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
@@ -149,15 +152,17 @@ class _ViewUseModel extends ConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<LlmModel>(
-        value: ref.watch(appSettingsProvider).llmModel,
+        value: ref.watch(appSettingsProvider).useLlmModel,
         icon: LineIcon(LineIcons.angleDown),
         elevation: 8,
         underline: Container(color: Colors.transparent),
-        onChanged: (LlmModel? selectValue) {
-          if (selectValue != null) {
-            ref.read(homeControllerProvider.notifier).selectModel(selectValue);
-          }
-        },
+        onChanged: isStartTalk
+            ? null
+            : (LlmModel? selectValue) {
+                if (selectValue != null) {
+                  ref.read(homeControllerProvider.notifier).selectModel(selectValue);
+                }
+              },
         items: LlmModel.values.map<DropdownMenuItem<LlmModel>>((m) {
           return DropdownMenuItem<LlmModel>(
             value: m,

@@ -1,4 +1,3 @@
-import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/graph/graph_controller.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +75,6 @@ class _ViewTotalUsage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tokenNum = ref.watch(totalTokenByMonthProvider);
     final amount = ref.watch(amountByMonthStateProvider);
-    final appSettings = ref.watch(appSettingsProvider);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -85,10 +83,6 @@ class _ViewTotalUsage extends ConsumerWidget {
           children: [
             const Text('当月の総利用トークン数', style: TextStyle(fontSize: 20)),
             Text('$tokenNum (約 $amount 円)', style: const TextStyle(fontSize: 24)),
-            Text(
-              '(${appSettings.amountPerTokenNum}トークンあたり＄${appSettings.amountDollerPerTokenNum}で計算してます。)',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
           ],
         ),
         const SizedBox(width: 16),

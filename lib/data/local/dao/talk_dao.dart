@@ -1,6 +1,7 @@
 import 'package:assistant_me/data/local/dao/id_dao.dart';
 import 'package:assistant_me/data/local/entities/talk_entity.dart';
 import 'package:assistant_me/data/local/entities/talk_thread_entity.dart';
+import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +17,7 @@ class TalkDao {
   ///
   /// スレッドを新規生成する
   ///
-  Future<TalkThread> createThread(String message) async {
+  Future<TalkThread> createThread(String message, LlmModel useModel) async {
     final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
 
     // スレッドに表示するタイトルは一旦最初の会話の先頭30文字としている。タイトルは変更できるようにした方がよさそう
@@ -25,6 +26,7 @@ class TalkDao {
     final newThreadId = await _ref.read(idDaoProvider).generate();
     final talkThread = TalkThreadEntity(
       id: newThreadId,
+      llmModelName: useModel.name,
       createAt: DateTime.now(),
       title: title,
       totalTalkTokenNum: 0,
@@ -194,6 +196,7 @@ class TalkDao {
     return TalkThread(
       id: entity.id,
       title: entity.title,
+      llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
       talkNum: talkNum,
       deleteAt: deleteAt,
