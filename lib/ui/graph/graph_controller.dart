@@ -43,37 +43,29 @@ final threadsByMonthFutureProvider = FutureProvider<List<TalkThread>>((ref) asyn
   return await ref.read(historyRepositoryProvider).findThreadOfMonth(selectedDate);
 });
 
-// 画面に表示する総トークン数
-final totalTokenNumProvider = Provider((ref) {
-  final tokenGpt3 = ref.watch(_tokenNumGpt3ByMonthProvider);
-  final tokenGpt4 = ref.watch(_tokenNumGpt4ByMonthProvider);
-  return tokenGpt3 + tokenGpt4;
-});
-
 // 画面に表示する利用料金
 final amountByMonthProvider = Provider((ref) {
-  final yen = ref.watch(yenPerDollar);
-  // モデル別の利用料金
-  final amountGpt3 = LlmModel.calcAmount(llmModel: LlmModel.gpt3, tokenNum: ref.watch(_tokenNumGpt3ByMonthProvider), yen: yen);
-  final amountGpt4 = LlmModel.calcAmount(llmModel: LlmModel.gpt4, tokenNum: ref.watch(_tokenNumGpt4ByMonthProvider), yen: yen);
-  // 算出したモデル別の金額の合計
+  final amountGpt3 = ref.watch(_useAmountGpt3ByMonthProvider);
+  final amountGpt4 = ref.watch(_useAmountGpt4ByMonthProvider);
   return amountGpt3 + amountGpt4;
 });
 
-// 選択した月のGPT3モデルの総使用トークン数
-final _tokenNumGpt3ByMonthProvider = Provider<int>((ref) {
-  final threads = ref.watch(threadsByMonthFutureProvider).value?.where((t) => t.llmModel == LlmModel.gpt3);
+// 選択した月のGPT3モデルの総利用料
+final _useAmountGpt3ByMonthProvider = Provider<int>((ref) {
+  final yen = ref.watch(yenPerDollar);
+  final threads = ref.watch(threadsByMonthFutureProvider).value?.where((t) => t.model == LlmModel.gpt3);
   if (threads == null) {
     return 0;
   }
-  return threads.map((e) => e.totalTalkTokenNum).fold(0, (prev, elem) => prev + elem);
+  return threads.map((e) => e.calcAmount(yen: yen)).fold(0, (prev, elem) => prev + elem);
 });
 
-// 選択した月のGPT4モデルの総使用トークン数
-final _tokenNumGpt4ByMonthProvider = Provider<int>((ref) {
-  final gpt4Threads = ref.watch(threadsByMonthFutureProvider).value?.where((t) => t.llmModel == LlmModel.gpt4);
+// 選択した月のGPT4モデルの総利用料
+final _useAmountGpt4ByMonthProvider = Provider<int>((ref) {
+  final yen = ref.watch(yenPerDollar);
+  final gpt4Threads = ref.watch(threadsByMonthFutureProvider).value?.where((t) => t.model == LlmModel.gpt4);
   if (gpt4Threads == null) {
     return 0;
   }
-  return gpt4Threads.map((e) => e.totalTalkTokenNum).fold(0, (prev, elem) => prev + elem);
+  return gpt4Threads.map((e) => e.calcAmount(yen: yen)).fold(0, (prev, elem) => prev + elem);
 });

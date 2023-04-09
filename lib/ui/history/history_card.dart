@@ -71,18 +71,13 @@ class _ViewThreadInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('トークン数: ${thread.totalTalkTokenNum}', style: Theme.of(context).textTheme.bodySmall),
-        Row(
-          children: [
-            LineIcon(LineIcons.comment, size: 16),
-            const SizedBox(width: 4),
-            Text(thread.talkNum.toString(), style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        border: Border.all(width: 1, color: Colors.white),
+      ),
+      child: Text(thread.modelName, style: Theme.of(context).textTheme.bodySmall),
     );
   }
 }

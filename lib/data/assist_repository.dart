@@ -59,6 +59,9 @@ class AssistRepository {
           currentTotalTokens: response.usage.totalTokens,
         );
 
+    // 現在のトークンを更新する
+    _ref.read(currentUseTokenStateProvider.notifier).state = response.usage.totalTokens;
+
     return talk;
   }
 }

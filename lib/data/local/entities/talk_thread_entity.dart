@@ -11,7 +11,6 @@ class TalkThreadEntity extends HiveObject {
     required this.createAt,
     this.deleteAt,
     required this.totalTalkTokenNum,
-    required this.currentTokenNum,
     required this.llmModelName,
   });
 
@@ -32,8 +31,7 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(4)
   final int totalTalkTokenNum;
 
-  @HiveField(5, defaultValue: 0)
-  final int currentTokenNum;
+  // HiveField(5)は現在の消費トークン数を保持していたがストレージに保持する必要性がなかったためリファクタで除去した
 
   @HiveField(6, defaultValue: LlmModel.gpt3ModelName)
   final String llmModelName;
@@ -45,7 +43,6 @@ class TalkThreadEntity extends HiveObject {
       createAt: createAt,
       deleteAt: deleteAt,
       totalTalkTokenNum: totalTalkTokenNum + tokenNum,
-      currentTokenNum: tokenNum,
       llmModelName: llmModelName,
     );
   }
@@ -57,7 +54,6 @@ class TalkThreadEntity extends HiveObject {
       createAt: createAt,
       deleteAt: DateTime.now(),
       totalTalkTokenNum: totalTalkTokenNum,
-      currentTokenNum: currentTokenNum,
       llmModelName: llmModelName,
     );
   }

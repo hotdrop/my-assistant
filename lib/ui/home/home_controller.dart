@@ -27,7 +27,7 @@ class HomeController extends _$HomeController {
     final message = ref.read(talkControllerProvider).text;
 
     // 最初の会話だったらスレッドを保存する
-    if (ref.read(threadProvider).isNotCrerateId()) {
+    if (ref.read(threadProvider).noneTalk()) {
       final thread = await ref.read(assistRepositoryProvider).createThread(message);
       ref.read(threadProvider.notifier).state = thread;
     }
@@ -84,6 +84,7 @@ class HomeController extends _$HomeController {
     ref.read(threadProvider.notifier).state = TalkThread.createEmpty(currentModel);
     ref.read(currentTalksProvider.notifier).clear();
     ref.read(talkControllerProvider).clear();
+    ref.read(currentUseTokenStateProvider.notifier).state = 0;
     ref.read(_apiErrorMessage.notifier).state = null;
   }
 

@@ -30,11 +30,10 @@ class TalkDao {
       createAt: DateTime.now(),
       title: title,
       totalTalkTokenNum: 0,
-      currentTokenNum: 0,
     );
     box.put(newThreadId, talkThread);
 
-    return _toThreadModel(entity: talkThread, talkNum: 0, totalTalkTokenNum: 0, currentTokenNum: 0);
+    return _toThreadModel(entity: talkThread, totalTalkTokenNum: 0);
   }
 
   ///
@@ -44,15 +43,10 @@ class TalkDao {
     final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
     final threadEntity = box.values.where((e) => e.id == id).first;
 
-    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
-    final talkNum = talkBox.values.where((e) => e.threadId == id).length;
-
     return _toThreadModel(
       entity: threadEntity,
-      talkNum: talkNum,
       deleteAt: threadEntity.deleteAt,
       totalTalkTokenNum: threadEntity.totalTalkTokenNum,
-      currentTokenNum: threadEntity.currentTokenNum,
     );
   }
 
@@ -64,21 +58,14 @@ class TalkDao {
     if (box.isEmpty) {
       return [];
     }
-    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
 
-    final results = <TalkThread>[];
-    for (var thread in box.values) {
-      final talks = talkBox.values.where((e) => e.threadId == thread.id);
-      final talkThread = _toThreadModel(
-        entity: thread,
-        talkNum: talks.length,
-        deleteAt: thread.deleteAt,
-        totalTalkTokenNum: thread.totalTalkTokenNum,
-        currentTokenNum: thread.currentTokenNum,
-      );
-      results.add(talkThread);
-    }
-    return results;
+    return box.values
+        .map((thread) => _toThreadModel(
+              entity: thread,
+              deleteAt: thread.deleteAt,
+              totalTalkTokenNum: thread.totalTalkTokenNum,
+            ))
+        .toList();
   }
 
   ///
@@ -95,10 +82,8 @@ class TalkDao {
         .where((t) => t.createAt.isAfter(from) && t.createAt.isBefore(to))
         .map((t) => _toThreadModel(
               entity: t,
-              talkNum: 0,
               deleteAt: t.deleteAt,
               totalTalkTokenNum: t.totalTalkTokenNum,
-              currentTokenNum: t.currentTokenNum,
             ))
         .toList();
   }
@@ -188,20 +173,16 @@ class TalkDao {
 
   TalkThread _toThreadModel({
     required TalkThreadEntity entity,
-    required int talkNum,
     required int totalTalkTokenNum,
-    required int currentTokenNum,
     DateTime? deleteAt,
   }) {
-    return TalkThread(
+    return TalkThread.create(
       id: entity.id,
       title: entity.title,
       llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
-      talkNum: talkNum,
       deleteAt: deleteAt,
-      totalTalkTokenNum: totalTalkTokenNum,
-      currentTalkNum: currentTokenNum,
+      tokenNum: totalTalkTokenNum,
     );
   }
 }

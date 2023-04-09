@@ -7,6 +7,9 @@ class AppTheme {
   static const Color primaryLightColor = Color.fromARGB(255, 141, 251, 165);
   static const Color selectedCardColor = Color.fromARGB(255, 117, 116, 116);
 
+  static const Color gpt3Color = primaryColor;
+  static const Color gpt4Color = Colors.blueAccent;
+
   static final ThemeData theme = ThemeData(
     brightness: Brightness.dark,
     fontFamily: 'Note Sans JP',

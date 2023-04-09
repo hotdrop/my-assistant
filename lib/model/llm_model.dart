@@ -17,10 +17,6 @@ enum LlmModel {
     this.amountDollerPerTokenNum,
   );
 
-  static int calcAmount({required LlmModel llmModel, required int tokenNum, required int yen}) {
-    return ((tokenNum / llmModel.amountPerTokenNum) * (llmModel.amountDollerPerTokenNum * yen)).round();
-  }
-
   static LlmModel toModel(String name) {
     if (name == LlmModel.gpt3ModelName) {
       return LlmModel.gpt3;

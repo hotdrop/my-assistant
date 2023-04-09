@@ -1,6 +1,7 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/llm_model.dart';
+import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
@@ -48,9 +49,9 @@ class _ViewHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final useToken = ref.watch(threadProvider.select((value) => value.currentTalkNum));
+    final useToken = ref.watch(currentUseTokenStateProvider);
     final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
-    return Text('現在の利用トークン数: $useToken / $maxToken');
+    return Text('現在の利用トークン数: $useToken/$maxToken');
   }
 }
 
@@ -63,7 +64,7 @@ class _ViewSupportRow extends StatelessWidget {
       alignment: WrapAlignment.start,
       children: const [
         _ViewTemplate(),
-        SizedBox(width: 24),
+        SizedBox(width: 16),
         _ViewUseModel(),
       ],
     );
@@ -150,10 +151,9 @@ class _ViewUseModel extends ConsumerWidget {
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         border: Border.all(width: 1, color: Colors.grey),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<LlmModel>(
         value: ref.watch(appSettingsProvider).useLlmModel,
-        icon: LineIcon(LineIcons.angleDown),
+        icon: const Icon(Icons.arrow_drop_down),
         elevation: 8,
         underline: Container(color: Colors.transparent),
         onChanged: isStartTalk
@@ -166,7 +166,10 @@ class _ViewUseModel extends ConsumerWidget {
         items: LlmModel.values.map<DropdownMenuItem<LlmModel>>((m) {
           return DropdownMenuItem<LlmModel>(
             value: m,
-            child: Text('利用するモデル: ${m.name} '),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(m.name),
+            ),
           );
         }).toList(),
       ),
