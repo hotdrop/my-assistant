@@ -29,6 +29,7 @@ class TalkDao {
       llmModelName: useModel.name,
       createAt: DateTime.now(),
       title: title,
+      currentTokenNum: 0,
       totalTalkTokenNum: 0,
     );
     box.put(newThreadId, talkThread);
