@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class TalkThread {
-  const TalkThread(this.id, this.title, this.createAt, this._llmModel, this._tokenNum, {this.deleteAt});
+  const TalkThread(this.id, this.title, this.createAt, this._llmModel, this._tokenNum, this._countCreateImages, {this.deleteAt});
 
   factory TalkThread.create({
     required int id,
@@ -11,13 +11,14 @@ class TalkThread {
     required DateTime createAt,
     required LlmModel llmModel,
     required int tokenNum,
+    required int countCreateImages,
     DateTime? deleteAt,
   }) {
-    return TalkThread(id, title, createAt, llmModel, tokenNum, deleteAt: deleteAt);
+    return TalkThread(id, title, createAt, llmModel, tokenNum, countCreateImages, deleteAt: deleteAt);
   }
 
   factory TalkThread.createEmpty(LlmModel selectModel) {
-    return TalkThread(noneId, '', DateTime.now(), selectModel, 0);
+    return TalkThread(noneId, '', DateTime.now(), selectModel, 0, 0);
   }
 
   static const int noneId = -1;
@@ -32,9 +33,13 @@ class TalkThread {
   final LlmModel _llmModel;
   // このスレッドで消費した総トークン数
   final int _tokenNum;
+  // このスレッドで生成した画像数
+  final int _countCreateImages;
 
   int calcAmount({required int yen}) {
-    return ((_tokenNum / _llmModel.amountPerTokenNum) * (_llmModel.amountDollerPerTokenNum * yen)).round();
+    final tokenAmount = ((_tokenNum / _llmModel.amountPerTokenNum) * (_llmModel.amountDollerPerTokenNum * yen)).round();
+    final imageAmount = (_countCreateImages * (_llmModel.amountDollerPerTokenNum * yen)).round();
+    return tokenAmount + imageAmount;
   }
 
   bool noneTalk() => id == noneId;

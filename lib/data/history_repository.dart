@@ -24,7 +24,7 @@ class HistoryRepository {
   }
 
   Future<List<Talk>> findTalks(int threadId) async {
-    return await _ref.read(talkDaoProvider).findTalks(threadId);
+    return await _ref.read(talkDaoProvider).findAllTalks(threadId);
   }
 
   Future<void> delete(int threadId) async {

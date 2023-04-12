@@ -1,10 +1,12 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/llm_model.dart';
+import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
+import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -261,11 +263,15 @@ class _ViewTalkArea extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
-              final isUser = talks[index].isRoleTypeUser();
-              if (isUser) {
-                return UserChatRowWidget(talk: talks[index]);
-              } else {
-                return AssistantChatRowWidget(talk: talks[index]);
+              switch (talks[index].roleType) {
+                case RoleType.user:
+                  return UserChatRowWidget(talk: talks[index]);
+                case RoleType.assistant:
+                  return AssistantChatRowWidget(talk: talks[index]);
+                case RoleType.image:
+                  return ImageChatRowWidget(talk: talks[index]);
+                default:
+                  throw UnimplementedError('未実装のRoleTypeです。 index=${talks[index].roleType.index}');
               }
             },
             childCount: talks.length,

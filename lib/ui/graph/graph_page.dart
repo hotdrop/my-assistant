@@ -161,13 +161,13 @@ class _ViewGraph extends ConsumerWidget {
     final yen = ref.watch(yenPerDollar);
 
     return SfCartesianChart(
-      primaryXAxis: NumericAxis(labelFormat: '{value}日', interval: 1),
+      primaryXAxis: NumericAxis(numberFormat: NumberFormat('#日'), interval: 1.0),
       primaryYAxis: NumericAxis(numberFormat: NumberFormat('###,###円')),
       tooltipBehavior: TooltipBehavior(enable: true, header: '詳細'),
       series: <ChartSeries>[
         StackedColumnSeries<_ChartData, int>(
           color: AppTheme.gpt3Color,
-          dataLabelMapper: (datum, index) => 'gpt3',
+          dataLabelMapper: (datum, index) => 'GPT3',
           dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.white, fontSize: 18)),
           dataSource: _createChartData(targetModel: LlmModel.gpt3, yen: yen),
           xValueMapper: (_ChartData data, _) => data.day,
@@ -175,9 +175,17 @@ class _ViewGraph extends ConsumerWidget {
         ),
         StackedColumnSeries<_ChartData, int>(
           color: AppTheme.gpt4Color,
-          dataLabelMapper: (datum, index) => 'gpt4',
+          dataLabelMapper: (datum, index) => 'GPT4',
           dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.white, fontSize: 18)),
           dataSource: _createChartData(targetModel: LlmModel.gpt4, yen: yen),
+          xValueMapper: (_ChartData data, _) => data.day,
+          yValueMapper: (_ChartData data, _) => data.totalAmount,
+        ),
+        StackedColumnSeries<_ChartData, int>(
+          color: AppTheme.dallEColor,
+          dataLabelMapper: (datum, index) => 'DALL-E',
+          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.black, fontSize: 18)),
+          dataSource: _createChartData(targetModel: LlmModel.dallE, yen: yen),
           xValueMapper: (_ChartData data, _) => data.day,
           yValueMapper: (_ChartData data, _) => data.totalAmount,
         ),

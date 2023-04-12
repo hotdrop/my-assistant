@@ -4,9 +4,9 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
 class UserChatRowWidget extends StatelessWidget {
-  const UserChatRowWidget({super.key, required this.talk});
+  const UserChatRowWidget({super.key, required Talk talk}) : messageTalk = (talk as Message);
 
-  final Talk talk;
+  final Message messageTalk;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class UserChatRowWidget extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: SelectableText(talk.message),
+            child: SelectableText(messageTalk.getValue()),
           ),
         ),
         const SizedBox(width: 32),

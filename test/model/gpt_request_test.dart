@@ -29,8 +29,8 @@ void main() {
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございます。',
       histories: [
-        const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
+        Message.create(roleType: RoleType.user, value: 'これはテストですか？', tokenNum: 0),
+        Message.create(roleType: RoleType.assistant, value: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
       ],
       useModel: container.read(appSettingsProvider).useLlmModel,
     );
@@ -47,10 +47,10 @@ void main() {
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございました!',
       histories: [
-        const Talk(roleType: RoleType.user, message: 'これはテストですか？', tokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
-        const Talk(roleType: RoleType.user, message: 'ありがとうございます。2回目のやりとりをしましょう', tokenNum: 0),
-        const Talk(roleType: RoleType.assistant, message: 'はい、2回目のやり取りをしました。', tokenNum: 0),
+        Message.create(roleType: RoleType.user, value: 'これはテストですか？', tokenNum: 0),
+        Message.create(roleType: RoleType.assistant, value: 'はい、履歴のやり取りが1回のテストです。', tokenNum: 0),
+        Message.create(roleType: RoleType.user, value: 'ありがとうございます。2回目のやりとりをしましょう', tokenNum: 0),
+        Message.create(roleType: RoleType.assistant, value: 'はい、2回目のやり取りをしました。', tokenNum: 0),
       ],
       useModel: container.read(appSettingsProvider).useLlmModel,
     );

@@ -9,6 +9,7 @@ class AppTheme {
 
   static const Color gpt3Color = primaryColor;
   static const Color gpt4Color = Colors.blueAccent;
+  static const Color dallEColor = Colors.yellow;
 
   static final ThemeData theme = ThemeData(
     brightness: Brightness.dark,

@@ -31,10 +31,11 @@ class TalkDao {
       title: title,
       currentTokenNum: 0,
       totalTalkTokenNum: 0,
+      countCreateImage: 0,
     );
     box.put(newThreadId, talkThread);
 
-    return _toThreadModel(entity: talkThread, totalTalkTokenNum: 0);
+    return _toThreadModel(entity: talkThread, totalTalkTokenNum: 0, countCreateImages: 0);
   }
 
   ///
@@ -48,6 +49,7 @@ class TalkDao {
       entity: threadEntity,
       deleteAt: threadEntity.deleteAt,
       totalTalkTokenNum: threadEntity.totalTalkTokenNum,
+      countCreateImages: threadEntity.countCreateImage,
     );
   }
 
@@ -65,6 +67,7 @@ class TalkDao {
               entity: thread,
               deleteAt: thread.deleteAt,
               totalTalkTokenNum: thread.totalTalkTokenNum,
+              countCreateImages: thread.countCreateImage,
             ))
         .toList();
   }
@@ -85,14 +88,15 @@ class TalkDao {
               entity: t,
               deleteAt: t.deleteAt,
               totalTalkTokenNum: t.totalTalkTokenNum,
+              countCreateImages: t.countCreateImage,
             ))
         .toList();
   }
 
   ///
-  /// スレッドに対応する会話情報をリスト形式で全て取得する
+  /// スレッドに対応するメッセージ形式の会話履歴を全て取得する
   ///
-  Future<List<Talk>> findTalks(int threadId) async {
+  Future<List<Message>> findMessageTalks(int threadId) async {
     final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
     if (talkBox.isEmpty) {
       return [];
@@ -100,14 +104,35 @@ class TalkDao {
 
     return talkBox.values //
         .where((t) => t.threadId == threadId)
+        .where((t) => t.roleTypeIndex != RoleType.image.index)
         .map((t) => _toTalkModel(entity: t))
         .toList();
   }
 
   ///
+  /// スレッドに対応する会話情報を形式にかかわらず全て取得する
+  ///
+  Future<List<Talk>> findAllTalks(int threadId) async {
+    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
+    if (talkBox.isEmpty) {
+      return [];
+    }
+
+    return talkBox.values //
+        .where((t) => t.threadId == threadId)
+        .map((t) {
+      if (t.roleTypeIndex == RoleType.image.index) {
+        return _toImageTalkModel(entity: t);
+      } else {
+        return _toTalkModel(entity: t);
+      }
+    }).toList();
+  }
+
+  ///
   /// ユーザーとアシストの2つ分の会話を保存する
   ///
-  Future<void> save({required int threadId, required String message, required Talk talk, required int currentTotalTokens}) async {
+  Future<void> save({required int threadId, required String message, required Message talk, required int currentTotalTokens}) async {
     final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
 
     final newUserTalkId = await _ref.read(idDaoProvider).generate();
@@ -121,6 +146,26 @@ class TalkDao {
 
     // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
     final updateThread = threadBox.get(threadId)!.updateTokenNum(currentTotalTokens);
+    await threadBox.put(threadId, updateThread);
+  }
+
+  ///
+  /// 画像生成の会話を保存する
+  ///
+  Future<void> saveImageTalk({required int threadId, required String message, required List<String> iamgeUrls}) async {
+    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
+
+    final newUserTalkId = await _ref.read(idDaoProvider).generate();
+    await talkBox.put(newUserTalkId, _toEntityForUserTalk(id: newUserTalkId, threadId: threadId, message: message));
+
+    final newImageTalkId = await _ref.read(idDaoProvider).generate();
+    await talkBox.put(newImageTalkId, _toEntityForImageTalk(id: newImageTalkId, threadId: threadId, imageUrls: iamgeUrls));
+
+    // スレッドの画像生成枚数を更新
+    final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+
+    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
+    final updateThread = threadBox.get(threadId)!.updateCountCreateImage(iamgeUrls.length);
     await threadBox.put(threadId, updateThread);
   }
 
@@ -154,27 +199,44 @@ class TalkDao {
     );
   }
 
-  TalkEntity _toEntityForAssistTalk({required int id, required int threadId, required Talk talk}) {
+  TalkEntity _toEntityForAssistTalk({required int id, required int threadId, required Message talk}) {
     return TalkEntity(
       id: id,
       threadId: threadId,
-      roleTypeIndex: talk.roleType.index,
-      message: talk.message,
+      roleTypeIndex: RoleType.assistant.index,
+      message: talk.getValue(),
       totalTokenNum: talk.tokenNum,
     );
   }
 
-  Talk _toTalkModel({required TalkEntity entity}) {
-    return Talk(
+  TalkEntity _toEntityForImageTalk({required int id, required int threadId, required List<String> imageUrls}) {
+    return TalkEntity(
+      id: id,
+      threadId: threadId,
+      roleTypeIndex: RoleType.image.index,
+      message: imageUrls.join(ImageTalk.urlJoinStringSeparate),
+      totalTokenNum: imageUrls.length, // imageの場合は1枚あたりの金額になるのでlengthをnumに入れる
+    );
+  }
+
+  Message _toTalkModel({required TalkEntity entity}) {
+    return Message.create(
       roleType: Talk.toRole(entity.roleTypeIndex),
-      message: entity.message,
+      value: entity.message,
       tokenNum: entity.totalTokenNum,
+    );
+  }
+
+  ImageTalk _toImageTalkModel({required TalkEntity entity}) {
+    return ImageTalk.create(
+      urls: entity.message.split(ImageTalk.urlJoinStringSeparate),
     );
   }
 
   TalkThread _toThreadModel({
     required TalkThreadEntity entity,
     required int totalTalkTokenNum,
+    required int countCreateImages,
     DateTime? deleteAt,
   }) {
     return TalkThread.create(
@@ -184,6 +246,7 @@ class TalkDao {
       createAt: entity.createAt,
       deleteAt: deleteAt,
       tokenNum: totalTalkTokenNum,
+      countCreateImages: countCreateImages,
     );
   }
 }
