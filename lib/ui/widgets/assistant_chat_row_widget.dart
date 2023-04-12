@@ -64,9 +64,11 @@ class _CodeElementBuilder extends MarkdownElementBuilder {
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     String? codeClass = element.attributes['class'];
-    // TODO ここnullをーにするとMarkdown形式がバラバラになるのでTextにオレンジ色をつけて返す
-    var lang = (codeClass != null) ? codeClass.substring(9) : 'ー';
+    if (codeClass == null) {
+      return Text(element.textContent, style: const TextStyle(color: Colors.orange));
+    }
 
+    final lang = codeClass.substring(9);
     return Column(
       children: [
         _HeaderWidget(language: lang, textContents: element.textContent),
