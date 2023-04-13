@@ -47,7 +47,7 @@ class Message extends Talk {
   String getValue() => _value;
 
   @override
-  bool isLoading() => (_value.isEmpty) && (_roleType != RoleType.assistant);
+  bool isLoading() => (_value.isEmpty) && (_roleType == RoleType.assistant);
 
   @override
   RoleType get roleType => _roleType;
