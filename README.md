@@ -10,8 +10,8 @@ APIKeyは永続領域には持たず、メモリに保持しているのでペ�
 
 # コマンド
 ```
-// ビルド 自分用なのでweb-rendererは指定しません
-flutter build web
+// ビルド(CanvaskitでビルドするとDALL-Eでの生成画像がCORSでロードできない)
+flutter build web --web-renderer html
 
 // デプロイ
 firebase deploy

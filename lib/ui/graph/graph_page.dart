@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/graph/graph_controller.dart';
@@ -74,7 +75,6 @@ class _ViewTotalUsage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokenNum = ref.watch(totalTokenNumProvider);
     final amount = ref.watch(amountByMonthProvider);
 
     return Row(
@@ -82,8 +82,8 @@ class _ViewTotalUsage extends ConsumerWidget {
       children: [
         Column(
           children: [
-            const Text('当月の総利用トークン数', style: TextStyle(fontSize: 20)),
-            Text('$tokenNum (約 $amount 円)', style: const TextStyle(fontSize: 24)),
+            const Text('当月の利用料', style: TextStyle(fontSize: 20)),
+            Text('約 $amount 円', style: const TextStyle(fontSize: 24)),
           ],
         ),
         const SizedBox(width: 16),
@@ -151,48 +151,59 @@ class _ViewMonthGraph extends ConsumerWidget {
   }
 }
 
-class _ViewGraph extends StatelessWidget {
+class _ViewGraph extends ConsumerWidget {
   const _ViewGraph(this.threads);
 
   final List<TalkThread> threads;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final yen = ref.watch(yenPerDollar);
+
     return SfCartesianChart(
-      primaryXAxis: NumericAxis(labelFormat: '{value}日', interval: 1),
-      primaryYAxis: NumericAxis(numberFormat: NumberFormat('###,###')),
+      primaryXAxis: NumericAxis(numberFormat: NumberFormat('#日'), interval: 1.0),
+      primaryYAxis: NumericAxis(numberFormat: NumberFormat('###,###円')),
       tooltipBehavior: TooltipBehavior(enable: true, header: '詳細'),
       series: <ChartSeries>[
         StackedColumnSeries<_ChartData, int>(
-          color: Colors.blueAccent,
-          dataLabelMapper: (datum, index) => 'gpt3',
+          color: AppTheme.gpt3Color,
+          dataLabelMapper: (datum, index) => 'GPT3',
           dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.white, fontSize: 18)),
-          dataSource: _createChartData(targetModel: LlmModel.gpt3),
+          dataSource: _createChartData(targetModel: LlmModel.gpt3, yen: yen),
           xValueMapper: (_ChartData data, _) => data.day,
-          yValueMapper: (_ChartData data, _) => data.tokenNum,
+          yValueMapper: (_ChartData data, _) => data.totalAmount,
         ),
         StackedColumnSeries<_ChartData, int>(
-          color: Colors.greenAccent,
-          dataLabelMapper: (datum, index) => 'gpt4',
-          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(fontSize: 18)),
-          dataSource: _createChartData(targetModel: LlmModel.gpt4),
+          color: AppTheme.gpt4Color,
+          dataLabelMapper: (datum, index) => 'GPT4',
+          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.white, fontSize: 18)),
+          dataSource: _createChartData(targetModel: LlmModel.gpt4, yen: yen),
           xValueMapper: (_ChartData data, _) => data.day,
-          yValueMapper: (_ChartData data, _) => data.tokenNum,
+          yValueMapper: (_ChartData data, _) => data.totalAmount,
+        ),
+        StackedColumnSeries<_ChartData, int>(
+          color: AppTheme.dallEColor,
+          dataLabelMapper: (datum, index) => 'DALL-E',
+          dataLabelSettings: const DataLabelSettings(isVisible: true, textStyle: TextStyle(color: Colors.black, fontSize: 18)),
+          dataSource: _createChartData(targetModel: LlmModel.dallE, yen: yen),
+          xValueMapper: (_ChartData data, _) => data.day,
+          yValueMapper: (_ChartData data, _) => data.totalAmount,
         ),
       ],
     );
   }
 
-  List<_ChartData> _createChartData({required LlmModel targetModel}) {
+  List<_ChartData> _createChartData({required LlmModel targetModel, required int yen}) {
     // 同日をまとめながらチャートデータを作成する
     final resultMap = <int, _ChartData>{};
-    final targetThread = threads.where((e) => e.llmModel == targetModel);
+    final targetThread = threads.where((e) => e.model == targetModel);
+
     for (var thread in targetThread) {
       final key = thread.createAt.day;
       if (resultMap.containsKey(key)) {
-        resultMap.update(key, (value) => value.copyWithAddToken(thread.totalTalkTokenNum));
+        resultMap.update(key, (value) => value.copyWithAddAmount(thread.calcAmount(yen: yen)));
       } else {
-        resultMap[key] = _ChartData(key, thread.totalTalkTokenNum);
+        resultMap[key] = _ChartData(key, thread.calcAmount(yen: yen));
       }
     }
     final t = resultMap.values.toList();
@@ -202,11 +213,11 @@ class _ViewGraph extends StatelessWidget {
 }
 
 class _ChartData {
-  _ChartData(this.day, this.tokenNum);
+  _ChartData(this.day, this.totalAmount);
   final int day;
-  final int tokenNum;
+  final int totalAmount;
 
-  _ChartData copyWithAddToken(int tn) {
-    return _ChartData(day, tokenNum + tn);
+  _ChartData copyWithAddAmount(int amount) {
+    return _ChartData(day, totalAmount + amount);
   }
 }

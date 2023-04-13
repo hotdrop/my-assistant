@@ -23,14 +23,14 @@ class HomeController extends _$HomeController {
     // エラーをクリア
     ref.invalidate(_apiErrorMessage);
 
-    final apiKey = ref.read(appSettingsProvider).apiKey;
     final message = ref.read(talkControllerProvider).text;
 
     // 最初の会話だったらスレッドを保存する
-    if (ref.read(threadProvider).isNotCrerateId()) {
+    if (ref.read(threadProvider).noneTalk()) {
       final thread = await ref.read(assistRepositoryProvider).createThread(message);
       ref.read(threadProvider.notifier).state = thread;
     }
+
     final thread = ref.read(threadProvider);
 
     // ユーザーの会話追加
@@ -41,10 +41,33 @@ class HomeController extends _$HomeController {
     ref.read(currentTalksProvider.notifier).addAssistantLoading();
     _autoScrollToEndOfTalkArea();
 
-    // アシスタントのレスポンス会話更新
+    // アシスタント側の処理
+    await _processAssistant(message, thread);
+
+    // スレッド更新
+    final newThread = await ref.read(assistRepositoryProvider).findThread(thread.id);
+    ref.read(threadProvider.notifier).state = newThread;
+
+    _autoScrollToEndOfTalkArea();
+  }
+
+  Future<void> _processAssistant(String message, TalkThread thread) async {
+    final useModel = ref.read(appSettingsProvider).useLlmModel;
+    final apiKey = ref.read(appSettingsProvider).apiKey!;
+
     try {
-      final talk = await ref.read(assistRepositoryProvider).talk(message, apiKey!, thread);
-      ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+      switch (useModel) {
+        case LlmModel.gpt3:
+        case LlmModel.gpt4:
+          final talk = await ref.read(assistRepositoryProvider).messageTalk(apiKey: apiKey, thread: thread, message: message);
+          ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+          break;
+        case LlmModel.dallE:
+          // TODO createNumは画面上で指定できるようにする
+          final talk = await ref.read(assistRepositoryProvider).imageTalk(apiKey: apiKey, thread: thread, message: message, createNum: 2);
+          ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+          break;
+      }
     } on AppException catch (e) {
       ref.read(_apiErrorMessage.notifier).state = e.message;
       ref.read(currentTalksProvider.notifier).errorAssistantResponse();
@@ -52,12 +75,6 @@ class HomeController extends _$HomeController {
       ref.read(_apiErrorMessage.notifier).state = '$e';
       ref.read(currentTalksProvider.notifier).errorAssistantResponse();
     }
-
-    // スレッド更新
-    final newThread = await ref.read(assistRepositoryProvider).findThread(thread.id);
-    ref.read(threadProvider.notifier).state = newThread;
-
-    _autoScrollToEndOfTalkArea();
   }
 
   ///
@@ -84,6 +101,7 @@ class HomeController extends _$HomeController {
     ref.read(threadProvider.notifier).state = TalkThread.createEmpty(currentModel);
     ref.read(currentTalksProvider.notifier).clear();
     ref.read(talkControllerProvider).clear();
+    ref.read(currentUseTokenStateProvider.notifier).state = 0;
     ref.read(_apiErrorMessage.notifier).state = null;
   }
 
@@ -142,16 +160,16 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
   }
 
   void addUserTalk(String message) {
-    final talk = Talk.create(
+    final talk = Message.create(
       roleType: RoleType.user,
-      message: message,
+      value: message,
       tokenNum: 0,
     );
     state = [...state, talk];
   }
 
   void addAssistantLoading() {
-    final talk = Talk.loading();
+    final talk = Message.loading();
     state = [...state, talk];
   }
 
@@ -163,9 +181,9 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
   void errorAssistantResponse() {
     final lastIndex = state.length - 1;
     state = List.of(state)
-      ..[lastIndex] = const Talk(
+      ..[lastIndex] = Message.create(
         roleType: RoleType.assistant,
-        message: 'エラーが発生しました。お手数をおかけしますが、会話入力欄の下のエラー内容をご確認ください。',
+        value: 'エラーが発生しました。お手数をおかけしますが、会話入力欄の下のエラー内容をご確認ください。',
         tokenNum: 0,
       );
   }

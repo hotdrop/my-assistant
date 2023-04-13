@@ -11,9 +11,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class AssistantChatRowWidget extends StatelessWidget {
-  const AssistantChatRowWidget({super.key, required this.talk});
+  const AssistantChatRowWidget({super.key, required Talk talk}) : messageTalk = (talk as Message);
 
-  final Talk talk;
+  final Message messageTalk;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class AssistantChatRowWidget extends StatelessWidget {
         ),
         InkWell(
           onTap: () {
-            final t = ClipboardData(text: talk.message);
+            final t = ClipboardData(text: messageTalk.getValue());
             Clipboard.setData(t);
           },
           child: Image.asset('assets/images/ic_assistant.png', width: 24, height: 24),
@@ -45,12 +45,12 @@ class AssistantChatRowWidget extends StatelessWidget {
   }
 
   Widget _talkContentsView(BuildContext context) {
-    if (talk.isLoading()) {
+    if (messageTalk.isLoading()) {
       return LoadingAnimationWidget.prograssiveDots(color: Colors.white, size: 32);
     } else {
       return Markdown(
         selectable: true,
-        data: talk.message,
+        data: messageTalk.getValue(),
         shrinkWrap: true,
         builders: {
           'code': _CodeElementBuilder(),
@@ -64,8 +64,11 @@ class _CodeElementBuilder extends MarkdownElementBuilder {
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     String? codeClass = element.attributes['class'];
-    var lang = (codeClass != null) ? codeClass.substring(9) : 'ー';
+    if (codeClass == null) {
+      return Text(element.textContent, style: const TextStyle(color: Colors.orange));
+    }
 
+    final lang = codeClass.substring(9);
     return Column(
       children: [
         _HeaderWidget(language: lang, textContents: element.textContent),

@@ -16,7 +16,7 @@ class GptRequest {
   final String apiKey;
   final List<Map<String, String>>? systemRoles;
   final String newContents;
-  final List<Talk> histories;
+  final List<Message> histories;
   final int maxLimitTokenNum;
   final LlmModel useModel;
 
@@ -31,9 +31,11 @@ class GptRequest {
     final historyTalks = histories.map((h) {
       switch (h.roleType) {
         case RoleType.user:
-          return {'role': 'user', 'content': h.message};
+          return {'role': 'user', 'content': h.getValue()};
         case RoleType.assistant:
-          return {'role': 'assistant', 'content': h.message};
+          return {'role': 'assistant', 'content': h.getValue()};
+        default:
+          throw UnimplementedError('未サポートのRoleTypeです index=${h.roleType.index}');
       }
     }).toList();
 
@@ -47,3 +49,4 @@ class GptRequest {
     });
   }
 }
+

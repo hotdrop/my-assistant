@@ -1,5 +1,5 @@
-import 'package:assistant_me/common/logger.dart';
 import 'package:assistant_me/data/local/dao/talk_dao.dart';
+import 'package:assistant_me/data/remote/entities/gpt_image_request.dart';
 import 'package:assistant_me/data/remote/entities/gpt_request.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
 import 'package:assistant_me/model/app_settings.dart';
@@ -26,8 +26,8 @@ class AssistRepository {
     return await _ref.read(talkDaoProvider).findThread(id);
   }
 
-  Future<Talk> talk(String message, String apiKey, TalkThread thread) async {
-    final historyTalks = await _ref.read(talkDaoProvider).findTalks(thread.id);
+  Future<Message> messageTalk({required String apiKey, required TalkThread thread, required String message}) async {
+    final historyTalks = await _ref.read(talkDaoProvider).findMessageTalks(thread.id);
     final request = GptRequest(
       apiKey: apiKey,
       systemRoles: _ref.read(appSettingsProvider).systemMessages,
@@ -37,18 +37,15 @@ class AssistRepository {
       useModel: _ref.read(appSettingsProvider).useLlmModel,
     );
 
-    AppLogger.d('[送信するリクエスト情報]\n header: ${request.header} \n body: ${request.body()}');
     final response = await _ref.read(httpClientProvider).post(request);
-
-    final messageObj = response.choices.first.message;
 
     // ここ紛らわしいので注意！
     // Threadには消費トークン数を保持する
     // Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
     final currentTotalTokenNum = historyTalks.map((e) => e.tokenNum).fold(0, (prev, e) => prev + e);
-    final talk = Talk.create(
-      roleType: Talk.toRoleType(messageObj.role),
-      message: messageObj.content,
+    final talk = Message.create(
+      roleType: Talk.toRoleType(response.choices.first.message.role),
+      value: response.choices.first.message.content,
       tokenNum: response.usage.totalTokens - currentTotalTokenNum,
     );
 
@@ -59,6 +56,30 @@ class AssistRepository {
           currentTotalTokens: response.usage.totalTokens,
         );
 
+    // 現在のトークンを更新する
+    _ref.read(currentUseTokenStateProvider.notifier).state = response.usage.totalTokens;
+
     return talk;
+  }
+
+  Future<ImageTalk> imageTalk({required String apiKey, required TalkThread thread, required String message, required int createNum}) async {
+    final request = GptImageRequest(
+      apiKey: apiKey,
+      newContents: message,
+      num: createNum,
+    );
+
+    final response = await _ref.read(httpClientProvider).postToCreateImage(request);
+    final imageTalk = ImageTalk.create(
+      urls: response.urls.map((r) => r.url).toList(),
+    );
+
+    await _ref.read(talkDaoProvider).saveImageTalk(
+          threadId: thread.id,
+          message: message,
+          iamgeUrls: imageTalk.getValue(),
+        );
+
+    return imageTalk;
   }
 }
