@@ -42,6 +42,7 @@ class _ImageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // イメージをダウンロードできるようにしたいが微妙に面倒臭そうなので要検討
     return ExtendedImage.network(
       url,
       width: 350,
