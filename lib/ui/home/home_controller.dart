@@ -63,8 +63,12 @@ class HomeController extends _$HomeController {
           ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
           break;
         case LlmModel.dallE:
-          // TODO createNumは画面上で指定できるようにする
-          final talk = await ref.read(assistRepositoryProvider).imageTalk(apiKey: apiKey, thread: thread, message: message, createNum: 2);
+          final talk = await ref.read(assistRepositoryProvider).imageTalk(
+                apiKey: apiKey,
+                thread: thread,
+                message: message,
+                createNum: ref.read(countCreateImagesStateProvider),
+              );
           ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
           break;
       }
@@ -90,6 +94,10 @@ class HomeController extends _$HomeController {
             curve: Curves.fastOutSlowIn,
           );
     });
+  }
+
+  void selectImageCount(int newVal) {
+    ref.read(countCreateImagesStateProvider.notifier).state = newVal;
   }
 
   void newThread() {
@@ -223,3 +231,11 @@ final errorProvider = Provider<String?>((ref) {
 
 // APIのエラー
 final _apiErrorMessage = StateProvider<String?>((_) => null);
+
+// 画像モデルを選択しているか？
+final isSelectDallEModelProvider = Provider((ref) {
+  return ref.watch(appSettingsProvider).isDallEModel;
+});
+
+// 生成する画像枚数
+final countCreateImagesStateProvider = StateProvider<int>((_) => 1);

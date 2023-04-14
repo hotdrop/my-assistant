@@ -51,6 +51,9 @@ class AppSettings {
   // 最大トークン数を取得
   int get maxTokensNum => useLlmModel.maxContext;
 
+  // 画像モデルかどうか？
+  bool get isDallEModel => useLlmModel == LlmModel.dallE;
+
   AppSettings copyWith({String? apiKey, List<Map<String, String>>? systemMessages, LlmModel? useLlmModel}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,

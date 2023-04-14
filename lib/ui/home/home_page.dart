@@ -53,7 +53,13 @@ class _ViewHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final useToken = ref.watch(currentUseTokenStateProvider);
     final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
-    return Text('現在の利用トークン数: $useToken/$maxToken');
+
+    final isImageModel = ref.watch(isSelectDallEModelProvider);
+    if (isImageModel) {
+      return const Text('画像生成モデルを選択中');
+    } else {
+      return Text('現在の利用トークン数: $useToken/$maxToken');
+    }
   }
 }
 
@@ -68,6 +74,8 @@ class _ViewSupportRow extends StatelessWidget {
         _ViewTemplate(),
         SizedBox(width: 16),
         _ViewUseModel(),
+        SizedBox(width: 16),
+        _ViewCreateImageCount(),
       ],
     );
   }
@@ -174,6 +182,44 @@ class _ViewUseModel extends ConsumerWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _ViewCreateImageCount extends ConsumerWidget {
+  const _ViewCreateImageCount();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isVisible = ref.watch(isSelectDallEModelProvider);
+    return Visibility(
+      visible: isVisible,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+          border: Border.all(width: 1, color: Colors.grey),
+        ),
+        child: DropdownButton<int>(
+          value: ref.watch(countCreateImagesStateProvider),
+          icon: const Icon(Icons.arrow_drop_down),
+          elevation: 8,
+          underline: Container(color: Colors.transparent),
+          onChanged: (int? selectValue) {
+            if (selectValue != null) {
+              ref.read(homeControllerProvider.notifier).selectImageCount(selectValue);
+            }
+          },
+          items: [1, 2, 3].map<DropdownMenuItem<int>>((m) {
+            return DropdownMenuItem<int>(
+              value: m,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text('$m枚'),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
