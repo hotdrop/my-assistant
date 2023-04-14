@@ -1,6 +1,8 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk.dart';
-import 'package:extended_image/extended_image.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_network/image_network.dart';
 
 class ImageChatRowWidget extends StatelessWidget {
   const ImageChatRowWidget({super.key, required Talk talk}) : imageTalk = (talk as ImageTalk);
@@ -42,14 +44,23 @@ class _ImageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // イメージをダウンロードできるようにしたいが微妙に面倒臭そうなので要検討
-    return ExtendedImage.network(
-      url,
+    // SizedBoxでラップしないとwidthが100%になってしまう
+    return SizedBox(
       width: 350,
       height: 350,
-      fit: BoxFit.fill,
-      cache: true,
-      border: Border.all(width: 1.0),
+      child: ImageNetwork(
+        image: url,
+        imageCache: FastCachedImageProvider(url),
+        width: 350,
+        height: 350,
+        onPointer: true,
+        onLoading: const CircularProgressIndicator(
+          color: AppTheme.primaryColor,
+        ),
+        onTap: () {
+          // TODO イメージをダウンロードできるようにすると便利だけど、現状はそこまでDALL-Eの精度が高くないのでダウンロードしようと思わないので後回し
+        },
+      ),
     );
   }
 }

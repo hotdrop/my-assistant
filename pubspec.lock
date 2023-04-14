@@ -201,22 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.5"
-  extended_image:
-    dependency: "direct main"
-    description:
-      name: extended_image
-      sha256: f6728c46e2c770be807c5e741a080b8751d5be280332103869049ecacdcf6845
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.1"
-  extended_image_library:
+  dio:
     dependency: transitive
     description:
-      name: extended_image_library
-      sha256: b1de389378589e4dffb3564d782373238f19064037458092c49b3043b2791b2b
+      name: dio
+      sha256: "7d328c4d898a61efc3cd93655a0955858e29a0aa647f0f9e02d59b3bb275e2e8"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.1"
+    version: "4.0.6"
   fake_async:
     dependency: transitive
     description:
@@ -225,6 +217,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  fast_cached_network_image:
+    dependency: "direct main"
+    description:
+      name: fast_cached_network_image
+      sha256: "3b26b7ded949f421540bec1746441b9542bcef566e3dba45ea69de2935a6a9ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   ffi:
     dependency: transitive
     description:
@@ -405,14 +405,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.5"
-  http_client_helper:
-    dependency: transitive
-    description:
-      name: http_client_helper
-      sha256: "1f32359bd07a064ad256d1f84ae5f973f69bc972e7287223fa198abe1d969c28"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   http_multi_server:
     dependency: transitive
     description:
@@ -429,6 +421,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  image_network:
+    dependency: "direct main"
+    description:
+      name: image_network
+      sha256: "5f780e4549749efba5280a32fd540e77117b76910357f8a0f1c210230aeb8ef1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.1"
   intl:
     dependency: "direct main"
     description:
@@ -645,6 +645,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  pointer_interceptor:
+    dependency: transitive
+    description:
+      name: pointer_interceptor
+      sha256: "6aa680b30d96dccef496933d00208ad25f07e047f644dc98ce03ec6141633a9a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.3+4"
   pool:
     dependency: transitive
     description:
@@ -898,6 +906,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: "392c1d83b70fe2495de3ea2c84531268d5b8de2de3f01086a53334d8b6030a88"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.4"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "8b3b2450e98876c70bfcead876d9390573b34b9418c19e28168b74f6cb252dbd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.10.4"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "812165e4e34ca677bdfbfa58c01e33b27fd03ab5fa75b70832d4b7d4ca1fa8cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.5"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: a5364369c758892aa487cbf59ea41d9edd10f9d9baf06a94e80f1bd1b4c7bbc0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.5"
+  webviewimage:
+    dependency: transitive
+    description:
+      name: webviewimage
+      sha256: "937bef362098c1b4b76cb15b68ba83a990a2801c336d0d26d41820dd21410d25"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   win32:
     dependency: transitive
     description:
@@ -924,4 +972,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.19.2 <3.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.0.0"
