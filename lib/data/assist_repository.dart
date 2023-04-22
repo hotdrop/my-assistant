@@ -1,7 +1,6 @@
 import 'package:assistant_me/data/local/dao/talk_dao.dart';
 import 'package:assistant_me/data/remote/entities/gpt_image_request.dart';
 import 'package:assistant_me/data/remote/entities/gpt_request.dart';
-import 'package:assistant_me/data/remote/entities/gpt_response.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
@@ -38,7 +37,7 @@ class AssistRepository {
       useModel: _ref.read(appSettingsProvider).useLlmModel,
     );
 
-    final response = _createDummyResponse(); //await _ref.read(httpClientProvider).post(request);
+    final response = await _ref.read(httpClientProvider).post(request);
 
     // 【注意！】Threadには消費トークン数を保持する
     // Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
@@ -81,25 +80,5 @@ class AssistRepository {
         );
 
     return imageTalk;
-  }
-
-  GptResponse _createDummyResponse() {
-    return GptResponse(
-      id: 'chatcmpl-123',
-      gptObject: 'chat.completion',
-      epoch: 1677652288,
-      choices: [
-        ChoiceResponse(
-          index: 0,
-          message: MessageResponse(role: 'assistant', content: 'おはようございます。これはテストです。'),
-          finishReason: 'stop',
-        )
-      ],
-      usage: UsageResponse(
-        promptTokens: 100,
-        completionTokens: 3900,
-        totalTokens: 4000,
-      ),
-    );
   }
 }

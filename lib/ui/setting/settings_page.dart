@@ -1,6 +1,8 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
+import 'package:assistant_me/ui/setting/setting_controller.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
@@ -28,6 +30,17 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 16),
             AppText.large('テンプレート', isBold: true),
             const Divider(),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                _ViewTemplateImportButton(),
+                SizedBox(width: 16),
+                _ViewTemplateExportButton(),
+              ],
+            ),
+            AppText.normal('(※ 誤操作防止のため、インポートはテンプレートを全て削除すると実行可能になります)'),
+            const _ViewTempleteMessage(),
             const SizedBox(height: 16),
             AppText.large('メモ', isBold: true),
             const Divider(),
@@ -74,6 +87,57 @@ class _ViewInputApiKey extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+class _ViewTemplateImportButton extends ConsumerWidget {
+  const _ViewTemplateImportButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enable = ref.watch(templateCanImportProvider);
+    return ElevatedButton.icon(
+      onPressed: enable ? () async => await execImport(ref) : null,
+      icon: LineIcon(LineIcons.fileImport),
+      label: AppText.normal('インポート'),
+    );
+  }
+
+  Future<void> execImport(WidgetRef ref) async {
+    const fileTypeGroup = XTypeGroup(label: 'json', extensions: <String>['json']);
+    final file = await openFile(acceptedTypeGroups: [fileTypeGroup]);
+    if (file != null) {
+      final rawData = await file.readAsString();
+      await ref.read(settingControllerProvider.notifier).importTemplate(rawData);
+    }
+  }
+}
+
+class _ViewTemplateExportButton extends ConsumerWidget {
+  const _ViewTemplateExportButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enable = ref.watch(templateCanExportProvider);
+    return ElevatedButton.icon(
+      onPressed: enable ? () => execExport(context, ref) : null,
+      icon: LineIcon(LineIcons.fileExport),
+      label: AppText.normal('エクスポート'),
+    );
+  }
+
+  void execExport(BuildContext context, WidgetRef ref) {
+    ref.read(settingControllerProvider.notifier).exportTemplate();
+  }
+}
+
+class _ViewTempleteMessage extends ConsumerWidget {
+  const _ViewTempleteMessage();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final message = ref.watch(templateMessageStateProvider);
+    return AppText.normal(message ?? '', textColor: AppTheme.primaryColor);
   }
 }
 

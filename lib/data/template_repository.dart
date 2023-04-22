@@ -13,6 +13,12 @@ class TemplateRepository {
     return await _ref.read(templateDaoProvider).findAll();
   }
 
+  Future<void> saveAll(List<Template> templates) async {
+    for (var t in templates) {
+      await _ref.read(templateDaoProvider).create(t.title, t.contents);
+    }
+  }
+
   Future<Template> create({required String title, required String contents}) async {
     return await _ref.read(templateDaoProvider).create(title, contents);
   }
