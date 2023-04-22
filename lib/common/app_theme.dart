@@ -11,6 +11,8 @@ class AppTheme {
   static const Color gpt4Color = Colors.blueAccent;
   static const Color dallEColor = Colors.yellow;
 
+  static const double defaultTextSize = 14;
+
   static final ThemeData theme = ThemeData(
     brightness: Brightness.dark,
     fontFamily: 'Note Sans JP',

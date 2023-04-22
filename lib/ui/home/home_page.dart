@@ -5,6 +5,7 @@ import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:assistant_me/ui/home/home_controller.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ホーム画面'),
+        title: AppText.pageTitle('ホーム画面'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -56,9 +57,9 @@ class _ViewHeader extends ConsumerWidget {
 
     final isImageModel = ref.watch(isSelectDallEModelProvider);
     if (isImageModel) {
-      return const Text('画像生成モデルを選択中');
+      return AppText.normal('画像生成モデルを選択中');
     } else {
-      return Text('現在の利用トークン数: $useToken/$maxToken');
+      return AppText.normal('現在の利用トークン数: $useToken/$maxToken');
     }
   }
 }
@@ -98,7 +99,7 @@ class _ViewTemplate extends ConsumerWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('テンプレートは登録されていません', style: Theme.of(context).textTheme.bodyMedium),
+          child: AppText.normal('テンプレートは登録されていません'),
         ),
       );
     }
@@ -114,7 +115,7 @@ class _ViewTemplate extends ConsumerWidget {
           children: [
             LineIcon(LineIcons.alternateFileAlt),
             const SizedBox(width: 8),
-            Text('テンプレートを使う', style: Theme.of(context).textTheme.bodyMedium),
+            AppText.normal('テンプレートを使う'),
           ],
         ),
         expandedAlignment: Alignment.centerLeft,
@@ -138,7 +139,7 @@ class _RowTemplate extends ConsumerWidget {
       child: InkWell(
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Text(template.title, style: Theme.of(context).textTheme.bodyMedium),
+          child: AppText.normal(template.title),
         ),
         onTap: () {
           ref.read(homeControllerProvider.notifier).setTemplate(template.contents);
@@ -178,7 +179,7 @@ class _ViewUseModel extends ConsumerWidget {
             value: m,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(m.name),
+              child: AppText.normal(m.name),
             ),
           );
         }).toList(),
@@ -215,7 +216,7 @@ class _ViewCreateImageCount extends ConsumerWidget {
               value: m,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text('$m枚'),
+                child: AppText.normal('$m枚'),
               ),
             );
           }).toList(),
@@ -240,6 +241,7 @@ class _ViewInputTalk extends ConsumerWidget {
             controller: ref.watch(talkControllerProvider),
             minLines: 1,
             maxLines: 10,
+            style: const TextStyle(fontSize: AppTheme.defaultTextSize),
             textAlignVertical: TextAlignVertical.top,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -269,10 +271,7 @@ class _ViewErrorLabel extends ConsumerWidget {
     }
 
     return Center(
-      child: Text(
-        errorMsg,
-        style: const TextStyle(color: Colors.red),
-      ),
+      child: AppText.error(errorMsg),
     );
   }
 }
@@ -287,9 +286,9 @@ class _ViewNewThreadButton extends ConsumerWidget {
         onPressed: () {
           ref.read(homeControllerProvider.notifier).newThread();
         },
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Text('新しく会話を始める'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: AppText.normal('新しく会話を始める'),
         ),
       ),
     );

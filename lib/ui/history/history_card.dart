@@ -1,5 +1,6 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk_thread.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -54,7 +55,7 @@ class _ViewContents extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Flexible(child: Text(titleNoneLine, style: Theme.of(context).textTheme.bodySmall)),
+        Flexible(child: AppText.small(titleNoneLine)),
         InkWell(
           child: LineIcon(LineIcons.times, color: Colors.grey),
           onLongPress: () => onDelete(thread.id),
@@ -77,7 +78,7 @@ class _ViewThreadInfo extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         border: Border.all(width: 1, color: Colors.white),
       ),
-      child: Text(thread.modelName, style: Theme.of(context).textTheme.bodySmall),
+      child: AppText.small(thread.modelName),
     );
   }
 }

@@ -17,7 +17,7 @@ class TemplateController extends _$TemplateController {
 
     // 同じ行を選択したら解除する
     if (selectedId == id) {
-      _clear();
+      clear();
       return;
     }
 
@@ -41,7 +41,7 @@ class TemplateController extends _$TemplateController {
           title: inputTitle,
           contents: inputContents,
         );
-    _clear();
+    clear();
   }
 
   ///
@@ -68,7 +68,7 @@ class TemplateController extends _$TemplateController {
             contents: inputContents,
           ),
         );
-    _clear();
+    clear();
   }
 
   ///
@@ -76,10 +76,10 @@ class TemplateController extends _$TemplateController {
   ///
   Future<void> deleteTemplate(Template template) async {
     ref.read(templateNotifierProvider.notifier).delete(template);
-    _clear();
+    clear();
   }
 
-  void _clear() {
+  void clear() {
     ref.read(selectTemplateIdStateProvider.notifier).state = unselecId;
     ref.read(titleControllerStateProvider).clear();
     ref.read(contentsControllerStateProvider).clear();

@@ -1,3 +1,4 @@
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:assistant_me/ui/template/template_page.dart';
 import 'package:assistant_me/ui/setting/settings_page.dart';
@@ -81,7 +82,7 @@ class _ViewWebMode extends StatelessWidget {
             destinations: destinations
                 .map((e) => NavigationRailDestination(
                       icon: e.icon,
-                      label: Text(e.title),
+                      label: AppText.normal(e.title),
                     ))
                 .toList(),
             selectedIndex: currentIdx,

@@ -1,4 +1,6 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
@@ -65,7 +67,7 @@ class _CodeElementBuilder extends MarkdownElementBuilder {
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     String? codeClass = element.attributes['class'];
     if (codeClass == null) {
-      return Text(element.textContent, style: const TextStyle(color: Colors.orange));
+      return AppText.normal(element.textContent, textColor: Colors.orange);
     }
 
     final lang = codeClass.substring(9);
@@ -91,7 +93,7 @@ class _HeaderWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: Text(language),
+          child: AppText.normal(language),
         ),
         IconButton(
           onPressed: () {
@@ -124,6 +126,7 @@ class _ContentsWidget extends StatelessWidget {
         language: language,
         padding: const EdgeInsets.all(8),
         theme: atomOneDarkTheme,
+        textStyle: const TextStyle(fontSize: AppTheme.defaultTextSize),
       ),
     );
   }
