@@ -19,4 +19,4 @@ firebase deploy
 
 # スクショ
 <img src="./images/01_home.png" width=300><img src="./images/02_history.png" width=300>
-<img src="./images/03_graph.png" width=300><img src="./images/04_template.png" width=300>
+<img src="./images/03_template.png" width=300>

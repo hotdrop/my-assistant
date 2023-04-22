@@ -9,11 +9,9 @@ class TalkThreadEntity extends HiveObject {
     required this.id,
     required this.title,
     required this.createAt,
-    this.deleteAt,
     required this.totalTalkTokenNum,
     required this.currentTokenNum,
     required this.llmModelName,
-    required this.countCreateImage,
   });
 
   static const String boxName = 'talkthread';
@@ -27,9 +25,6 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(2)
   final DateTime createAt;
 
-  @HiveField(3)
-  final DateTime? deleteAt;
-
   @HiveField(4)
   final int totalTalkTokenNum;
 
@@ -39,45 +34,14 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(6, defaultValue: LlmModel.gpt3ModelName)
   final String llmModelName;
 
-  @HiveField(7, defaultValue: 0)
-  final int countCreateImage;
-
   TalkThreadEntity updateTokenNum(int tokenNum) {
     return TalkThreadEntity(
       id: id,
       title: title,
       createAt: createAt,
-      deleteAt: deleteAt,
       totalTalkTokenNum: totalTalkTokenNum + tokenNum,
       currentTokenNum: tokenNum,
       llmModelName: llmModelName,
-      countCreateImage: countCreateImage,
-    );
-  }
-
-  TalkThreadEntity updateCountCreateImage(int num) {
-    return TalkThreadEntity(
-      id: id,
-      title: title,
-      createAt: createAt,
-      deleteAt: deleteAt,
-      totalTalkTokenNum: totalTalkTokenNum,
-      currentTokenNum: currentTokenNum,
-      llmModelName: llmModelName,
-      countCreateImage: countCreateImage + num,
-    );
-  }
-
-  TalkThreadEntity toDelete() {
-    return TalkThreadEntity(
-      id: id,
-      title: title,
-      createAt: createAt,
-      deleteAt: DateTime.now(),
-      totalTalkTokenNum: totalTalkTokenNum,
-      currentTokenNum: currentTokenNum,
-      llmModelName: llmModelName,
-      countCreateImage: countCreateImage,
     );
   }
 }

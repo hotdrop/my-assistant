@@ -31,11 +31,10 @@ class TalkDao {
       title: title,
       currentTokenNum: 0,
       totalTalkTokenNum: 0,
-      countCreateImage: 0,
     );
     box.put(newThreadId, talkThread);
 
-    return _toThreadModel(entity: talkThread, totalTalkTokenNum: 0, countCreateImages: 0);
+    return _toThreadModel(talkThread);
   }
 
   ///
@@ -44,13 +43,7 @@ class TalkDao {
   Future<TalkThread> findThread(int id) async {
     final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
     final threadEntity = box.values.where((e) => e.id == id).first;
-
-    return _toThreadModel(
-      entity: threadEntity,
-      deleteAt: threadEntity.deleteAt,
-      totalTalkTokenNum: threadEntity.totalTalkTokenNum,
-      countCreateImages: threadEntity.countCreateImage,
-    );
+    return _toThreadModel(threadEntity);
   }
 
   ///
@@ -61,36 +54,7 @@ class TalkDao {
     if (box.isEmpty) {
       return [];
     }
-
-    return box.values
-        .map((thread) => _toThreadModel(
-              entity: thread,
-              deleteAt: thread.deleteAt,
-              totalTalkTokenNum: thread.totalTalkTokenNum,
-              countCreateImages: thread.countCreateImage,
-            ))
-        .toList();
-  }
-
-  ///
-  /// 指定した範囲内のスレッドを全て取得する
-  /// スレッドが持っているトーク数は使用しない想定で0を設定しているので注意
-  ///
-  Future<List<TalkThread>> findRangeThread({required DateTime from, required DateTime to}) async {
-    final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
-    if (box.isEmpty) {
-      return [];
-    }
-
-    return box.values //
-        .where((t) => t.createAt.isAfter(from) && t.createAt.isBefore(to))
-        .map((t) => _toThreadModel(
-              entity: t,
-              deleteAt: t.deleteAt,
-              totalTalkTokenNum: t.totalTalkTokenNum,
-              countCreateImages: t.countCreateImage,
-            ))
-        .toList();
+    return box.values.map((thread) => _toThreadModel(thread)).toList();
   }
 
   ///
@@ -120,13 +84,8 @@ class TalkDao {
 
     return talkBox.values //
         .where((t) => t.threadId == threadId)
-        .map((t) {
-      if (t.roleTypeIndex == RoleType.image.index) {
-        return _toImageTalkModel(entity: t);
-      } else {
-        return _toTalkModel(entity: t);
-      }
-    }).toList();
+        .map((t) => (t.roleTypeIndex == RoleType.image.index) ? _toImageTalkModel(entity: t) : _toTalkModel(entity: t))
+        .toList();
   }
 
   ///
@@ -160,26 +119,15 @@ class TalkDao {
 
     final newImageTalkId = await _ref.read(idDaoProvider).generate();
     await talkBox.put(newImageTalkId, _toEntityForImageTalk(id: newImageTalkId, threadId: threadId, imageUrls: iamgeUrls));
-
-    // スレッドの画像生成枚数を更新
-    final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
-
-    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
-    final updateThread = threadBox.get(threadId)!.updateCountCreateImage(iamgeUrls.length);
-    await threadBox.put(threadId, updateThread);
   }
 
   ///
   /// 会話を削除する
-  /// スレッドも削除してしまうと消費トークン数がわからなくなるので会話のみ削除している
   ///
   Future<void> delete({required int threadId}) async {
+    // スレッドを削除
     final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
-
-    // スレッドは削除状態にするのみ
-    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
-    final deleteThread = threadBox.get(threadId)!.toDelete();
-    await threadBox.put(threadId, deleteThread);
+    await threadBox.delete(threadId);
 
     // 会話を削除
     final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
@@ -215,7 +163,7 @@ class TalkDao {
       threadId: threadId,
       roleTypeIndex: RoleType.image.index,
       message: imageUrls.join(ImageTalk.urlJoinStringSeparate),
-      totalTokenNum: imageUrls.length, // imageの場合は1枚あたりの金額になるのでlengthをnumに入れる
+      totalTokenNum: 0, // imageの場合は0
     );
   }
 
@@ -233,20 +181,12 @@ class TalkDao {
     );
   }
 
-  TalkThread _toThreadModel({
-    required TalkThreadEntity entity,
-    required int totalTalkTokenNum,
-    required int countCreateImages,
-    DateTime? deleteAt,
-  }) {
+  TalkThread _toThreadModel(TalkThreadEntity entity) {
     return TalkThread.create(
       id: entity.id,
       title: entity.title,
       llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
-      deleteAt: deleteAt,
-      tokenNum: totalTalkTokenNum,
-      countCreateImages: countCreateImages,
     );
   }
 }
