@@ -187,6 +187,7 @@ class TalkDao {
       title: entity.title,
       llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
+      totalUseTokens: entity.totalTalkTokenNum,
     );
   }
 }

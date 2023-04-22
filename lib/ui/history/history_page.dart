@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
@@ -60,6 +61,7 @@ class _ViewBody extends ConsumerWidget {
         children: const [
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
+          _ViewThreadUsageToken(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -88,7 +90,25 @@ class _ViewThreadCreateDate extends ConsumerWidget {
     if (currentThread == null) {
       return const SizedBox();
     }
-    return Center(child: Text(currentThread.toDateTimeString()));
+    return Center(
+      child: Text(
+        currentThread.toDateTimeString(),
+        style: const TextStyle(color: AppTheme.primaryColor, fontSize: 20),
+      ),
+    );
+  }
+}
+
+class _ViewThreadUsageToken extends ConsumerWidget {
+  const _ViewThreadUsageToken();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentThread = ref.watch(historySelectedThreadProvider);
+    if (currentThread == null) {
+      return const SizedBox();
+    }
+    return Center(child: Text('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens})'));
   }
 }
 
