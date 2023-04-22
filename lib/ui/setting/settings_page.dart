@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher_web/url_launcher_web.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -169,7 +169,10 @@ class _ViewUsageFeeLink extends StatelessWidget {
         padding: const EdgeInsets.only(left: 16),
         child: AppText.weblink('https://platform.openai.com/account/usage'),
       ),
-      onTap: () async => launchUrl(Uri.parse('https://platform.openai.com/account/usage')),
+      onTap: () async {
+        final launchPlugin = UrlLauncherPlugin();
+        await launchPlugin.launch('https://platform.openai.com/account/usage');
+      },
     );
   }
 }
