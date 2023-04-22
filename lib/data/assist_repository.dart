@@ -39,8 +39,7 @@ class AssistRepository {
 
     final response = await _ref.read(httpClientProvider).post(request);
 
-    // ここ紛らわしいので注意！
-    // Threadには消費トークン数を保持する
+    // 【注意！】Threadには消費トークン数を保持する
     // Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
     final currentTotalTokenNum = historyTalks.map((e) => e.tokenNum).fold(0, (prev, e) => prev + e);
     final talk = Message.create(

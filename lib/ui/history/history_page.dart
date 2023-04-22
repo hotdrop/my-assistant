@@ -104,7 +104,6 @@ class _ViewBodyHistories extends ConsumerWidget {
       child: Wrap(
         verticalDirection: VerticalDirection.down,
         children: threads
-            .where((t) => t.deleteAt == null) //
             .map((t) => ViewHistoryCard(
                   thread: t,
                   isSelected: selectedThreadId == t.id,

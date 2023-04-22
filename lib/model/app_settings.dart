@@ -43,14 +43,8 @@ class AppSettings {
   // 利用対象のモデル
   final LlmModel useLlmModel;
 
-  // 金額算出時に使用するトークン単位 コンストラクタで設定している値は2023/1現在のもの
-  int get amountPerTokenNum => useLlmModel.amountPerTokenNum;
-  // 上記トークン単位の金額（ドル） コンストラクタで設定している値は2023/1現在のもの
-  double get amountDollerPerTokenNum => useLlmModel.amountDollerPerTokenNum;
-
   // 最大トークン数を取得
   int get maxTokensNum => useLlmModel.maxContext;
-
   // 画像モデルかどうか？
   bool get isDallEModel => useLlmModel == LlmModel.dallE;
 

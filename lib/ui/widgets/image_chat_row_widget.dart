@@ -58,7 +58,7 @@ class _ImageView extends StatelessWidget {
           color: AppTheme.primaryColor,
         ),
         onTap: () {
-          // TODO イメージをダウンロードできるようにすると便利だけど、現状はそこまでDALL-Eの精度が高くないのでダウンロードしようと思わないので後回し
+          // イメージをダウンロードできるようにすると便利だけど、現状はそこまでDALL-Eの精度が高くなくダウンロードしようと思わないので後回し
         },
       ),
     );
