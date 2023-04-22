@@ -1,3 +1,4 @@
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
@@ -21,7 +22,10 @@ class UserChatRowWidget extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: SelectableText(messageTalk.getValue()),
+            child: SelectableText(
+              messageTalk.getValue(),
+              style: const TextStyle(fontSize: AppTheme.defaultTextSize),
+            ),
           ),
         ),
         const SizedBox(width: 32),

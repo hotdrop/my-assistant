@@ -1,6 +1,7 @@
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/template.dart';
 import 'package:assistant_me/ui/template/template_controller.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
@@ -11,18 +12,22 @@ class TemplatePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('テンプレート'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Flexible(flex: 1, child: _ViewListArea()),
-            Flexible(flex: 2, child: _ViewEditArea()),
-          ],
+    return GestureDetector(
+      // 画面外をタップしたら選択クリア
+      onTap: () => ref.read(templateControllerProvider.notifier).clear(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppText.pageTitle('テンプレート'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Flexible(flex: 1, child: _ViewListArea()),
+              Flexible(flex: 2, child: _ViewEditArea()),
+            ],
+          ),
         ),
       ),
     );
@@ -36,7 +41,7 @@ class _ViewListArea extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final templates = ref.watch(templateNotifierProvider);
     if (templates.isEmpty) {
-      return const Text('テンプレートは未登録です。タイトルとテンプレート内容を入力して登録しましょう！');
+      return AppText.normal('テンプレートは未登録です。タイトルとテンプレート内容を入力して登録しましょう！');
     }
 
     return CustomScrollView(
@@ -69,7 +74,7 @@ class _RowList extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(child: Text(template.title, overflow: TextOverflow.ellipsis)),
+              Flexible(child: AppText.normal(template.title, overflow: TextOverflow.ellipsis)),
               InkWell(
                 child: LineIcon(LineIcons.times, color: Colors.grey),
                 onLongPress: () async => await ref.read(templateControllerProvider.notifier).deleteTemplate(template),
@@ -95,22 +100,24 @@ class _ViewEditArea extends ConsumerWidget {
       child: Column(
         children: [
           TextFormField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              label: Text('タイトル'),
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              label: AppText.normal('タイトル'),
             ),
+            style: const TextStyle(fontSize: AppTheme.defaultTextSize),
             controller: ref.watch(titleControllerStateProvider),
             maxLength: 50,
           ),
           const SizedBox(height: 16),
           Expanded(
             child: TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('テンプレート内容'),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: AppText.normal('テンプレート内容'),
               ),
+              style: const TextStyle(fontSize: AppTheme.defaultTextSize),
               controller: ref.watch(contentsControllerStateProvider),
-              maxLines: 20,
+              maxLines: 30,
             ),
           ),
           const SizedBox(height: 16),
@@ -136,10 +143,13 @@ class _ViewSaveButton extends ConsumerWidget {
           await ref.read(templateControllerProvider.notifier).createTemplate();
         }
       },
-      icon: LineIcon(LineIcons.save),
+      icon: Padding(
+        padding: const EdgeInsets.only(left: 24),
+        child: LineIcon(LineIcons.save),
+      ),
       label: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Text(isUpdate ? '更新する' : '登録する'),
+        padding: const EdgeInsets.only(left: 8, top: 12, bottom: 12, right: 24),
+        child: AppText.normal(isUpdate ? '更新する' : '登録する'),
       ),
     );
   }

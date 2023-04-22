@@ -1,3 +1,5 @@
+import 'dart:convert' as convert;
+
 import 'package:assistant_me/data/template_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +35,25 @@ class TemplateNotifier extends Notifier<List<Template>> {
     l.remove(template);
     state = [...l];
   }
+
+  String toJson() {
+    final templateList = <Map<String, String>>[];
+    for (var t in state) {
+      templateList.add(t.toJson());
+    }
+    return convert.jsonEncode(templateList);
+  }
+
+  Future<void> fromJson(String rawData) async {
+    final decodeList = convert.jsonDecode(rawData) as List<dynamic>;
+    final result = <Template>[];
+    for (var decodeStr in decodeList) {
+      // idは保存されないのでダミー値にする
+      result.add(Template(id: 1, title: decodeStr['title'], contents: decodeStr['contents']));
+    }
+    await ref.read(templateRepositoryProvider).saveAll(result);
+    await onLoad();
+  }
 }
 
 class Template {
@@ -45,4 +66,11 @@ class Template {
   final int id;
   final String title;
   final String contents;
+
+  Map<String, String> toJson() {
+    return {
+      "title": title,
+      "contents": contents,
+    };
+  }
 }

@@ -1,6 +1,9 @@
+import 'package:assistant_me/common/app_extension.dart';
+import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
@@ -14,7 +17,9 @@ class HistoryPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('履歴')),
+      appBar: AppBar(
+        title: AppText.pageTitle('履歴'),
+      ),
       body: ref.watch(historyControllerProvider).when(
             data: (_) => const _ViewBody(),
             error: (error, stackTrace) => _ViewOnLoading(errorMessage: '$error'),
@@ -33,7 +38,7 @@ class _ViewOnLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     if (errorMessage != null) {
       return Center(
-        child: Text(errorMessage!, style: const TextStyle(color: Colors.red)),
+        child: AppText.error(errorMessage!),
       );
     }
 
@@ -60,6 +65,7 @@ class _ViewBody extends ConsumerWidget {
         children: const [
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
+          _ViewThreadUsageToken(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -72,9 +78,9 @@ class _ViewBodyNonHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
-      child: Text('履歴はありません。'),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: AppText.normal('履歴はありません。'),
     );
   }
 }
@@ -88,7 +94,27 @@ class _ViewThreadCreateDate extends ConsumerWidget {
     if (currentThread == null) {
       return const SizedBox();
     }
-    return Center(child: Text(currentThread.toDateTimeString()));
+    return Center(
+      child: AppText.normal(
+        currentThread.toDateTimeString(),
+        textColor: AppTheme.primaryColor,
+      ),
+    );
+  }
+}
+
+class _ViewThreadUsageToken extends ConsumerWidget {
+  const _ViewThreadUsageToken();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentThread = ref.watch(historySelectedThreadProvider);
+    if (currentThread == null) {
+      return const SizedBox();
+    }
+    return Center(
+      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})'),
+    );
   }
 }
 

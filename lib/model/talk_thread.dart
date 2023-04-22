@@ -3,19 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class TalkThread {
-  const TalkThread(this.id, this.title, this.createAt, this._llmModel);
+  const TalkThread(this.id, this.title, this.createAt, this._llmModel, this.totalUseTokens);
 
   factory TalkThread.create({
     required int id,
     required String title,
     required DateTime createAt,
     required LlmModel llmModel,
+    required int totalUseTokens,
   }) {
-    return TalkThread(id, title, createAt, llmModel);
+    return TalkThread(id, title, createAt, llmModel, totalUseTokens);
   }
 
   factory TalkThread.createEmpty(LlmModel selectModel) {
-    return TalkThread(noneId, '', DateTime.now(), selectModel);
+    return TalkThread(noneId, '', DateTime.now(), selectModel, 0);
   }
 
   static const int noneId = -1;
@@ -25,6 +26,7 @@ class TalkThread {
   final String title;
   final DateTime createAt;
   final LlmModel _llmModel;
+  final int totalUseTokens;
 
   bool noneTalk() => id == noneId;
   String toDateTimeString() => _dateFormat.format(createAt);

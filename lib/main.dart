@@ -2,6 +2,7 @@ import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/firebase_options.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/top_page.dart';
+import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,7 +49,7 @@ class _ViewOnLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('マイアシスト'),
+        title: AppText.pageTitle('マイアシスト'),
       ),
       body: Center(
         child: LoadingAnimationWidget.threeArchedCircle(color: Theme.of(context).primaryColor, size: 32),
