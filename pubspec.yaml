@@ -40,8 +40,7 @@ dependencies:
   hive_flutter: ^1.1.0
 
   # other
-  file_selector: ^0.9.2+4
-  # これUNLISTEDなのであまり使わない方がいいがurl_launchがFirebase HostingでPluginエラーになってしまうので仕方なくこちらを使う
+  file_picker: ^5.2.6
   url_launcher_web: ^2.0.16
   intl: ^0.17.0
   logger: ^1.2.2

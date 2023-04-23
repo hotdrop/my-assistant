@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/setting/setting_controller.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
-import 'package:file_selector/file_selector.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
@@ -104,10 +106,13 @@ class _ViewTemplateImportButton extends ConsumerWidget {
   }
 
   Future<void> execImport(WidgetRef ref) async {
-    const fileTypeGroup = XTypeGroup(label: 'json', extensions: <String>['json']);
-    final file = await openFile(acceptedTypeGroups: [fileTypeGroup]);
-    if (file != null) {
-      final rawData = await file.readAsString();
+    final result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['json'],
+      type: FileType.custom,
+    );
+    if (result != null) {
+      final rawByteData = result.files.first.bytes!;
+      final rawData = const Utf8Decoder().convert(rawByteData);
       await ref.read(settingControllerProvider.notifier).importTemplate(rawData);
     }
   }
