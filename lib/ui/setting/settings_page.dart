@@ -25,6 +25,10 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            AppText.large('メモ', isBold: true),
+            const Divider(),
+            const _ViewMemoList(),
+            const SizedBox(height: 16),
             AppText.large('アプリ設定', isBold: true),
             const Divider(),
             const SizedBox(height: 16),
@@ -43,10 +47,6 @@ class SettingsPage extends StatelessWidget {
             ),
             AppText.normal('(※ 誤操作防止のため、インポートはテンプレートを全て削除すると実行可能になります)'),
             const _ViewTempleteMessage(),
-            const SizedBox(height: 16),
-            AppText.large('メモ', isBold: true),
-            const Divider(),
-            const _ViewMemoList(),
           ],
         ),
       ),
