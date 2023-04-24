@@ -2,8 +2,6 @@ import 'package:assistant_me/common/app_theme.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 
 class ViewHistoryCard extends StatelessWidget {
   const ViewHistoryCard({super.key, required this.thread, required this.isSelected, required this.onTap, required this.onDelete});
@@ -57,7 +55,8 @@ class _ViewContents extends StatelessWidget {
       children: [
         Flexible(child: AppText.small(titleNoneLine)),
         InkWell(
-          child: LineIcon(LineIcons.times, color: Colors.grey),
+          borderRadius: BorderRadius.circular(16),
+          child: const Icon(Icons.clear, color: Colors.grey),
           onLongPress: () => onDelete(thread.id),
         ),
       ],

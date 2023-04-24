@@ -10,30 +10,37 @@ part 'history_controller.g.dart';
 class HistoryController extends _$HistoryController {
   @override
   Future<void> build() async {
-    await _refresh();
+    await ref.read(historyThreadsProvider.notifier).onLoad();
   }
 
-  Future<void> onLoad(int threadId) async {
+  Future<void> onLoadTalks(int threadId) async {
     final talks = await ref.read(historyRepositoryProvider).findTalks(threadId);
     ref.read(historyTalksStateProvider.notifier).state = talks;
     ref.read(historySelectedThreadIdProvider.notifier).state = threadId;
   }
 
-  Future<void> delete(int threadId) async {
+  Future<void> deleteThread(int threadId) async {
     await ref.read(historyRepositoryProvider).delete(threadId);
     ref.read(historyTalksStateProvider.notifier).state = [];
     ref.read(historySelectedThreadIdProvider.notifier).state = TalkThread.noneId;
-    await _refresh();
+    ref.read(historyThreadsProvider.notifier).removeThread(threadId);
   }
 
-  Future<void> _refresh() async {
-    final threads = await ref.read(historyRepositoryProvider).findAllThread();
-    ref.read(historyThreadsStateProvider.notifier).state = threads;
+  void inputSearchText(String? text) {
+    ref.read(historyThreadsProvider.notifier).searchText(text);
+    ref.read(historyTalksStateProvider.notifier).state = [];
+    ref.read(historySelectedThreadIdProvider.notifier).state = TalkThread.noneId;
+  }
+
+  void chageDateSort() {
+    final isAsc = ref.read(historyCreateAtOrderAscStateProvider);
+    ref.read(historyThreadsProvider.notifier).sort(!isAsc);
+    ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !isAsc;
   }
 }
 
-// 履歴のスレッド一覧
-final historyThreadsStateProvider = StateProvider<List<TalkThread>>((_) => []);
+// 日付の昇順・昇順ソート
+final historyCreateAtOrderAscStateProvider = StateProvider<bool>((_) => true);
 
 // 選択中のスレッドID
 final historySelectedThreadIdProvider = StateProvider<int>((_) => TalkThread.noneId);
@@ -41,7 +48,7 @@ final historySelectedThreadIdProvider = StateProvider<int>((_) => TalkThread.non
 // 選択中のスレッド
 final historySelectedThreadProvider = Provider<TalkThread?>((ref) {
   final currentThreadId = ref.watch(historySelectedThreadIdProvider);
-  final currentThreads = ref.watch(historyThreadsStateProvider).where((t) => t.id == currentThreadId).toList();
+  final currentThreads = ref.watch(historyThreadsProvider).where((t) => t.id == currentThreadId).toList();
   if (currentThreads.isEmpty) {
     return null;
   }
@@ -50,3 +57,48 @@ final historySelectedThreadProvider = Provider<TalkThread?>((ref) {
 
 // 表示する履歴の会話情報
 final historyTalksStateProvider = StateProvider<List<Talk>>((ref) => []);
+
+// 表示用の履歴スレッド一覧
+final historyThreadsProvider = NotifierProvider<HistoryThreadsNotifier, List<TalkThread>>(HistoryThreadsNotifier.new);
+
+class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
+  @override
+  List<TalkThread> build() {
+    return [];
+  }
+
+  List<TalkThread> _original = [];
+
+  Future<void> onLoad() async {
+    final threads = await ref.read(historyRepositoryProvider).findAllThread();
+    _original = threads;
+    state = threads;
+  }
+
+  void sort(bool isAsc) {
+    final tmp = state;
+    if (isAsc) {
+      tmp.sort((a, b) => a.createAt.compareTo(b.createAt));
+    } else {
+      tmp.sort((a, b) => b.createAt.compareTo(a.createAt));
+    }
+    state = [...tmp];
+  }
+
+  void removeThread(int threadId) {
+    final current = state;
+    _original.removeWhere((thread) => thread.id == threadId);
+    current.removeWhere((thread) => thread.id == threadId);
+    state = [...current];
+  }
+
+  Future<void> searchText(String? text) async {
+    if (text == null || text.isEmpty) {
+      state = [..._original];
+      return;
+    }
+    // TODO ここでLocalStrorageのThreadのTitleとTalkのcontentsを全検索して該当スレッドIDをdistinctして取得する。
+    final newState = state.where((t) => t.title.contains(text)).toList();
+    state = [...newState];
+  }
+}
