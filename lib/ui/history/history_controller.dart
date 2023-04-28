@@ -97,8 +97,9 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
       state = [..._original];
       return;
     }
-    // TODO ここでLocalStrorageのThreadのTitleとTalkのcontentsを全検索して該当スレッドIDをdistinctして取得する。
-    final newState = state.where((t) => t.title.contains(text)).toList();
+
+    final targetThreadIds = await ref.read(historyRepositoryProvider).findThreadIdsByKeyword(text);
+    final newState = state.where((t) => targetThreadIds.contains(t.id)).toList();
     state = [...newState];
   }
 }

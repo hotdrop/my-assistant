@@ -18,6 +18,10 @@ class HistoryRepository {
     return await _ref.read(talkDaoProvider).findAllTalks(threadId);
   }
 
+  Future<List<int>> findThreadIdsByKeyword(String text) async {
+    return await _ref.read(talkDaoProvider).findThreadIDsByKeywordInTalkMessage(text);
+  }
+
   Future<void> delete(int threadId) async {
     await _ref.read(talkDaoProvider).delete(threadId: threadId);
   }
