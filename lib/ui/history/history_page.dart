@@ -9,6 +9,8 @@ import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HistoryPage extends ConsumerWidget {
@@ -48,21 +50,18 @@ class _ViewOnLoading extends StatelessWidget {
   }
 }
 
-class _ViewBody extends ConsumerWidget {
+class _ViewBody extends StatelessWidget {
   const _ViewBody();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final threads = ref.watch(historyThreadsStateProvider);
-    if (threads.isEmpty) {
-      return const _ViewBodyNonHistory();
-    }
-
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
+          _ViewFilterArea(),
+          SizedBox(height: 8),
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
           _ViewThreadUsageToken(),
@@ -73,14 +72,96 @@ class _ViewBody extends ConsumerWidget {
   }
 }
 
-class _ViewBodyNonHistory extends StatelessWidget {
-  const _ViewBodyNonHistory();
+class _ViewFilterArea extends StatelessWidget {
+  const _ViewFilterArea();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: AppText.normal('履歴はありません。'),
+    return Row(
+      children: const [
+        _ViewSearchField(),
+        SizedBox(width: 32),
+        _ViewFilterSortIcon(),
+        SizedBox(width: 32),
+      ],
+    );
+  }
+}
+
+class _ViewSearchField extends ConsumerWidget {
+  const _ViewSearchField();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Expanded(
+      child: TextFormField(
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.all(2),
+          prefixIcon: Padding(
+            padding: EdgeInsets.only(left: 16, right: 8),
+            child: Icon(Icons.search),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+          ),
+        ),
+        style: const TextStyle(fontSize: AppTheme.defaultTextSize),
+        onFieldSubmitted: (String? text) {
+          ref.read(historyControllerProvider.notifier).inputSearchText(text);
+        },
+      ),
+    );
+  }
+}
+
+class _ViewFilterSortIcon extends ConsumerWidget {
+  const _ViewFilterSortIcon();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAsc = ref.watch(historyCreateAtOrderAscStateProvider);
+    return InkWell(
+      borderRadius: BorderRadius.circular(32),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: isAsc ? LineIcon(LineIcons.alternateSortAmountDown) : LineIcon(LineIcons.sortAmountUp),
+      ),
+      onTap: () {
+        ref.read(historyControllerProvider.notifier).changeDateSort();
+      },
+    );
+  }
+}
+
+class _ViewBodyHistories extends ConsumerWidget {
+  const _ViewBodyHistories();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final threads = ref.watch(historyThreadsProvider);
+    final selectedThreadId = ref.watch(historySelectedThreadIdProvider);
+
+    if (threads.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: AppText.normal('該当する履歴はありません。'),
+      );
+    }
+
+    return SingleChildScrollView(
+      child: Wrap(
+        verticalDirection: VerticalDirection.down,
+        children: threads
+            .map((t) => ViewHistoryCard(
+                  thread: t,
+                  isSelected: selectedThreadId == t.id,
+                  onTap: (int threadId) => ref.read(historyControllerProvider.notifier).onLoadTalks(threadId),
+                  onDelete: (int threadId) {
+                    ref.read(historyControllerProvider.notifier).deleteThread(threadId);
+                  },
+                ))
+            .toList(),
+      ),
     );
   }
 }
@@ -114,32 +195,6 @@ class _ViewThreadUsageToken extends ConsumerWidget {
     }
     return Center(
       child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})'),
-    );
-  }
-}
-
-class _ViewBodyHistories extends ConsumerWidget {
-  const _ViewBodyHistories();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final threads = ref.watch(historyThreadsStateProvider);
-    final selectedThreadId = ref.watch(historySelectedThreadIdProvider);
-
-    return SingleChildScrollView(
-      child: Wrap(
-        verticalDirection: VerticalDirection.down,
-        children: threads
-            .map((t) => ViewHistoryCard(
-                  thread: t,
-                  isSelected: selectedThreadId == t.id,
-                  onTap: (int threadId) => ref.read(historyControllerProvider.notifier).onLoad(threadId),
-                  onDelete: (int threadId) {
-                    ref.read(historyControllerProvider.notifier).delete(threadId);
-                  },
-                ))
-            .toList(),
-      ),
     );
   }
 }

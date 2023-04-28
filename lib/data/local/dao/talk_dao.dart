@@ -135,6 +135,24 @@ class TalkDao {
     await talkBox.deleteAll(targetTalks);
   }
 
+  ///
+  /// スレッドタイトルと会話メッセージに対し、引数の文字列を部分一致検索してマッチしたスレッドIDをリスト形式で取得する。
+  /// なお、スレッドIDは重複して返さない。
+  ///
+  Future<List<int>> findThreadIDsByKeywordInTalkMessage(String searchWord) async {
+    final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
+    final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
+    if (threadBox.isEmpty || talkBox.isEmpty) {
+      return [];
+    }
+
+    final idsByThreadTitle = threadBox.values.where((t) => t.title.contains(searchWord)).map((t) => t.id);
+    final idsByTalkMessage = talkBox.values.where((t) => t.message.contains(searchWord)).map((t) => t.threadId);
+    final idsMergeAndDistinct = [...idsByThreadTitle, ...idsByTalkMessage]..toSet();
+
+    return idsMergeAndDistinct.toList();
+  }
+
   // ここから下はModelクラスとEntityの変換関数
 
   TalkEntity _toEntityForUserTalk({required int id, required int threadId, required String message}) {
