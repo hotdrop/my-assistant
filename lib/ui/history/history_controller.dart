@@ -32,7 +32,7 @@ class HistoryController extends _$HistoryController {
     ref.read(historySelectedThreadIdProvider.notifier).state = TalkThread.noneId;
   }
 
-  void chageDateSort() {
+  void changeDateSort() {
     final isAsc = ref.read(historyCreateAtOrderAscStateProvider);
     ref.read(historyThreadsProvider.notifier).sort(!isAsc);
     ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !isAsc;
@@ -94,6 +94,7 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
 
   Future<void> searchText(String? text) async {
     if (text == null || text.isEmpty) {
+      // TODO この実装だとソート状態が維持されないので修正が必要
       state = [..._original];
       return;
     }

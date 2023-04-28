@@ -72,7 +72,7 @@ class _ViewInputApiKey extends ConsumerWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  label: AppText.normal('ここにOpen_API_Keyを入力してください'),
+                  label: AppText.normal('ここにOpenAI_API_Keyを入力してください'),
                   counterText: '',
                 ),
                 style: const TextStyle(fontSize: AppTheme.defaultTextSize),
@@ -156,7 +156,6 @@ class _ViewMemoList extends StatelessWidget {
       children: [
         AppText.normal('・履歴を削除したい場合、カード右上のバツボタンを長押ししてください。'),
         AppText.normal('・アシスタント側の回答はアイコンをクリックするとコピーできます。'),
-        AppText.normal('・よく使いそうなPromptや面白いPromptを見つけたらテンプレートに登録しましょう。'),
         AppText.normal('・こまめに以下のページで使用料を確認しましょう。', textColor: AppTheme.primaryColor),
         const _ViewUsageFeeLink(),
       ],

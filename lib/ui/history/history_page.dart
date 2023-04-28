@@ -127,7 +127,7 @@ class _ViewFilterSortIcon extends ConsumerWidget {
         child: isAsc ? LineIcon(LineIcons.alternateSortAmountDown) : LineIcon(LineIcons.sortAmountUp),
       ),
       onTap: () {
-        ref.read(historyControllerProvider.notifier).chageDateSort();
+        ref.read(historyControllerProvider.notifier).changeDateSort();
       },
     );
   }
