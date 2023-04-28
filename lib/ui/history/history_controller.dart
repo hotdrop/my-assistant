@@ -33,9 +33,8 @@ class HistoryController extends _$HistoryController {
   }
 
   void changeDateSort() {
-    final isAsc = ref.read(historyCreateAtOrderAscStateProvider);
-    ref.read(historyThreadsProvider.notifier).sort(!isAsc);
-    ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !isAsc;
+    ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !ref.read(historyCreateAtOrderAscStateProvider);
+    ref.read(historyThreadsProvider.notifier).sortByCreateAt();
   }
 }
 
@@ -75,13 +74,8 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
     state = threads;
   }
 
-  void sort(bool isAsc) {
-    final tmp = state;
-    if (isAsc) {
-      tmp.sort((a, b) => a.createAt.compareTo(b.createAt));
-    } else {
-      tmp.sort((a, b) => b.createAt.compareTo(a.createAt));
-    }
+  void sortByCreateAt() {
+    final tmp = _sort(state);
     state = [...tmp];
   }
 
@@ -94,13 +88,25 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
 
   Future<void> searchText(String? text) async {
     if (text == null || text.isEmpty) {
-      // TODO この実装だとソート状態が維持されないので修正が必要
-      state = [..._original];
+      final tmp = _sort(_original);
+      state = [...tmp];
       return;
     }
 
     final targetThreadIds = await ref.read(historyRepositoryProvider).findThreadIdsByKeyword(text);
-    final newState = state.where((t) => targetThreadIds.contains(t.id)).toList();
+    final tmp = _sort(_original);
+    final newState = tmp.where((t) => targetThreadIds.contains(t.id)).toList();
     state = [...newState];
+  }
+
+  List<TalkThread> _sort(List<TalkThread> threads) {
+    final isAscOrder = ref.read(historyCreateAtOrderAscStateProvider);
+    final tmp = threads;
+    if (isAscOrder) {
+      tmp.sort((a, b) => a.createAt.compareTo(b.createAt));
+    } else {
+      tmp.sort((a, b) => b.createAt.compareTo(a.createAt));
+    }
+    return tmp;
   }
 }
