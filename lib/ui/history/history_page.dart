@@ -65,6 +65,8 @@ class _ViewBody extends StatelessWidget {
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
           _ViewThreadUsageToken(),
+          SizedBox(height: 4),
+          _ViewThreadSystemRole(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -194,7 +196,28 @@ class _ViewThreadUsageToken extends ConsumerWidget {
       return const SizedBox();
     }
     return Center(
-      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})'),
+      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})', textColor: Colors.grey),
+    );
+  }
+}
+
+class _ViewThreadSystemRole extends ConsumerWidget {
+  const _ViewThreadSystemRole();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentThread = ref.watch(historySelectedThreadProvider);
+    if (currentThread == null) {
+      return const SizedBox();
+    }
+
+    final system = currentThread.isSettingSystem ? currentThread.system! : 'この会話のSystemは未設定です。';
+    return Container(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: AppText.small(system),
+      ),
     );
   }
 }

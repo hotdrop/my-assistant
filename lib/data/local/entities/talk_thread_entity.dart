@@ -8,6 +8,7 @@ class TalkThreadEntity extends HiveObject {
   TalkThreadEntity({
     required this.id,
     required this.title,
+    required this.system,
     required this.createAt,
     required this.totalTalkTokenNum,
     required this.currentTokenNum,
@@ -34,10 +35,14 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(6, defaultValue: LlmModel.gpt3ModelName)
   final String llmModelName;
 
+  @HiveField(8, defaultValue: '')
+  final String? system;
+
   TalkThreadEntity updateTokenNum(int tokenNum) {
     return TalkThreadEntity(
       id: id,
       title: title,
+      system: system,
       createAt: createAt,
       totalTalkTokenNum: totalTalkTokenNum + tokenNum,
       currentTokenNum: tokenNum,

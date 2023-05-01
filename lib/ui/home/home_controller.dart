@@ -23,22 +23,23 @@ class HomeController extends _$HomeController {
     // エラーをクリア
     ref.invalidate(_apiErrorMessage);
 
-    final message = ref.read(talkControllerProvider).text;
+    final message = ref.read(homeTalkControllerProvider).text;
+    final system = ref.read(homeSystemInputTextStateProvider);
 
     // 最初の会話だったらスレッドを保存する
-    if (ref.read(threadProvider).noneTalk()) {
-      final thread = await ref.read(assistRepositoryProvider).createThread(message);
-      ref.read(threadProvider.notifier).state = thread;
+    if (ref.read(homeThreadProvider).noneTalk()) {
+      final newTread = await ref.read(assistRepositoryProvider).createThread(system: system, message: message);
+      ref.read(homeThreadProvider.notifier).state = newTread;
     }
 
-    final thread = ref.read(threadProvider);
+    final thread = ref.read(homeThreadProvider);
 
     // ユーザーの会話追加
-    ref.read(currentTalksProvider.notifier).addUserTalk(message);
-    ref.read(talkControllerProvider).clear();
+    ref.read(homeCurrentTalksProvider.notifier).addUserTalk(message);
+    ref.read(homeTalkControllerProvider).clear();
 
     // アシスタントのロード中会話追加
-    ref.read(currentTalksProvider.notifier).addAssistantLoading();
+    ref.read(homeCurrentTalksProvider.notifier).addAssistantLoading();
     _autoScrollToEndOfTalkArea();
 
     // アシスタント側の処理
@@ -46,7 +47,7 @@ class HomeController extends _$HomeController {
 
     // スレッド更新
     final newThread = await ref.read(assistRepositoryProvider).findThread(thread.id);
-    ref.read(threadProvider.notifier).state = newThread;
+    ref.read(homeThreadProvider.notifier).state = newThread;
 
     _autoScrollToEndOfTalkArea();
   }
@@ -60,24 +61,24 @@ class HomeController extends _$HomeController {
         case LlmModel.gpt3:
         case LlmModel.gpt4:
           final talk = await ref.read(assistRepositoryProvider).messageTalk(apiKey: apiKey, thread: thread, message: message);
-          ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+          ref.read(homeCurrentTalksProvider.notifier).updateAssistantResponse(talk);
           break;
         case LlmModel.dallE:
           final talk = await ref.read(assistRepositoryProvider).imageTalk(
                 apiKey: apiKey,
                 thread: thread,
                 message: message,
-                createNum: ref.read(countCreateImagesStateProvider),
+                createNum: ref.read(homeCountCreateImagesStateProvider),
               );
-          ref.read(currentTalksProvider.notifier).updateAssistantResponse(talk);
+          ref.read(homeCurrentTalksProvider.notifier).updateAssistantResponse(talk);
           break;
       }
     } on AppException catch (e) {
       ref.read(_apiErrorMessage.notifier).state = e.message;
-      ref.read(currentTalksProvider.notifier).errorAssistantResponse();
+      ref.read(homeCurrentTalksProvider.notifier).errorAssistantResponse();
     } catch (e) {
       ref.read(_apiErrorMessage.notifier).state = '$e';
-      ref.read(currentTalksProvider.notifier).errorAssistantResponse();
+      ref.read(homeCurrentTalksProvider.notifier).errorAssistantResponse();
     }
   }
 
@@ -88,8 +89,8 @@ class HomeController extends _$HomeController {
   ///
   void _autoScrollToEndOfTalkArea() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      ref.read(chatScrollControllerProvider).animateTo(
-            ref.read(chatScrollControllerProvider).position.maxScrollExtent,
+      ref.read(homeChatScrollControllerProvider).animateTo(
+            ref.read(homeChatScrollControllerProvider).position.maxScrollExtent,
             duration: const Duration(milliseconds: 500),
             curve: Curves.fastOutSlowIn,
           );
@@ -97,7 +98,19 @@ class HomeController extends _$HomeController {
   }
 
   void selectImageCount(int newVal) {
-    ref.read(countCreateImagesStateProvider.notifier).state = newVal;
+    ref.read(homeCountCreateImagesStateProvider.notifier).state = newVal;
+  }
+
+  void setTemplate(String templateContents) {
+    ref.read(homeTalkControllerProvider).text = templateContents;
+  }
+
+  void selectModel(LlmModel selectValue) {
+    ref.read(appSettingsProvider.notifier).selectModel(selectValue);
+  }
+
+  void inputSystem(String? value) {
+    ref.read(homeSystemInputTextStateProvider.notifier).state = value;
   }
 
   void newThread() {
@@ -106,11 +119,12 @@ class HomeController extends _$HomeController {
     }
     final currentModel = ref.read(appSettingsProvider).useLlmModel;
 
-    ref.read(threadProvider.notifier).state = TalkThread.createEmpty(currentModel);
-    ref.read(currentTalksProvider.notifier).clear();
-    ref.read(talkControllerProvider).clear();
+    ref.read(homeThreadProvider.notifier).state = TalkThread.createEmpty(currentModel);
+    ref.read(homeCurrentTalksProvider.notifier).clear();
+    ref.read(homeTalkControllerProvider).clear();
     ref.read(currentUseTokenStateProvider.notifier).state = 0;
     ref.read(_apiErrorMessage.notifier).state = null;
+    ref.read(homeSystemInputTextStateProvider.notifier).state = null;
   }
 
   ///
@@ -120,8 +134,8 @@ class HomeController extends _$HomeController {
   /// ・アシスタント側が会話のロード中
   ///
   bool _canContinueProcess() {
-    final emptyMessage = ref.read(talkControllerProvider).text.isEmpty;
-    final nonTalk = ref.read(currentTalksProvider).isEmpty;
+    final emptyMessage = ref.read(homeTalkControllerProvider).text.isEmpty;
+    final nonTalk = ref.read(homeCurrentTalksProvider).isEmpty;
     final isAssistantLoading = _isNowLoadingAssistant();
 
     if ((emptyMessage && nonTalk) || isAssistantLoading) {
@@ -135,31 +149,23 @@ class HomeController extends _$HomeController {
   /// アシスタントがロード中か？
   ///
   bool _isNowLoadingAssistant() {
-    if (ref.read(currentTalksProvider).isEmpty) {
+    if (ref.read(homeCurrentTalksProvider).isEmpty) {
       return false;
     }
 
-    final lastTalk = ref.read(currentTalksProvider).last;
+    final lastTalk = ref.read(homeCurrentTalksProvider).last;
     return lastTalk.isLoading();
-  }
-
-  void setTemplate(String templateContents) {
-    ref.read(talkControllerProvider).text = templateContents;
-  }
-
-  void selectModel(LlmModel selectValue) {
-    ref.read(appSettingsProvider.notifier).selectModel(selectValue);
   }
 }
 
 // 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）
-final threadProvider = StateProvider((ref) {
+final homeThreadProvider = StateProvider((ref) {
   final useModel = ref.watch(appSettingsProvider).useLlmModel;
   return TalkThread.createEmpty(useModel);
 });
 
 // 会話データ
-final currentTalksProvider = NotifierProvider<CurrentTalksNotifier, List<Talk>>(CurrentTalksNotifier.new);
+final homeCurrentTalksProvider = NotifierProvider<CurrentTalksNotifier, List<Talk>>(CurrentTalksNotifier.new);
 
 class CurrentTalksNotifier extends Notifier<List<Talk>> {
   @override
@@ -202,22 +208,22 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
 }
 
 // 会話入力フィールド
-final talkControllerProvider = StateProvider<TextEditingController>((ref) {
+final homeTalkControllerProvider = StateProvider<TextEditingController>((ref) {
   final controller = TextEditingController();
   controller.addListener(() {
-    ref.read(isInputTextEmpty.notifier).state = controller.text.isEmpty;
+    ref.read(homeIsInputTextEmpty.notifier).state = controller.text.isEmpty;
   });
   return controller;
 });
 
 // 入力フィールドのリスナー
-final isInputTextEmpty = StateProvider((_) => true);
+final homeIsInputTextEmpty = StateProvider((_) => true);
 
 // 会話は上から下方向に時系列で進んでいくのでスクロールを常に一番下に移動させるためこれを定義する
-final chatScrollControllerProvider = StateProvider((_) => ScrollController());
+final homeChatScrollControllerProvider = StateProvider((_) => ScrollController());
 
 // 入力枠の下に表示するエラーメッセージ
-final errorProvider = Provider<String?>((ref) {
+final homeErrorProvider = Provider<String?>((ref) {
   final apiKey = ref.watch(appSettingsProvider.select((value) => value.apiKey));
   final apiErrorMessage = ref.watch(_apiErrorMessage);
 
@@ -233,9 +239,12 @@ final errorProvider = Provider<String?>((ref) {
 final _apiErrorMessage = StateProvider<String?>((_) => null);
 
 // 画像モデルを選択しているか？
-final isSelectDallEModelProvider = Provider((ref) {
+final homeIsSelectDallEModelProvider = Provider((ref) {
   return ref.watch(appSettingsProvider).isDallEModel;
 });
 
 // 生成する画像枚数
-final countCreateImagesStateProvider = StateProvider<int>((_) => 1);
+final homeCountCreateImagesStateProvider = StateProvider<int>((_) => 1);
+
+// system
+final homeSystemInputTextStateProvider = StateProvider<String?>((_) => null);

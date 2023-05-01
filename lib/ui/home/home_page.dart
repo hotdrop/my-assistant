@@ -55,7 +55,7 @@ class _ViewHeader extends ConsumerWidget {
     final useToken = ref.watch(currentUseTokenStateProvider);
     final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
 
-    final isImageModel = ref.watch(isSelectDallEModelProvider);
+    final isImageModel = ref.watch(homeIsSelectDallEModelProvider);
     if (isImageModel) {
       return AppText.normal('画像生成モデルを選択中');
     } else {
@@ -71,12 +71,13 @@ class _ViewSupportRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.start,
+      runSpacing: 8,
+      spacing: 8,
       children: const [
-        _ViewTemplate(),
-        SizedBox(width: 16),
         _ViewUseModel(),
-        SizedBox(width: 16),
         _ViewCreateImageCount(),
+        _ViewInputSystem(),
+        _ViewTemplate(),
       ],
     );
   }
@@ -87,9 +88,14 @@ class _ViewTemplate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final templates = ref.watch(templateNotifierProvider);
     const double widgetWidth = 300;
 
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (isSelectDalle) {
+      return const SizedBox();
+    }
+
+    final templates = ref.watch(templateNotifierProvider);
     if (templates.isEmpty) {
       return Container(
         width: widgetWidth,
@@ -155,7 +161,7 @@ class _ViewUseModel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 一度会話を始めたらモデルの変更は抑止
-    final isStartTalk = ref.watch(currentTalksProvider).isNotEmpty;
+    final isStartTalk = ref.watch(homeCurrentTalksProvider).isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
@@ -193,34 +199,76 @@ class _ViewCreateImageCount extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isVisible = ref.watch(isSelectDallEModelProvider);
-    return Visibility(
-      visible: isVisible,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-          border: Border.all(width: 1, color: Colors.grey),
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (!isSelectDalle) {
+      return const SizedBox();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        border: Border.all(width: 1, color: Colors.grey),
+      ),
+      child: DropdownButton<int>(
+        value: ref.watch(homeCountCreateImagesStateProvider),
+        icon: const Icon(Icons.arrow_drop_down),
+        elevation: 8,
+        underline: Container(color: Colors.transparent),
+        onChanged: (int? selectValue) {
+          if (selectValue != null) {
+            ref.read(homeControllerProvider.notifier).selectImageCount(selectValue);
+          }
+        },
+        items: [1, 2, 3].map<DropdownMenuItem<int>>((m) {
+          return DropdownMenuItem<int>(
+            value: m,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: AppText.normal('$m枚'),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _ViewInputSystem extends ConsumerWidget {
+  const _ViewInputSystem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (isSelectDalle) {
+      return const SizedBox();
+    }
+
+    final systemInput = ref.watch(homeSystemInputTextStateProvider) ?? '';
+    final label = (systemInput.isNotEmpty) ? systemInput : 'Systemは未設定です(任意)';
+    // 一度会話を始めたらsystemの変更は抑止
+    final isStartTalk = ref.watch(homeCurrentTalksProvider).isNotEmpty;
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width / 2,
+      child: ExpansionTile(
+        collapsedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          side: BorderSide(width: 1, color: Colors.grey),
         ),
-        child: DropdownButton<int>(
-          value: ref.watch(countCreateImagesStateProvider),
-          icon: const Icon(Icons.arrow_drop_down),
-          elevation: 8,
-          underline: Container(color: Colors.transparent),
-          onChanged: (int? selectValue) {
-            if (selectValue != null) {
-              ref.read(homeControllerProvider.notifier).selectImageCount(selectValue);
-            }
-          },
-          items: [1, 2, 3].map<DropdownMenuItem<int>>((m) {
-            return DropdownMenuItem<int>(
-              value: m,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: AppText.normal('$m枚'),
-              ),
-            );
-          }).toList(),
-        ),
+        title: AppText.normal(label, overflow: TextOverflow.ellipsis, textColor: isStartTalk ? Colors.grey : null),
+        expandedAlignment: Alignment.centerLeft,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            minLines: 1,
+            maxLines: 5,
+            initialValue: systemInput,
+            enabled: !isStartTalk,
+            style: const TextStyle(fontSize: AppTheme.defaultTextSize),
+            textAlignVertical: TextAlignVertical.top,
+            onChanged: (String? value) => ref.read(homeControllerProvider.notifier).inputSystem(value),
+          ),
+        ],
       ),
     );
   }
@@ -232,13 +280,13 @@ class _ViewInputTalk extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cannotTalk = ref.watch(appSettingsProvider).apiKey?.isEmpty ?? true;
-    final emptyInputTalk = ref.watch(isInputTextEmpty);
+    final emptyInputTalk = ref.watch(homeIsInputTextEmpty);
 
     return Row(
       children: [
         Expanded(
           child: TextFormField(
-            controller: ref.watch(talkControllerProvider),
+            controller: ref.watch(homeTalkControllerProvider),
             minLines: 1,
             maxLines: 10,
             style: const TextStyle(fontSize: AppTheme.defaultTextSize),
@@ -265,7 +313,7 @@ class _ViewErrorLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final errorMsg = ref.watch(errorProvider);
+    final errorMsg = ref.watch(homeErrorProvider);
     if (errorMsg == null) {
       return const SizedBox();
     }
@@ -300,10 +348,10 @@ class _ViewTalkArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final talks = ref.watch(currentTalksProvider);
+    final talks = ref.watch(homeCurrentTalksProvider);
 
     return CustomScrollView(
-      controller: ref.watch(chatScrollControllerProvider),
+      controller: ref.watch(homeChatScrollControllerProvider),
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(

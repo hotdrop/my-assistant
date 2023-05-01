@@ -3,20 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class TalkThread {
-  const TalkThread(this.id, this.title, this.createAt, this._llmModel, this.totalUseTokens);
+  const TalkThread(this.id, this.title, this.system, this.createAt, this._llmModel, this.totalUseTokens);
 
   factory TalkThread.create({
     required int id,
     required String title,
+    String? system,
     required DateTime createAt,
     required LlmModel llmModel,
     required int totalUseTokens,
   }) {
-    return TalkThread(id, title, createAt, llmModel, totalUseTokens);
+    return TalkThread(id, title, system, createAt, llmModel, totalUseTokens);
   }
 
   factory TalkThread.createEmpty(LlmModel selectModel) {
-    return TalkThread(noneId, '', DateTime.now(), selectModel, 0);
+    return TalkThread(noneId, '', null, DateTime.now(), selectModel, 0);
   }
 
   static const int noneId = -1;
@@ -24,6 +25,7 @@ class TalkThread {
 
   final int id;
   final String title;
+  final String? system;
   final DateTime createAt;
   final LlmModel _llmModel;
   final int totalUseTokens;
@@ -32,6 +34,8 @@ class TalkThread {
   String toDateTimeString() => _dateFormat.format(createAt);
   LlmModel get model => _llmModel;
   String get modelName => _llmModel.name;
+
+  bool get isSettingSystem => (system != null) ? system!.isNotEmpty : false;
 }
 
 // 現在の会話の消費トークン
