@@ -55,7 +55,7 @@ class _ViewHeader extends ConsumerWidget {
     final useToken = ref.watch(currentUseTokenStateProvider);
     final maxToken = ref.watch(appSettingsProvider.select((value) => value.useLlmModel)).maxContext;
 
-    final isImageModel = ref.watch(isSelectDallEModelProvider);
+    final isImageModel = ref.watch(homeIsSelectDallEModelProvider);
     if (isImageModel) {
       return AppText.normal('画像生成モデルを選択中');
     } else {
@@ -155,7 +155,7 @@ class _ViewUseModel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 一度会話を始めたらモデルの変更は抑止
-    final isStartTalk = ref.watch(currentTalksProvider).isNotEmpty;
+    final isStartTalk = ref.watch(homeCurrentTalksProvider).isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
@@ -193,7 +193,7 @@ class _ViewCreateImageCount extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isVisible = ref.watch(isSelectDallEModelProvider);
+    final isVisible = ref.watch(homeIsSelectDallEModelProvider);
     return Visibility(
       visible: isVisible,
       child: Container(
@@ -202,7 +202,7 @@ class _ViewCreateImageCount extends ConsumerWidget {
           border: Border.all(width: 1, color: Colors.grey),
         ),
         child: DropdownButton<int>(
-          value: ref.watch(countCreateImagesStateProvider),
+          value: ref.watch(homeCountCreateImagesStateProvider),
           icon: const Icon(Icons.arrow_drop_down),
           elevation: 8,
           underline: Container(color: Colors.transparent),
@@ -232,13 +232,13 @@ class _ViewInputTalk extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cannotTalk = ref.watch(appSettingsProvider).apiKey?.isEmpty ?? true;
-    final emptyInputTalk = ref.watch(isInputTextEmpty);
+    final emptyInputTalk = ref.watch(homeIsInputTextEmpty);
 
     return Row(
       children: [
         Expanded(
           child: TextFormField(
-            controller: ref.watch(talkControllerProvider),
+            controller: ref.watch(homeTalkControllerProvider),
             minLines: 1,
             maxLines: 10,
             style: const TextStyle(fontSize: AppTheme.defaultTextSize),
@@ -265,7 +265,7 @@ class _ViewErrorLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final errorMsg = ref.watch(errorProvider);
+    final errorMsg = ref.watch(homeErrorProvider);
     if (errorMsg == null) {
       return const SizedBox();
     }
@@ -300,10 +300,10 @@ class _ViewTalkArea extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final talks = ref.watch(currentTalksProvider);
+    final talks = ref.watch(homeCurrentTalksProvider);
 
     return CustomScrollView(
-      controller: ref.watch(chatScrollControllerProvider),
+      controller: ref.watch(homeChatScrollControllerProvider),
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
