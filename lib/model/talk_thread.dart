@@ -34,6 +34,8 @@ class TalkThread {
   String toDateTimeString() => _dateFormat.format(createAt);
   LlmModel get model => _llmModel;
   String get modelName => _llmModel.name;
+
+  bool get isSettingSystem => (system != null) ? system!.isNotEmpty : false;
 }
 
 // 現在の会話の消費トークン

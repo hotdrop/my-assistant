@@ -211,11 +211,12 @@ class _ViewThreadSystemRole extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final system = currentThread.isSettingSystem ? currentThread.system! : 'この会話のSystemは未設定です。';
     return Container(
       alignment: Alignment.center,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: AppText.small(currentThread.system ?? 'この会話のSystemは未設定です。'),
+        child: AppText.small(system),
       ),
     );
   }

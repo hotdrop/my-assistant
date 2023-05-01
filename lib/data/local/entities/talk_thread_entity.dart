@@ -23,9 +23,6 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(1)
   final String title;
 
-  @HiveField(7)
-  final String? system;
-
   @HiveField(2)
   final DateTime createAt;
 
@@ -37,6 +34,9 @@ class TalkThreadEntity extends HiveObject {
 
   @HiveField(6, defaultValue: LlmModel.gpt3ModelName)
   final String llmModelName;
+
+  @HiveField(8, defaultValue: '')
+  final String? system;
 
   TalkThreadEntity updateTokenNum(int tokenNum) {
     return TalkThreadEntity(
