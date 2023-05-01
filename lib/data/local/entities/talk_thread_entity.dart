@@ -8,6 +8,7 @@ class TalkThreadEntity extends HiveObject {
   TalkThreadEntity({
     required this.id,
     required this.title,
+    required this.system,
     required this.createAt,
     required this.totalTalkTokenNum,
     required this.currentTokenNum,
@@ -21,6 +22,9 @@ class TalkThreadEntity extends HiveObject {
 
   @HiveField(1)
   final String title;
+
+  @HiveField(7)
+  final String? system;
 
   @HiveField(2)
   final DateTime createAt;
@@ -38,6 +42,7 @@ class TalkThreadEntity extends HiveObject {
     return TalkThreadEntity(
       id: id,
       title: title,
+      system: system,
       createAt: createAt,
       totalTalkTokenNum: totalTalkTokenNum + tokenNum,
       currentTokenNum: tokenNum,

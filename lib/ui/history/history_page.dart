@@ -65,6 +65,7 @@ class _ViewBody extends StatelessWidget {
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
           _ViewThreadUsageToken(),
+          // TODO Systemの設定値をここに表示する
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),

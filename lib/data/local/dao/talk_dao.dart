@@ -17,7 +17,7 @@ class TalkDao {
   ///
   /// スレッドを新規生成する
   ///
-  Future<TalkThread> createThread(String message, LlmModel useModel) async {
+  Future<TalkThread> createThread({required LlmModel useModel, String? system, required String message}) async {
     final box = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
 
     // スレッドに表示するタイトルは一旦最初の会話の先頭30文字としている。タイトルは変更できるようにした方がよさそう
@@ -29,6 +29,7 @@ class TalkDao {
       llmModelName: useModel.name,
       createAt: DateTime.now(),
       title: title,
+      system: system,
       currentTokenNum: 0,
       totalTalkTokenNum: 0,
     );
@@ -203,6 +204,7 @@ class TalkDao {
     return TalkThread.create(
       id: entity.id,
       title: entity.title,
+      system: entity.system,
       llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
       totalUseTokens: entity.totalTalkTokenNum,

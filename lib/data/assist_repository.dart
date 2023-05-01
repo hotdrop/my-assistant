@@ -17,9 +17,9 @@ class AssistRepository {
   ///
   /// 会話の初回でのみ実行する
   ///
-  Future<TalkThread> createThread(String message) async {
+  Future<TalkThread> createThread({String? system, required String message}) async {
     final useModel = _ref.read(appSettingsProvider).useLlmModel;
-    return await _ref.read(talkDaoProvider).createThread(message, useModel);
+    return await _ref.read(talkDaoProvider).createThread(useModel: useModel, message: message, system: system);
   }
 
   Future<TalkThread> findThread(int id) async {
@@ -30,7 +30,7 @@ class AssistRepository {
     final historyTalks = await _ref.read(talkDaoProvider).findMessageTalks(thread.id);
     final request = GptRequest(
       apiKey: apiKey,
-      systemRoles: _ref.read(appSettingsProvider).systemMessages,
+      system: thread.system,
       maxLimitTokenNum: _ref.read(appSettingsProvider).maxTokensNum,
       newContents: message,
       histories: historyTalks,

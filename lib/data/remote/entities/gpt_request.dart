@@ -6,7 +6,7 @@ import 'package:assistant_me/model/talk.dart';
 class GptRequest {
   GptRequest({
     required this.apiKey,
-    required this.systemRoles,
+    this.system,
     required this.newContents,
     required this.histories,
     required this.maxLimitTokenNum,
@@ -14,7 +14,7 @@ class GptRequest {
   });
 
   final String apiKey;
-  final List<Map<String, String>>? systemRoles;
+  final String? system;
   final String newContents;
   final List<Message> histories;
   final int maxLimitTokenNum;
@@ -42,11 +42,10 @@ class GptRequest {
     return json.encode({
       'model': useModel.name,
       'messages': [
-        ...systemRoles ?? [],
+        if (system != null) {'role': 'system', 'content': system},
         ...historyTalks,
         {'role': 'user', 'content': newContents}
       ]
     });
   }
 }
-

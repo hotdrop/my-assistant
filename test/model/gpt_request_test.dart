@@ -10,7 +10,6 @@ void main() {
     final container = ProviderContainer();
     final request = GptRequest(
       apiKey: 'test',
-      systemRoles: container.read(appSettingsProvider).systemMessages,
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'こんにちわ',
       histories: [],
@@ -21,11 +20,10 @@ void main() {
 
   const String expectSecondTalkBody =
       '{"model":"gpt-3.5-turbo","messages":[{"role":"user","content":"これはテストですか？"},{"role":"assistant","content":"はい、履歴のやり取りが1回のテストです。"},{"role":"user","content":"ありがとうございます。"}]}';
-  test('履歴が1回のやり取りの状態のリクエストで生成したjsonが意図した形式になっているか', () {
+  test('Systemが設定された状態のリクエストで生成したjsonが意図した形式になっているか', () {
     final container = ProviderContainer();
     final request = GptRequest(
       apiKey: 'test',
-      systemRoles: container.read(appSettingsProvider).systemMessages,
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございます。',
       histories: [
@@ -43,7 +41,6 @@ void main() {
     final container = ProviderContainer();
     final request = GptRequest(
       apiKey: 'test',
-      systemRoles: container.read(appSettingsProvider).systemMessages,
       maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
       newContents: 'ありがとうございました!',
       histories: [
@@ -55,5 +52,20 @@ void main() {
       useModel: container.read(appSettingsProvider).useLlmModel,
     );
     expect(request.body(), expectThirdTalkBody);
+  });
+
+  const String expectWithSystemTalkBody =
+      '{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":"これはシステムロールです。"},{"role":"user","content":"こんにちわ"}]}';
+  test('システムロールを設定した状態のリクエストで生成したjsonが意図した形式になっているか', () {
+    final container = ProviderContainer();
+    final request = GptRequest(
+      apiKey: 'test',
+      system: 'これはシステムロールです。',
+      maxLimitTokenNum: container.read(appSettingsProvider).maxTokensNum,
+      newContents: 'こんにちわ',
+      histories: [],
+      useModel: container.read(appSettingsProvider).useLlmModel,
+    );
+    expect(request.body(), expectWithSystemTalkBody);
   });
 }

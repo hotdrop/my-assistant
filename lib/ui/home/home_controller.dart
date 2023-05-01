@@ -24,11 +24,12 @@ class HomeController extends _$HomeController {
     ref.invalidate(_apiErrorMessage);
 
     final message = ref.read(talkControllerProvider).text;
+    final system = ref.read(homeSystemInputTextStateProvider);
 
     // 最初の会話だったらスレッドを保存する
     if (ref.read(threadProvider).noneTalk()) {
-      final thread = await ref.read(assistRepositoryProvider).createThread(message);
-      ref.read(threadProvider.notifier).state = thread;
+      final newTread = await ref.read(assistRepositoryProvider).createThread(system: system, message: message);
+      ref.read(threadProvider.notifier).state = newTread;
     }
 
     final thread = ref.read(threadProvider);
@@ -100,6 +101,18 @@ class HomeController extends _$HomeController {
     ref.read(countCreateImagesStateProvider.notifier).state = newVal;
   }
 
+  void setTemplate(String templateContents) {
+    ref.read(talkControllerProvider).text = templateContents;
+  }
+
+  void selectModel(LlmModel selectValue) {
+    ref.read(appSettingsProvider.notifier).selectModel(selectValue);
+  }
+
+  void inputSystem(String? value) {
+    ref.read(homeSystemInputTextStateProvider.notifier).state = value;
+  }
+
   void newThread() {
     if (!_canContinueProcess()) {
       return;
@@ -111,6 +124,7 @@ class HomeController extends _$HomeController {
     ref.read(talkControllerProvider).clear();
     ref.read(currentUseTokenStateProvider.notifier).state = 0;
     ref.read(_apiErrorMessage.notifier).state = null;
+    ref.read(homeSystemInputTextStateProvider.notifier).state = null;
   }
 
   ///
@@ -141,14 +155,6 @@ class HomeController extends _$HomeController {
 
     final lastTalk = ref.read(currentTalksProvider).last;
     return lastTalk.isLoading();
-  }
-
-  void setTemplate(String templateContents) {
-    ref.read(talkControllerProvider).text = templateContents;
-  }
-
-  void selectModel(LlmModel selectValue) {
-    ref.read(appSettingsProvider.notifier).selectModel(selectValue);
   }
 }
 
@@ -239,3 +245,6 @@ final isSelectDallEModelProvider = Provider((ref) {
 
 // 生成する画像枚数
 final countCreateImagesStateProvider = StateProvider<int>((_) => 1);
+
+// system
+final homeSystemInputTextStateProvider = StateProvider<String?>((_) => null);

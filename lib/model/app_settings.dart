@@ -32,14 +32,11 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
 class AppSettings {
   const AppSettings({
     this.apiKey,
-    this.systemMessages,
     this.useLlmModel = LlmModel.gpt3,
   });
 
   // API Key
   final String? apiKey;
-  // GhatGPT APIを使うときのsystem Roleに設定する文字列。今のところ役に立たないので空にする
-  final List<Map<String, String>>? systemMessages;
   // 利用対象のモデル
   final LlmModel useLlmModel;
 
@@ -48,10 +45,9 @@ class AppSettings {
   // 画像モデルかどうか？
   bool get isDallEModel => useLlmModel == LlmModel.dallE;
 
-  AppSettings copyWith({String? apiKey, List<Map<String, String>>? systemMessages, LlmModel? useLlmModel}) {
+  AppSettings copyWith({String? apiKey, LlmModel? useLlmModel}) {
     return AppSettings(
       apiKey: apiKey ?? this.apiKey,
-      systemMessages: systemMessages ?? this.systemMessages,
       useLlmModel: useLlmModel ?? this.useLlmModel,
     );
   }
