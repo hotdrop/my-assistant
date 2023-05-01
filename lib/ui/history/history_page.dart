@@ -65,7 +65,8 @@ class _ViewBody extends StatelessWidget {
           Expanded(flex: 3, child: _ViewBodyHistories()),
           _ViewThreadCreateDate(),
           _ViewThreadUsageToken(),
-          // TODO Systemの設定値をここに表示する
+          SizedBox(height: 4),
+          _ViewThreadSystemRole(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -196,6 +197,35 @@ class _ViewThreadUsageToken extends ConsumerWidget {
     }
     return Center(
       child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})'),
+    );
+  }
+}
+
+class _ViewThreadSystemRole extends ConsumerWidget {
+  const _ViewThreadSystemRole();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentThread = ref.watch(historySelectedThreadProvider);
+    if (currentThread == null) {
+      return const SizedBox();
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
+            border: Border.all(width: 1, color: Colors.grey),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: AppText.small(currentThread.system ?? 'この会話のSystemは未設定です。'),
+          ),
+        ),
+      ],
     );
   }
 }

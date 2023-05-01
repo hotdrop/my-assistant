@@ -71,12 +71,13 @@ class _ViewSupportRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.start,
+      runSpacing: 8,
+      spacing: 8,
       children: const [
-        _ViewTemplate(),
-        SizedBox(width: 16),
         _ViewUseModel(),
-        SizedBox(width: 16),
         _ViewCreateImageCount(),
+        _ViewInputSystem(),
+        _ViewTemplate(),
       ],
     );
   }
@@ -87,9 +88,14 @@ class _ViewTemplate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final templates = ref.watch(templateNotifierProvider);
     const double widgetWidth = 300;
 
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (isSelectDalle) {
+      return const SizedBox();
+    }
+
+    final templates = ref.watch(templateNotifierProvider);
     if (templates.isEmpty) {
       return Container(
         width: widgetWidth,
@@ -193,34 +199,70 @@ class _ViewCreateImageCount extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isVisible = ref.watch(homeIsSelectDallEModelProvider);
-    return Visibility(
-      visible: isVisible,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-          border: Border.all(width: 1, color: Colors.grey),
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (!isSelectDalle) {
+      return const SizedBox();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        border: Border.all(width: 1, color: Colors.grey),
+      ),
+      child: DropdownButton<int>(
+        value: ref.watch(homeCountCreateImagesStateProvider),
+        icon: const Icon(Icons.arrow_drop_down),
+        elevation: 8,
+        underline: Container(color: Colors.transparent),
+        onChanged: (int? selectValue) {
+          if (selectValue != null) {
+            ref.read(homeControllerProvider.notifier).selectImageCount(selectValue);
+          }
+        },
+        items: [1, 2, 3].map<DropdownMenuItem<int>>((m) {
+          return DropdownMenuItem<int>(
+            value: m,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: AppText.normal('$m枚'),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _ViewInputSystem extends ConsumerWidget {
+  const _ViewInputSystem();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (isSelectDalle) {
+      return const SizedBox();
+    }
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width / 2,
+      child: ExpansionTile(
+        collapsedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          side: BorderSide(width: 1, color: Colors.grey),
         ),
-        child: DropdownButton<int>(
-          value: ref.watch(homeCountCreateImagesStateProvider),
-          icon: const Icon(Icons.arrow_drop_down),
-          elevation: 8,
-          underline: Container(color: Colors.transparent),
-          onChanged: (int? selectValue) {
-            if (selectValue != null) {
-              ref.read(homeControllerProvider.notifier).selectImageCount(selectValue);
-            }
-          },
-          items: [1, 2, 3].map<DropdownMenuItem<int>>((m) {
-            return DropdownMenuItem<int>(
-              value: m,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: AppText.normal('$m枚'),
-              ),
-            );
-          }).toList(),
-        ),
+        title: AppText.normal('System(任意)'),
+        expandedAlignment: Alignment.centerLeft,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            minLines: 1,
+            maxLines: 10,
+            initialValue: ref.watch(homeSystemInputTextStateProvider),
+            style: const TextStyle(fontSize: AppTheme.defaultTextSize),
+            textAlignVertical: TextAlignVertical.top,
+            onChanged: (String? value) => ref.read(homeControllerProvider.notifier).inputSystem(value),
+          ),
+        ],
       ),
     );
   }
