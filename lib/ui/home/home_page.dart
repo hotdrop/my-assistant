@@ -243,6 +243,11 @@ class _ViewInputSystem extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final systemInput = ref.watch(homeSystemInputTextStateProvider) ?? '';
+    final label = (systemInput.isNotEmpty) ? systemInput : 'Systemは未設定です(任意)';
+    // 一度会話を始めたらsystemの変更は抑止
+    final isStartTalk = ref.watch(homeCurrentTalksProvider).isNotEmpty;
+
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: ExpansionTile(
@@ -250,14 +255,15 @@ class _ViewInputSystem extends ConsumerWidget {
           borderRadius: BorderRadius.all(Radius.circular(4)),
           side: BorderSide(width: 1, color: Colors.grey),
         ),
-        title: AppText.normal('System(任意)'),
+        title: AppText.normal(label, overflow: TextOverflow.ellipsis, textColor: isStartTalk ? Colors.grey : null),
         expandedAlignment: Alignment.centerLeft,
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
             minLines: 1,
-            maxLines: 10,
-            initialValue: ref.watch(homeSystemInputTextStateProvider),
+            maxLines: 5,
+            initialValue: systemInput,
+            enabled: !isStartTalk,
             style: const TextStyle(fontSize: AppTheme.defaultTextSize),
             textAlignVertical: TextAlignVertical.top,
             onChanged: (String? value) => ref.read(homeControllerProvider.notifier).inputSystem(value),

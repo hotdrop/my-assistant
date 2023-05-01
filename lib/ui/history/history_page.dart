@@ -196,7 +196,7 @@ class _ViewThreadUsageToken extends ConsumerWidget {
       return const SizedBox();
     }
     return Center(
-      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})'),
+      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})', textColor: Colors.grey),
     );
   }
 }
@@ -211,21 +211,12 @@ class _ViewThreadSystemRole extends ConsumerWidget {
       return const SizedBox();
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(4)),
-            border: Border.all(width: 1, color: Colors.grey),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: AppText.small(currentThread.system ?? 'この会話のSystemは未設定です。'),
-          ),
-        ),
-      ],
+    return Container(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: AppText.small(currentThread.system ?? 'この会話のSystemは未設定です。'),
+      ),
     );
   }
 }
