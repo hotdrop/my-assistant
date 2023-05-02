@@ -92,7 +92,14 @@ class TalkDao {
   ///
   /// ユーザーとアシストの2つ分の会話を保存する
   ///
-  Future<void> save({required int threadId, required String message, required Message talk, required int currentTotalTokens}) async {
+  Future<void> save({
+    required int threadId,
+    required String message,
+    required String? system,
+    required Message talk,
+    required int currentTotalTokens,
+  }) async {
+    // 個々の対話(Talk)の保存
     final talkBox = await Hive.openBox<TalkEntity>(TalkEntity.boxName);
 
     final newUserTalkId = await _ref.read(idDaoProvider).generate();
@@ -101,12 +108,11 @@ class TalkDao {
     final newAssistTalkId = await _ref.read(idDaoProvider).generate();
     await talkBox.put(newAssistTalkId, _toEntityForAssistTalk(id: newAssistTalkId, threadId: threadId, talk: talk));
 
-    // スレッドの総トークン数を更新
     final threadBox = await Hive.openBox<TalkThreadEntity>(TalkThreadEntity.boxName);
 
-    // このタイミングでThreadIDのスレッドは絶対存在するため!をつける
-    final updateThread = threadBox.get(threadId)!.updateTokenNum(currentTotalTokens);
-    await threadBox.put(threadId, updateThread);
+    // スレッドの保存。このタイミングでThreadIDのスレッドは絶対存在するため!をつける
+    final newThread = threadBox.get(threadId)!.copyWith(tokenNum: currentTotalTokens, system: system);
+    await threadBox.put(threadId, newThread);
   }
 
   ///

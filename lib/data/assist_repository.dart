@@ -1,6 +1,7 @@
 import 'package:assistant_me/data/local/dao/talk_dao.dart';
 import 'package:assistant_me/data/remote/entities/gpt_image_request.dart';
 import 'package:assistant_me/data/remote/entities/gpt_request.dart';
+import 'package:assistant_me/data/remote/entities/gpt_response.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
@@ -39,8 +40,9 @@ class AssistRepository {
 
     final response = await _ref.read(httpClientProvider).post(request);
 
-    // 【注意！】Threadには消費トークン数を保持する
-    // Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
+    // 注意！！
+    // ・Threadには消費トークン数を保持する
+    // ・Talkには個々のTalkが使用したトークン数を保持する（APIからは合計トークンが返ってくるので差し引いて保存する）
     final currentTotalTokenNum = historyTalks.map((e) => e.tokenNum).fold(0, (prev, e) => prev + e);
     final talk = Message.create(
       roleType: Talk.toRoleType(response.choices.first.message.role),
@@ -51,6 +53,7 @@ class AssistRepository {
     await _ref.read(talkDaoProvider).save(
           threadId: thread.id,
           message: message,
+          system: thread.system,
           talk: talk,
           currentTotalTokens: response.usage.totalTokens,
         );
