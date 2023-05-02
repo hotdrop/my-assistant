@@ -36,6 +36,17 @@ class TalkThread {
   String get modelName => _llmModel.name;
 
   bool get isSettingSystem => (system != null) ? system!.isNotEmpty : false;
+
+  TalkThread updateSystem(String? system) {
+    return TalkThread(
+      id,
+      title,
+      system,
+      createAt,
+      _llmModel,
+      totalUseTokens,
+    );
+  }
 }
 
 // 現在の会話の消費トークン

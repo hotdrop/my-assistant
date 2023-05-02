@@ -83,78 +83,6 @@ class _ViewSupportRow extends StatelessWidget {
   }
 }
 
-class _ViewTemplate extends ConsumerWidget {
-  const _ViewTemplate();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    const double widgetWidth = 300;
-
-    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
-    if (isSelectDalle) {
-      return const SizedBox();
-    }
-
-    final templates = ref.watch(templateNotifierProvider);
-    if (templates.isEmpty) {
-      return Container(
-        width: widgetWidth,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-          border: Border.all(width: 1, color: Colors.grey),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: AppText.normal('テンプレートは登録されていません'),
-        ),
-      );
-    }
-
-    return SizedBox(
-      width: widgetWidth,
-      child: ExpansionTile(
-        collapsedShape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-          side: BorderSide(width: 1, color: Colors.grey),
-        ),
-        title: Row(
-          children: [
-            LineIcon(LineIcons.alternateFileAlt),
-            const SizedBox(width: 8),
-            AppText.normal('テンプレートを使う'),
-          ],
-        ),
-        expandedAlignment: Alignment.centerLeft,
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: templates.map((t) => _RowTemplate(t, width: widgetWidth)).toList(),
-      ),
-    );
-  }
-}
-
-class _RowTemplate extends ConsumerWidget {
-  const _RowTemplate(this.template, {required this.width});
-
-  final Template template;
-  final double width;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      width: width,
-      child: InkWell(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: AppText.normal(template.title),
-        ),
-        onTap: () {
-          ref.read(homeControllerProvider.notifier).setTemplate(template.contents);
-        },
-      ),
-    );
-  }
-}
-
 class _ViewUseModel extends ConsumerWidget {
   const _ViewUseModel();
 
@@ -244,9 +172,7 @@ class _ViewInputSystem extends ConsumerWidget {
     }
 
     final systemInput = ref.watch(homeSystemInputTextStateProvider) ?? '';
-    final label = (systemInput.isNotEmpty) ? systemInput : 'Systemは未設定です(任意)';
-    // 一度会話を始めたらsystemの変更は抑止
-    final isStartTalk = ref.watch(homeCurrentTalksProvider).isNotEmpty;
+    final label = (systemInput.isNotEmpty) ? systemInput : 'Systemは未設定です。';
 
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
@@ -255,7 +181,7 @@ class _ViewInputSystem extends ConsumerWidget {
           borderRadius: BorderRadius.all(Radius.circular(4)),
           side: BorderSide(width: 1, color: Colors.grey),
         ),
-        title: AppText.normal(label, overflow: TextOverflow.ellipsis, textColor: isStartTalk ? Colors.grey : null),
+        title: AppText.normal(label, overflow: TextOverflow.ellipsis),
         expandedAlignment: Alignment.centerLeft,
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -263,12 +189,83 @@ class _ViewInputSystem extends ConsumerWidget {
             minLines: 1,
             maxLines: 5,
             initialValue: systemInput,
-            enabled: !isStartTalk,
             style: const TextStyle(fontSize: AppTheme.defaultTextSize),
             textAlignVertical: TextAlignVertical.top,
             onChanged: (String? value) => ref.read(homeControllerProvider.notifier).inputSystem(value),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ViewTemplate extends ConsumerWidget {
+  const _ViewTemplate();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const double widgetWidth = 300;
+
+    final isSelectDalle = ref.watch(homeIsSelectDallEModelProvider);
+    if (isSelectDalle) {
+      return const SizedBox();
+    }
+
+    final templates = ref.watch(templateNotifierProvider);
+    if (templates.isEmpty) {
+      return Container(
+        width: widgetWidth,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+          border: Border.all(width: 1, color: Colors.grey),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: AppText.normal('テンプレートは登録されていません'),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: widgetWidth,
+      child: ExpansionTile(
+        collapsedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          side: BorderSide(width: 1, color: Colors.grey),
+        ),
+        title: Row(
+          children: [
+            LineIcon(LineIcons.alternateFileAlt),
+            const SizedBox(width: 8),
+            AppText.normal('テンプレートを使う'),
+          ],
+        ),
+        expandedAlignment: Alignment.centerLeft,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: templates.map((t) => _RowTemplate(t, width: widgetWidth)).toList(),
+      ),
+    );
+  }
+}
+
+class _RowTemplate extends ConsumerWidget {
+  const _RowTemplate(this.template, {required this.width});
+
+  final Template template;
+  final double width;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: width,
+      child: InkWell(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: AppText.normal(template.title),
+        ),
+        onTap: () {
+          ref.read(homeControllerProvider.notifier).setTemplate(template.contents);
+        },
       ),
     );
   }

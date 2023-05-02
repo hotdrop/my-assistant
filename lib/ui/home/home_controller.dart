@@ -26,13 +26,14 @@ class HomeController extends _$HomeController {
     final message = ref.read(homeTalkControllerProvider).text;
     final system = ref.read(homeSystemInputTextStateProvider);
 
-    // 最初の会話だったらスレッドを保存する
     if (ref.read(homeThreadProvider).noneTalk()) {
-      final newTread = await ref.read(assistRepositoryProvider).createThread(system: system, message: message);
-      ref.read(homeThreadProvider.notifier).state = newTread;
+      // 最初の会話だったらスレッドを保存する
+      final newThread = await ref.read(assistRepositoryProvider).createThread(system: system, message: message);
+      ref.read(homeThreadProvider.notifier).state = newThread;
+    } else {
+      // 継続会話であればこのタイミングでsystemのみ更新する
+      ref.read(homeThreadProvider.notifier).state = ref.read(homeThreadProvider).updateSystem(system);
     }
-
-    final thread = ref.read(homeThreadProvider);
 
     // ユーザーの会話追加
     ref.read(homeCurrentTalksProvider.notifier).addUserTalk(message);
@@ -41,6 +42,8 @@ class HomeController extends _$HomeController {
     // アシスタントのロード中会話追加
     ref.read(homeCurrentTalksProvider.notifier).addAssistantLoading();
     _autoScrollToEndOfTalkArea();
+
+    final thread = ref.read(homeThreadProvider);
 
     // アシスタント側の処理
     await _processAssistant(message, thread);

@@ -38,14 +38,14 @@ class TalkThreadEntity extends HiveObject {
   @HiveField(8, defaultValue: '')
   final String? system;
 
-  TalkThreadEntity updateTokenNum(int tokenNum) {
+  TalkThreadEntity copyWith({int? tokenNum, String? system}) {
     return TalkThreadEntity(
       id: id,
       title: title,
-      system: system,
+      system: system ?? this.system,
       createAt: createAt,
-      totalTalkTokenNum: totalTalkTokenNum + tokenNum,
-      currentTokenNum: tokenNum,
+      totalTalkTokenNum: (tokenNum != null) ? totalTalkTokenNum + tokenNum : totalTalkTokenNum,
+      currentTokenNum: tokenNum ?? currentTokenNum,
       llmModelName: llmModelName,
     );
   }
