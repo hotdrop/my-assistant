@@ -1,7 +1,6 @@
 import 'package:assistant_me/data/local/dao/talk_dao.dart';
 import 'package:assistant_me/data/remote/entities/gpt_image_request.dart';
 import 'package:assistant_me/data/remote/entities/gpt_request.dart';
-import 'package:assistant_me/data/remote/entities/gpt_response.dart';
 import 'package:assistant_me/data/remote/http_client.dart';
 import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
@@ -32,7 +31,6 @@ class AssistRepository {
     final request = GptRequest(
       apiKey: apiKey,
       system: thread.system,
-      maxLimitTokenNum: _ref.read(appSettingsProvider).maxTokensNum,
       newContents: message,
       histories: historyTalks,
       useModel: _ref.read(appSettingsProvider).useLlmModel,

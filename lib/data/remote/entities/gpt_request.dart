@@ -9,7 +9,6 @@ class GptRequest {
     this.system,
     required this.newContents,
     required this.histories,
-    required this.maxLimitTokenNum,
     required this.useModel,
   });
 
@@ -17,7 +16,6 @@ class GptRequest {
   final String? system;
   final String newContents;
   final List<Message> histories;
-  final int maxLimitTokenNum;
   final LlmModel useModel;
 
   Uri get uri => Uri.parse('https://api.openai.com/v1/chat/completions');
@@ -27,17 +25,22 @@ class GptRequest {
         'Content-type': 'application/json',
       };
 
-  String body() {
-    final historyTalks = histories.map((h) {
-      switch (h.roleType) {
-        case RoleType.user:
-          return {'role': 'user', 'content': h.getValue()};
-        case RoleType.assistant:
-          return {'role': 'assistant', 'content': h.getValue()};
-        default:
-          throw UnimplementedError('未サポートのRoleTypeです index=${h.roleType.index}');
+  String body({int? overLimitToken}) {
+    final historyTalks = <Map<String, String>>[];
+
+    if (overLimitToken == null) {
+      historyTalks.addAll(histories.map((h) => _toJsonContent(h)));
+    } else {
+      // overLimitTokenが設定されている場合はuseModelのMaxTokenとoverの差し引きで先頭から無視していく
+      int ignoreTokenNum = overLimitToken - useModel.maxContext;
+      for (var msg in histories) {
+        if (ignoreTokenNum >= 0) {
+          ignoreTokenNum = ignoreTokenNum - msg.tokenNum;
+        } else {
+          historyTalks.add(_toJsonContent(msg));
+        }
       }
-    }).toList();
+    }
 
     return json.encode({
       'model': useModel.name,
@@ -47,5 +50,16 @@ class GptRequest {
         {'role': 'user', 'content': newContents}
       ]
     });
+  }
+
+  Map<String, String> _toJsonContent(Message msg) {
+    switch (msg.roleType) {
+      case RoleType.user:
+        return {'role': 'user', 'content': msg.getValue()};
+      case RoleType.assistant:
+        return {'role': 'assistant', 'content': msg.getValue()};
+      default:
+        throw UnimplementedError('未サポートのRoleTypeです index=${msg.roleType.index}');
+    }
   }
 }
