@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class TalkThread {
-  const TalkThread(this.id, this.title, this.system, this.createAt, this._llmModel, this.totalUseTokens);
+  const TalkThread._(this.id, this.title, this.system, this.createAt, this._llmModel, this.totalUseTokens);
 
   factory TalkThread.create({
     required int id,
@@ -13,11 +13,11 @@ class TalkThread {
     required LlmModel llmModel,
     required int totalUseTokens,
   }) {
-    return TalkThread(id, title, system, createAt, llmModel, totalUseTokens);
+    return TalkThread._(id, title, system, createAt, llmModel, totalUseTokens);
   }
 
   factory TalkThread.createEmpty(LlmModel selectModel) {
-    return TalkThread(noneId, '', null, DateTime.now(), selectModel, 0);
+    return TalkThread._(noneId, '', null, DateTime.now(), selectModel, 0);
   }
 
   static const int noneId = -1;
@@ -38,7 +38,7 @@ class TalkThread {
   bool get isSettingSystem => (system != null) ? system!.isNotEmpty : false;
 
   TalkThread updateSystem(String? system) {
-    return TalkThread(
+    return TalkThread._(
       id,
       title,
       system,
