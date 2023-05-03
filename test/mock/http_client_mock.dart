@@ -75,11 +75,11 @@ class HttpClientMock implements HttpClient {
   GptErrorResponse _createOverTokenError() {
     return GptErrorResponse(
       error: GptErrorDetailResponse(
-        code: 'context_length_exceeded',
         message:
             'This model\'s maximum context length is 4097 tokens. However, your messages resulted in 5100 tokens.Please reduce the length of the messages.',
-        type: 'test-error-type',
+        type: 'invalid_request_error',
         param: 'messages',
+        code: 'context_length_exceeded',
       ),
     );
   }

@@ -17,10 +17,10 @@ class GptErrorResponse with _$GptErrorResponse {
 abstract class GptErrorDetailResponse implements _$GptErrorDetailResponse {
   const GptErrorDetailResponse._();
   factory GptErrorDetailResponse({
-    @JsonKey(name: 'code') required String code,
-    @JsonKey(name: 'message') required String message,
-    @JsonKey(name: 'type') required String type,
-    @JsonKey(name: 'param') required String param,
+    @JsonKey(name: 'code') required String? code,
+    @JsonKey(name: 'message') required String? message,
+    @JsonKey(name: 'type') required String? type,
+    @JsonKey(name: 'param') required String? param,
   }) = _GptErrorDetailResponse;
 
   factory GptErrorDetailResponse.fromJson(Map<String, Object?> json) => _$GptErrorDetailResponseFromJson(json);
@@ -32,12 +32,11 @@ abstract class GptErrorDetailResponse implements _$GptErrorDetailResponse {
   }
 
   int getOverTokenNum() {
-    if (!isOverTokenError()) {
+    if (!isOverTokenError() || message == null) {
       throw AppException(message: 'エラーコードがcontext_length_exceededでないのに超過トークン数の取得処理が呼ばれました。プログラムを見直してください code=$code');
     }
-
     // 「This model's maximum context length ...」のエラーのみここにくるはずなので2つ目の数値を取得して返す
-    final overLimitTokenNumStr = _regExpOnlyAllNumber.allMatches(message).elementAt(1).group(0) ?? "";
+    final overLimitTokenNumStr = _regExpOnlyAllNumber.allMatches(message!).elementAt(1).group(0) ?? "";
     return int.parse(overLimitTokenNumStr);
   }
 }
