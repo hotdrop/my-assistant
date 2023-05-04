@@ -2,6 +2,7 @@
 import 'dart:html' as html;
 import 'package:assistant_me/model/template.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'setting_controller.g.dart';
@@ -25,6 +26,10 @@ class SettingController extends _$SettingController {
     final blob = html.Blob([jsonStr], 'application/json');
     final anchorElement = html.AnchorElement(href: html.Url.createObjectUrlFromBlob(blob).toString())..download = 'export_template.json';
     anchorElement.click();
+  }
+
+  Future<PackageInfo> getAppVersion() async {
+    return await PackageInfo.fromPlatform();
   }
 }
 
