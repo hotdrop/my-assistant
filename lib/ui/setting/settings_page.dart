@@ -37,16 +37,9 @@ class SettingsPage extends StatelessWidget {
             AppText.large('テンプレート', isBold: true),
             const Divider(),
             const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                _ViewTemplateImportButton(),
-                SizedBox(width: 16),
-                _ViewTemplateExportButton(),
-              ],
-            ),
-            AppText.normal('(※ 誤操作防止のため、インポートはテンプレートを全て削除すると実行可能になります)'),
-            const _ViewTempleteMessage(),
+            const _ViewTemplateArea(),
+            const SizedBox(height: 32),
+            const _ViewLicense(),
           ],
         ),
       ),
@@ -88,6 +81,29 @@ class _ViewInputApiKey extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ViewTemplateArea extends StatelessWidget {
+  const _ViewTemplateArea();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: const [
+            _ViewTemplateImportButton(),
+            SizedBox(width: 16),
+            _ViewTemplateExportButton(),
+          ],
+        ),
+        AppText.normal('(※ 誤操作防止のため、インポートはテンプレートを全て削除すると実行可能になります)'),
+        const _ViewTempleteMessage()
+      ],
     );
   }
 }
@@ -177,6 +193,30 @@ class _ViewUsageFeeLink extends StatelessWidget {
         final launchPlugin = UrlLauncherPlugin();
         await launchPlugin.launch('https://platform.openai.com/account/usage');
       },
+    );
+  }
+}
+
+class _ViewLicense extends ConsumerWidget {
+  const _ViewLicense();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return OutlinedButton(
+      onPressed: () async {
+        ref.read(settingControllerProvider.notifier).getAppVersion().then((value) {
+          showLicensePage(
+            context: context,
+            applicationName: value.appName,
+            applicationVersion: value.version,
+            applicationIcon: Image.asset('assets/images/ic_assistant.png'),
+          );
+        });
+      },
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('ライセンスとアプリバージョンを見る'),
+      ),
     );
   }
 }
