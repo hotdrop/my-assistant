@@ -25,7 +25,12 @@ class GptRequest {
     }
 
     // overTokenNumが指定されている場合はこっちを実行する
-    int ignoreTokenNum = overTokenNum - useModel.maxContext;
+
+    // 細かく会話しているとちょっとずつ履歴会話を切っていってもジリ貧になる。
+    // 例えば、GPT3.5を使っていてoverTokenNumが4110だと差分が13になり、最初の会話2つくらい（短いと40程度）をきる
+    // この状態だとMAXまでしか回答されないので、途中で切られた回答が送信されてくるのでまた送信して・・・となる。最悪次の回答で高確率でcontext_length_exceededが発生する。
+    // そのため、overTokenNumを500くらいあけてしまう。
+    int ignoreTokenNum = (overTokenNum + 500) - useModel.maxContext;
     final adjustedHistories = <Message>[];
     for (var history in histories) {
       if (ignoreTokenNum >= 0) {
