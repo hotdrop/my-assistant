@@ -55,11 +55,11 @@ class _ViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
+    return const Padding(
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           _ViewFilterArea(),
           SizedBox(height: 8),
           Expanded(flex: 3, child: _ViewBodyHistories()),
@@ -79,8 +79,8 @@ class _ViewFilterArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         _ViewSearchField(),
         SizedBox(width: 32),
         _ViewFilterSortIcon(),
