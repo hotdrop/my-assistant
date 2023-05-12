@@ -19,11 +19,11 @@ class TemplatePage extends ConsumerWidget {
         appBar: AppBar(
           title: AppText.pageTitle('テンプレート'),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
+        body: const Padding(
+          padding: EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Flexible(flex: 1, child: _ViewListArea()),
               Flexible(flex: 2, child: _ViewEditArea()),
             ],

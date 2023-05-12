@@ -23,11 +23,11 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: AppText.pageTitle('ホーム画面'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: const Padding(
+        padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             _ViewHeader(),
             SizedBox(height: 8),
             _ViewSupportRow(),
@@ -69,11 +69,11 @@ class _ViewSupportRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return const Wrap(
       alignment: WrapAlignment.start,
       runSpacing: 8,
       spacing: 8,
-      children: const [
+      children: [
         _ViewUseModel(),
         _ViewCreateImageCount(),
         _ViewInputSystem(),

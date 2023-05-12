@@ -93,9 +93,9 @@ class _ViewTemplateArea extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const [
+          children: [
             _ViewTemplateImportButton(),
             SizedBox(width: 16),
             _ViewTemplateExportButton(),
