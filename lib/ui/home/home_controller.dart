@@ -169,6 +169,7 @@ class HomeController extends _$HomeController {
     ref.read(homeThreadProvider.notifier).state = thread;
     ref.read(homeSystemInputTextStateProvider.notifier).state = thread.system;
     ref.read(homeCurrentTalksProvider.notifier).addAll(talks);
+    ref.read(currentUseTokenStateProvider.notifier).state = thread.currentTokens;
   }
 }
 

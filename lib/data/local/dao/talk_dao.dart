@@ -213,6 +213,7 @@ class TalkDao {
       system: entity.system,
       llmModel: LlmModel.toModel(entity.llmModelName),
       createAt: entity.createAt,
+      currentTokens: entity.currentTokenNum,
       totalUseTokens: entity.totalTalkTokenNum,
     );
   }

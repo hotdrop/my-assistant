@@ -17,7 +17,14 @@ void main() {
       httpClientProvider.overrideWithValue(HttpClientMock()),
     ]);
     final repository = container.read(assistRepositoryProvider);
-    final thread = TalkThread.create(id: 1, title: 'test1', createAt: DateTime.now(), llmModel: LlmModel.gpt3, totalUseTokens: 0);
+    final thread = TalkThread.create(
+      id: 1,
+      title: 'test1',
+      createAt: DateTime.now(),
+      llmModel: LlmModel.gpt3,
+      currentTokens: 0,
+      totalUseTokens: 0,
+    );
 
     final talk = await repository.messageTalk(
       apiKey: '成功テスト',
@@ -33,7 +40,14 @@ void main() {
       httpClientProvider.overrideWithValue(HttpClientMock()),
     ]);
     final repository = container.read(assistRepositoryProvider);
-    final thread = TalkThread.create(id: 2, title: 'test2', createAt: DateTime.now(), llmModel: LlmModel.gpt3, totalUseTokens: 0);
+    final thread = TalkThread.create(
+      id: 2,
+      title: 'test2',
+      createAt: DateTime.now(),
+      llmModel: LlmModel.gpt3,
+      currentTokens: 0,
+      totalUseTokens: 0,
+    );
 
     expect(
         () async => await repository.messageTalk(
@@ -50,7 +64,14 @@ void main() {
       httpClientProvider.overrideWithValue(HttpClientMock()),
     ]);
     final repository = container.read(assistRepositoryProvider);
-    final thread = TalkThread.create(id: 3, title: 'test3', createAt: DateTime.now(), llmModel: LlmModel.gpt3, totalUseTokens: 0);
+    final thread = TalkThread.create(
+      id: 3,
+      title: 'test3',
+      createAt: DateTime.now(),
+      llmModel: LlmModel.gpt3,
+      currentTokens: 0,
+      totalUseTokens: 0,
+    );
 
     final talk = await repository.messageTalk(
       apiKey: 'リトライ成功テスト',
@@ -66,7 +87,14 @@ void main() {
       httpClientProvider.overrideWithValue(HttpClientMock()),
     ]);
     final repository = container.read(assistRepositoryProvider);
-    final thread = TalkThread.create(id: 4, title: 'test4', createAt: DateTime.now(), llmModel: LlmModel.gpt3, totalUseTokens: 0);
+    final thread = TalkThread.create(
+      id: 4,
+      title: 'test4',
+      createAt: DateTime.now(),
+      llmModel: LlmModel.gpt3,
+      currentTokens: 0,
+      totalUseTokens: 0,
+    );
 
     expect(
         () async => await repository.messageTalk(
@@ -83,7 +111,14 @@ void main() {
       httpClientProvider.overrideWithValue(HttpClientMock()),
     ]);
     final repository = container.read(assistRepositoryProvider);
-    final thread = TalkThread.create(id: 5, title: 'test5', createAt: DateTime.now(), llmModel: LlmModel.gpt3, totalUseTokens: 0);
+    final thread = TalkThread.create(
+      id: 5,
+      title: 'test5',
+      createAt: DateTime.now(),
+      llmModel: LlmModel.gpt3,
+      currentTokens: 0,
+      totalUseTokens: 0,
+    );
 
     expect(
         () async => await repository.messageTalk(
