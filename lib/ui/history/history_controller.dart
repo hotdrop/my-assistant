@@ -36,10 +36,15 @@ class HistoryController extends _$HistoryController {
     ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !ref.read(historyCreateAtOrderAscStateProvider);
     ref.read(historyThreadsProvider.notifier).sortByCreateAt();
   }
+
+  void visiblePageHeaderArea() {
+    bool isVisible = ref.read(historyHeaderVisibleStateProvider);
+    ref.read(historyHeaderVisibleStateProvider.notifier).state = !isVisible;
+  }
 }
 
-// 日付の昇順・昇順ソート
-final historyCreateAtOrderAscStateProvider = StateProvider<bool>((_) => true);
+// 日付の昇順・昇順ソート (デフォルトは降順)
+final historyCreateAtOrderAscStateProvider = StateProvider<bool>((_) => false);
 
 // 選択中のスレッドID
 final historySelectedThreadIdProvider = StateProvider<int>((_) => TalkThread.noneId);
@@ -53,6 +58,9 @@ final historySelectedThreadProvider = Provider<TalkThread?>((ref) {
   }
   return currentThreads.first;
 });
+
+// 履歴リストと検索バーの表示設定
+final historyHeaderVisibleStateProvider = StateProvider<bool>((_) => true);
 
 // 表示する履歴の会話情報
 final historyTalksStateProvider = StateProvider<List<Talk>>((ref) => []);
@@ -70,8 +78,9 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
 
   Future<void> onLoad() async {
     final threads = await ref.read(historyRepositoryProvider).findAllThread();
-    _original = threads;
-    state = threads;
+    final tmp = _sort(threads);
+    _original = tmp;
+    state = tmp;
   }
 
   void sortByCreateAt() {

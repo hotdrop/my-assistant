@@ -1,38 +1,39 @@
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:assistant_me/ui/template/template_page.dart';
 import 'package:assistant_me/ui/setting/settings_page.dart';
 import 'package:assistant_me/ui/history/history_page.dart';
 import 'package:assistant_me/ui/home/home_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
-class TopPage extends StatefulWidget {
+class TopPage extends ConsumerWidget {
   const TopPage({super.key});
 
-  @override
-  State<TopPage> createState() => _TopPageState();
-}
-
-class _TopPageState extends State<TopPage> {
-  int _currentIdx = 0;
+  static const int homeIndex = 0;
+  static const int historyIndex = 1;
+  static const int templateIndex = 2;
+  static const int settingIndex = 3;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIdx = ref.watch(selectPageIndexProvider);
     final isMobileSize = MediaQuery.of(context).size.width < 640;
     if (isMobileSize) {
       return _ViewMobileMode(
         destinations: destinations,
-        body: _menuView(_currentIdx),
-        currentIdx: _currentIdx,
-        onTap: (index) => setState(() => _currentIdx = index),
+        body: _menuView(currentIdx),
+        currentIdx: currentIdx,
+        onTap: (index) => ref.read(selectPageIndexProvider.notifier).state = index,
       );
     } else {
       return _ViewWebMode(
         destinations: destinations,
-        body: _menuView(_currentIdx),
-        currentIdx: _currentIdx,
-        onSelected: (index) => setState(() => _currentIdx = index),
+        body: _menuView(currentIdx),
+        currentIdx: currentIdx,
+        onTap: (index) => ref.read(selectPageIndexProvider.notifier).state = index,
       );
     }
   }
@@ -46,13 +47,13 @@ class _TopPageState extends State<TopPage> {
 
   Widget _menuView(int index) {
     switch (index) {
-      case 0:
+      case homeIndex:
         return const HomePage();
-      case 1:
+      case historyIndex:
         return const HistoryPage();
-      case 2:
+      case templateIndex:
         return const TemplatePage();
-      case 3:
+      case settingIndex:
         return const SettingsPage();
       default:
         throw Exception(['不正なIndexです index=$index']);
@@ -65,13 +66,13 @@ class _ViewWebMode extends StatelessWidget {
     required this.destinations,
     required this.body,
     required this.currentIdx,
-    required this.onSelected,
+    required this.onTap,
   });
 
   final List<Destination> destinations;
   final Widget body;
   final int currentIdx;
-  final void Function(int) onSelected;
+  final void Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +87,7 @@ class _ViewWebMode extends StatelessWidget {
                     ))
                 .toList(),
             selectedIndex: currentIdx,
-            onDestinationSelected: onSelected,
+            onDestinationSelected: onTap,
             labelType: NavigationRailLabelType.all,
           ),
           const VerticalDivider(thickness: 1, width: 1),

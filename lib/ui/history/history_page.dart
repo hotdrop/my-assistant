@@ -1,8 +1,11 @@
 import 'package:assistant_me/common/app_extension.dart';
 import 'package:assistant_me/common/app_theme.dart';
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
+import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
+import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
@@ -61,12 +64,8 @@ class _ViewBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _ViewFilterArea(),
-          SizedBox(height: 8),
-          Expanded(flex: 3, child: _ViewBodyHistories()),
-          _ViewThreadCreateDate(),
-          _ViewThreadUsageToken(),
-          SizedBox(height: 4),
-          _ViewThreadSystemRole(),
+          _ViewBodyHistories(),
+          _ViewHistoryTalkHeaderArea(),
           Expanded(flex: 7, child: _ViewBodyHistoryTalks()),
         ],
       ),
@@ -74,18 +73,21 @@ class _ViewBody extends StatelessWidget {
   }
 }
 
-class _ViewFilterArea extends StatelessWidget {
+class _ViewFilterArea extends ConsumerWidget {
   const _ViewFilterArea();
 
   @override
-  Widget build(BuildContext context) {
-    return const Row(
-      children: [
-        _ViewSearchField(),
-        SizedBox(width: 32),
-        _ViewFilterSortIcon(),
-        SizedBox(width: 32),
-      ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Visibility(
+      visible: ref.watch(historyHeaderVisibleStateProvider),
+      child: const Row(
+        children: [
+          _ViewSearchField(),
+          SizedBox(width: 32),
+          _ViewFilterSortIcon(),
+          SizedBox(width: 32),
+        ],
+      ),
     );
   }
 }
@@ -150,26 +152,32 @@ class _ViewBodyHistories extends ConsumerWidget {
       );
     }
 
-    return SingleChildScrollView(
-      child: Wrap(
-        verticalDirection: VerticalDirection.down,
-        children: threads
-            .map((t) => ViewHistoryCard(
-                  thread: t,
-                  isSelected: selectedThreadId == t.id,
-                  onTap: (int threadId) => ref.read(historyControllerProvider.notifier).onLoadTalks(threadId),
-                  onDelete: (int threadId) {
-                    ref.read(historyControllerProvider.notifier).deleteThread(threadId);
-                  },
-                ))
-            .toList(),
+    return Visibility(
+      visible: ref.watch(historyHeaderVisibleStateProvider),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 4,
+        child: SingleChildScrollView(
+          child: Wrap(
+            verticalDirection: VerticalDirection.down,
+            children: threads
+                .map((t) => ViewHistoryCard(
+                      thread: t,
+                      isSelected: selectedThreadId == t.id,
+                      onTap: (int threadId) => ref.read(historyControllerProvider.notifier).onLoadTalks(threadId),
+                      onDelete: (int threadId) {
+                        ref.read(historyControllerProvider.notifier).deleteThread(threadId);
+                      },
+                    ))
+                .toList(),
+          ),
+        ),
       ),
     );
   }
 }
 
-class _ViewThreadCreateDate extends ConsumerWidget {
-  const _ViewThreadCreateDate();
+class _ViewHistoryTalkHeaderArea extends ConsumerWidget {
+  const _ViewHistoryTalkHeaderArea();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -177,46 +185,115 @@ class _ViewThreadCreateDate extends ConsumerWidget {
     if (currentThread == null) {
       return const SizedBox();
     }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(width: 16),
+        const _ViewContinueButton(),
+        const Spacer(),
+        Column(
+          children: [
+            _ViewThreadCreateDate(currentThread.toDateTimeString()),
+            _ViewThreadUsageToken(currentThread.totalUseTokens),
+            const SizedBox(height: 4),
+            _ViewThreadSystemRole(currentThread),
+          ],
+        ),
+        const Spacer(),
+        const _ViewFilterAndrListAreaVisibleButton(),
+        const SizedBox(width: 16),
+      ],
+    );
+  }
+}
+
+class _ViewContinueButton extends ConsumerWidget {
+  const _ViewContinueButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton(
+      onPressed: () {
+        final thread = ref.read(historySelectedThreadProvider);
+        if (thread == null) {
+          return;
+        }
+
+        final talks = ref.read(historyTalksStateProvider);
+        ref.read(homeControllerProvider.notifier).loadHistoryThread(thread, talks);
+        ref.read(selectPageIndexProvider.notifier).state = 0;
+      },
+      child: AppText.normal('この会話を再開'),
+    );
+  }
+}
+
+class _ViewThreadCreateDate extends StatelessWidget {
+  const _ViewThreadCreateDate(this.dateStr);
+
+  final String dateStr;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: AppText.normal(
-        currentThread.toDateTimeString(),
+        dateStr,
         textColor: AppTheme.primaryColor,
       ),
     );
   }
 }
 
-class _ViewThreadUsageToken extends ConsumerWidget {
-  const _ViewThreadUsageToken();
+class _ViewThreadUsageToken extends StatelessWidget {
+  const _ViewThreadUsageToken(this.totalUseTokenNum);
+
+  final int totalUseTokenNum;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread = ref.watch(historySelectedThreadProvider);
-    if (currentThread == null) {
-      return const SizedBox();
-    }
+  Widget build(BuildContext context) {
     return Center(
-      child: AppText.small('(このスレッドの総消費トークン数: ${currentThread.totalUseTokens.toCommaFormat()})', textColor: Colors.grey),
+      child: AppText.small(
+        '(このスレッドの総消費トークン数: ${totalUseTokenNum.toCommaFormat()})',
+        textColor: Colors.grey,
+      ),
     );
   }
 }
 
-class _ViewThreadSystemRole extends ConsumerWidget {
-  const _ViewThreadSystemRole();
+class _ViewThreadSystemRole extends StatelessWidget {
+  const _ViewThreadSystemRole(this.currentThread);
+
+  final TalkThread currentThread;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread = ref.watch(historySelectedThreadProvider);
-    if (currentThread == null) {
-      return const SizedBox();
-    }
-
+  Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: (currentThread.isSettingSystem) ? AppText.small(currentThread.system!) : AppText.small('この会話のSystemは未設定です。', textColor: Colors.grey),
+        child: (currentThread.isSettingSystem)
+            ? AppText.small(currentThread.system!)
+            : AppText.small(
+                'この会話のSystemは未設定です。',
+                textColor: Colors.grey,
+              ),
       ),
+    );
+  }
+}
+
+class _ViewFilterAndrListAreaVisibleButton extends ConsumerWidget {
+  const _ViewFilterAndrListAreaVisibleButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isVisible = ref.watch(historyHeaderVisibleStateProvider);
+    return IconButton(
+      onPressed: () {
+        ref.read(historyControllerProvider.notifier).visiblePageHeaderArea();
+      },
+      icon: isVisible ? LineIcon(LineIcons.angleUp) : LineIcon(LineIcons.angleDown),
     );
   }
 }

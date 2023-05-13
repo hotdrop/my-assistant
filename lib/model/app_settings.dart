@@ -1,8 +1,9 @@
 import 'package:assistant_me/data/local/local_data_source.dart';
 import 'package:assistant_me/model/llm_model.dart';
 import 'package:assistant_me/model/template.dart';
+import 'package:assistant_me/ui/top_page.dart';
 import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // アプリ起動時の初期化処理を行う
 final appInitFutureProvider = FutureProvider<void>((ref) async {
@@ -52,3 +53,6 @@ class AppSettings {
     );
   }
 }
+
+// TopPageでどの画面のメニューを表示するか
+final selectPageIndexProvider = StateProvider<int>((_) => TopPage.homeIndex);
