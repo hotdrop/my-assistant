@@ -43,8 +43,8 @@ class HistoryController extends _$HistoryController {
   }
 }
 
-// 日付の昇順・昇順ソート
-final historyCreateAtOrderAscStateProvider = StateProvider<bool>((_) => true);
+// 日付の昇順・昇順ソート (デフォルトは降順)
+final historyCreateAtOrderAscStateProvider = StateProvider<bool>((_) => false);
 
 // 選択中のスレッドID
 final historySelectedThreadIdProvider = StateProvider<int>((_) => TalkThread.noneId);
@@ -78,8 +78,9 @@ class HistoryThreadsNotifier extends Notifier<List<TalkThread>> {
 
   Future<void> onLoad() async {
     final threads = await ref.read(historyRepositoryProvider).findAllThread();
-    _original = threads;
-    state = threads;
+    final tmp = _sort(threads);
+    _original = tmp;
+    state = tmp;
   }
 
   void sortByCreateAt() {
