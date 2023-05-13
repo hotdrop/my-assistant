@@ -1,9 +1,11 @@
 import 'package:assistant_me/common/app_extension.dart';
 import 'package:assistant_me/common/app_theme.dart';
+import 'package:assistant_me/model/app_settings.dart';
 import 'package:assistant_me/model/talk.dart';
 import 'package:assistant_me/model/talk_thread.dart';
 import 'package:assistant_me/ui/history/history_card.dart';
 import 'package:assistant_me/ui/history/history_controller.dart';
+import 'package:assistant_me/ui/home/home_controller.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:assistant_me/ui/widgets/assistant_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
@@ -187,6 +189,8 @@ class _ViewHistoryTalkHeaderArea extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        const SizedBox(width: 16),
+        const _ViewContinueButton(),
         const Spacer(),
         Column(
           children: [
@@ -198,7 +202,29 @@ class _ViewHistoryTalkHeaderArea extends ConsumerWidget {
         ),
         const Spacer(),
         const _ViewFilterAndrListAreaVisibleButton(),
+        const SizedBox(width: 16),
       ],
+    );
+  }
+}
+
+class _ViewContinueButton extends ConsumerWidget {
+  const _ViewContinueButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ElevatedButton(
+      onPressed: () {
+        final thread = ref.read(historySelectedThreadProvider);
+        if (thread == null) {
+          return;
+        }
+
+        final talks = ref.read(historyTalksStateProvider);
+        ref.read(homeControllerProvider.notifier).loadHistoryThread(thread, talks);
+        ref.read(selectPageIndexProvider.notifier).state = 0;
+      },
+      child: AppText.normal('この会話を再開'),
     );
   }
 }

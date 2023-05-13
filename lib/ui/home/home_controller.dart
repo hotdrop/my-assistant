@@ -159,6 +159,17 @@ class HomeController extends _$HomeController {
     final lastTalk = ref.read(homeCurrentTalksProvider).last;
     return lastTalk.isLoading();
   }
+
+  ///
+  /// 履歴画面から会話を再開する場合にこれを呼ぶ
+  ///
+  Future<void> loadHistoryThread(TalkThread thread, List<Talk> talks) async {
+    newThread();
+    ref.read(appSettingsProvider.notifier).selectModel(thread.model);
+    ref.read(homeThreadProvider.notifier).state = thread;
+    ref.read(homeSystemInputTextStateProvider.notifier).state = thread.system;
+    ref.read(homeCurrentTalksProvider.notifier).addAll(talks);
+  }
 }
 
 // 会話データのスレッド（会話データに対して1つのスレッドを割り当てる）
@@ -183,6 +194,10 @@ class CurrentTalksNotifier extends Notifier<List<Talk>> {
       tokenNum: 0,
     );
     state = [...state, talk];
+  }
+
+  void addAll(List<Talk> talks) {
+    state = talks;
   }
 
   void addAssistantLoading() {
