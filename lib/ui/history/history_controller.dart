@@ -36,6 +36,11 @@ class HistoryController extends _$HistoryController {
     ref.read(historyCreateAtOrderAscStateProvider.notifier).state = !ref.read(historyCreateAtOrderAscStateProvider);
     ref.read(historyThreadsProvider.notifier).sortByCreateAt();
   }
+
+  void visiblePageHeaderArea() {
+    bool isVisible = ref.read(historyHeaderVisibleStateProvider);
+    ref.read(historyHeaderVisibleStateProvider.notifier).state = !isVisible;
+  }
 }
 
 // 日付の昇順・昇順ソート
@@ -53,6 +58,9 @@ final historySelectedThreadProvider = Provider<TalkThread?>((ref) {
   }
   return currentThreads.first;
 });
+
+// 履歴リストと検索バーの表示設定
+final historyHeaderVisibleStateProvider = StateProvider<bool>((_) => true);
 
 // 表示する履歴の会話情報
 final historyTalksStateProvider = StateProvider<List<Talk>>((ref) => []);
