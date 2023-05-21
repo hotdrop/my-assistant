@@ -16,14 +16,11 @@ enum LlmModel {
   );
 
   static LlmModel toModel(String name) {
-    if (name == LlmModel.gpt3ModelName) {
-      return LlmModel.gpt3;
-    } else if (name == LlmModel.gpt4ModelName) {
-      return LlmModel.gpt4;
-    } else if (name == LlmModel.imageModelName) {
-      return LlmModel.dallE;
-    } else {
-      throw UnsupportedError('$name は未サポートのモデルです');
-    }
+    return switch (name) {
+      LlmModel.gpt3ModelName => LlmModel.gpt3,
+      LlmModel.gpt4ModelName => LlmModel.gpt4,
+      LlmModel.imageModelName => LlmModel.dallE,
+      _ => throw UnsupportedError('$name は未サポートのモデルです'),
+    };
   }
 }

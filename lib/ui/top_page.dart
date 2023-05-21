@@ -46,18 +46,13 @@ class TopPage extends ConsumerWidget {
       ];
 
   Widget _menuView(int index) {
-    switch (index) {
-      case homeIndex:
-        return const HomePage();
-      case historyIndex:
-        return const HistoryPage();
-      case templateIndex:
-        return const TemplatePage();
-      case settingIndex:
-        return const SettingsPage();
-      default:
-        throw Exception(['不正なIndexです index=$index']);
-    }
+    return switch (index) {
+      homeIndex => const HomePage(),
+      historyIndex => const HistoryPage(),
+      templateIndex => const TemplatePage(),
+      settingIndex => const SettingsPage(),
+      _ => throw Exception(['不正なIndexです index=$index'])
+    };
   }
 }
 
