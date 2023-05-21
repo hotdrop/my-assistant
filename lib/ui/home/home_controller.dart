@@ -61,8 +61,7 @@ class HomeController extends _$HomeController {
 
     try {
       switch (useModel) {
-        case LlmModel.gpt3:
-        case LlmModel.gpt4:
+        case LlmModel.gpt3 || LlmModel.gpt4:
           final talk = await ref.read(assistRepositoryProvider).messageTalk(apiKey: apiKey, thread: thread, message: message);
           ref.read(homeCurrentTalksProvider.notifier).updateAssistantResponse(talk);
           break;
