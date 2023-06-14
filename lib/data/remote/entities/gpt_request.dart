@@ -70,14 +70,11 @@ class GptRequest {
   }
 
   Map<String, String> _toJsonContent(Message msg) {
-    switch (msg.roleType) {
-      case RoleType.user:
-        return {'role': 'user', 'content': msg.getValue()};
-      case RoleType.assistant:
-        return {'role': 'assistant', 'content': msg.getValue()};
-      default:
-        throw UnimplementedError('未サポートのRoleTypeです index=${msg.roleType.index}');
-    }
+    return switch (msg.roleType) {
+      RoleType.user => {'role': 'user', 'content': msg.getValue()},
+      RoleType.assistant => {'role': 'assistant', 'content': msg.getValue()},
+      RoleType.image => throw UnsupportedError('プログラムバグ。Imageはここは通りません index=${msg.roleType.index}'),
+    };
   }
 
   // 履歴メッセージの合計トークン数を取得する

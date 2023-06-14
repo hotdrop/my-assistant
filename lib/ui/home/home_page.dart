@@ -353,16 +353,11 @@ class _ViewTalkArea extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
-              switch (talks[index].roleType) {
-                case RoleType.user:
-                  return UserChatRowWidget(talk: talks[index]);
-                case RoleType.assistant:
-                  return AssistantChatRowWidget(talk: talks[index]);
-                case RoleType.image:
-                  return ImageChatRowWidget(talk: talks[index]);
-                default:
-                  throw UnimplementedError('未実装のRoleTypeです。 index=${talks[index].roleType.index}');
-              }
+              return switch (talks[index].roleType) {
+                RoleType.user => UserChatRowWidget(talk: talks[index]),
+                RoleType.assistant => AssistantChatRowWidget(talk: talks[index]),
+                RoleType.image => ImageChatRowWidget(talk: talks[index]),
+              };
             },
             childCount: talks.length,
           ),
