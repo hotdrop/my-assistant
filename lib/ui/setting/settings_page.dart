@@ -7,8 +7,6 @@ import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:url_launcher_web/url_launcher_web.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -57,7 +55,7 @@ class _ViewInputApiKey extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          LineIcon(LineIcons.key, size: 28),
+          const Icon(Icons.key, size: 28),
           const SizedBox(width: 8),
           Flexible(
             child: SizedBox(
@@ -116,7 +114,7 @@ class _ViewTemplateImportButton extends ConsumerWidget {
     final enable = ref.watch(templateCanImportProvider);
     return ElevatedButton.icon(
       onPressed: enable ? () async => await execImport(ref) : null,
-      icon: LineIcon(LineIcons.fileImport),
+      icon: const Icon(Icons.upload),
       label: AppText.normal('インポート'),
     );
   }
@@ -142,7 +140,7 @@ class _ViewTemplateExportButton extends ConsumerWidget {
     final enable = ref.watch(templateCanExportProvider);
     return ElevatedButton.icon(
       onPressed: enable ? () => execExport(context, ref) : null,
-      icon: LineIcon(LineIcons.fileExport),
+      icon: const Icon(Icons.download),
       label: AppText.normal('エクスポート'),
     );
   }

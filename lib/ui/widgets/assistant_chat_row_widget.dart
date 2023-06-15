@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
 import 'package:flutter_highlighter/themes/atom-one-dark.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 // ignore: depend_on_referenced_packages
 import 'package:markdown/markdown.dart' as md;
@@ -101,7 +99,7 @@ class _HeaderWidget extends StatelessWidget {
             Clipboard.setData(t);
           },
           tooltip: 'クリップボードにコピーします',
-          icon: LineIcon(LineIcons.clipboard),
+          icon: const Icon(Icons.content_copy),
         ),
       ],
     );

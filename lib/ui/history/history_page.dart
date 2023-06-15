@@ -12,8 +12,6 @@ import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HistoryPage extends ConsumerWidget {
@@ -123,12 +121,11 @@ class _ViewFilterSortIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAsc = ref.watch(historyCreateAtOrderAscStateProvider);
     return InkWell(
       borderRadius: BorderRadius.circular(32),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: isAsc ? LineIcon(LineIcons.alternateSortAmountDown) : LineIcon(LineIcons.sortAmountUp),
+      child: const Padding(
+        padding: EdgeInsets.all(16),
+        child: Icon(Icons.sort),
       ),
       onTap: () {
         ref.read(historyControllerProvider.notifier).changeDateSort();
@@ -293,7 +290,7 @@ class _ViewFilterAndrListAreaVisibleButton extends ConsumerWidget {
       onPressed: () {
         ref.read(historyControllerProvider.notifier).visiblePageHeaderArea();
       },
-      icon: isVisible ? LineIcon(LineIcons.angleUp) : LineIcon(LineIcons.angleDown),
+      icon: isVisible ? const Icon(Icons.expand_less) : const Icon(Icons.expand_more),
     );
   }
 }
