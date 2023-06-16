@@ -4,8 +4,6 @@ import 'package:assistant_me/ui/template/template_controller.dart';
 import 'package:assistant_me/ui/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 
 class TemplatePage extends ConsumerWidget {
   const TemplatePage({super.key});
@@ -76,7 +74,7 @@ class _RowList extends ConsumerWidget {
             children: [
               Flexible(child: AppText.normal(template.title, overflow: TextOverflow.ellipsis)),
               InkWell(
-                child: LineIcon(LineIcons.times, color: Colors.grey),
+                child: const Icon(Icons.delete_forever, color: Colors.grey),
                 onLongPress: () async => await ref.read(templateControllerProvider.notifier).deleteTemplate(template),
               ),
             ],
@@ -143,9 +141,9 @@ class _ViewSaveButton extends ConsumerWidget {
           await ref.read(templateControllerProvider.notifier).createTemplate();
         }
       },
-      icon: Padding(
-        padding: const EdgeInsets.only(left: 24),
-        child: LineIcon(LineIcons.save),
+      icon: const Padding(
+        padding: EdgeInsets.only(left: 24),
+        child: Icon(Icons.save),
       ),
       label: Padding(
         padding: const EdgeInsets.only(left: 8, top: 12, bottom: 12, right: 24),

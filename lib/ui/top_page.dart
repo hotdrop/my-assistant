@@ -6,8 +6,6 @@ import 'package:assistant_me/ui/setting/settings_page.dart';
 import 'package:assistant_me/ui/history/history_page.dart';
 import 'package:assistant_me/ui/home/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 
 class TopPage extends ConsumerWidget {
   const TopPage({super.key});
@@ -39,10 +37,10 @@ class TopPage extends ConsumerWidget {
   }
 
   List<Destination> get destinations => <Destination>[
-        Destination('ホーム', LineIcon(LineIcons.home)),
-        Destination('履歴', LineIcon(LineIcons.history)),
-        Destination('テンプレ', LineIcon(LineIcons.alternateFileAlt)),
-        Destination('設定', LineIcon(LineIcons.cog)),
+        const Destination('ホーム', Icon(Icons.home)),
+        const Destination('履歴', Icon(Icons.history)),
+        const Destination('テンプレ', Icon(Icons.note_add)),
+        const Destination('設定', Icon(Icons.settings)),
       ];
 
   Widget _menuView(int index) {

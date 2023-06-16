@@ -11,8 +11,6 @@ import 'package:assistant_me/ui/widgets/image_chat_row_widget.dart';
 import 'package:assistant_me/ui/widgets/user_chat_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:line_icons/line_icon.dart';
-import 'package:line_icons/line_icons.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -235,7 +233,7 @@ class _ViewTemplate extends ConsumerWidget {
         ),
         title: Row(
           children: [
-            LineIcon(LineIcons.alternateFileAlt),
+            const Icon(Icons.note_add),
             const SizedBox(width: 8),
             AppText.normal('テンプレートを使う'),
           ],
@@ -298,7 +296,7 @@ class _ViewInputTalk extends ConsumerWidget {
           padding: const EdgeInsets.all(8),
           fillColor: (cannotTalk || emptyInputTalk) ? Colors.grey : AppTheme.primaryColor,
           shape: const CircleBorder(),
-          child: LineIcon(LineIcons.paperPlane, size: 28, color: Colors.white),
+          child: const Icon(Icons.send, size: 28, color: Colors.white),
         ),
       ],
     );
